@@ -1,0 +1,458 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+.game-prototype {
+    margin: 0;
+    min-height: 100vh;
+    padding: 22px;
+    color: #243930;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    background: radial-gradient(ellipse at top, #285546, #10262b 75%);
+}
+
+.prototype-page {
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+.game-header {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr auto;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.game-brand,
+.forest-message,
+.panel-heading,
+.mission-target,
+.field-note,
+.learning-note {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.brand-title {
+    color: #ffcf60;
+    font-family: monospace;
+    font-size: clamp(26px, 2.7vw, 40px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    text-decoration: none;
+    text-shadow: 2px 2px #813b24, 4px 4px #081d21;
+}
+
+.game-brand p {
+    color: #a5d9d7;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+}
+
+.level-title,
+.panel-heading {
+    color: #fff3d4;
+    border: 3px solid #37281f;
+    background: repeating-linear-gradient(0deg, #976236 0 24px, #85562f 24px 27px);
+    box-shadow: inset 0 0 0 2px #c49357, 0 3px #081e23;
+}
+
+.level-title {
+    padding: 13px 24px;
+    text-align: center;
+}
+
+.eyebrow {
+    color: #f2d9ab;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.level-title h1 {
+    margin-top: 4px;
+    font-size: clamp(18px, 1.7vw, 25px);
+    font-weight: 800;
+    text-shadow: 2px 2px #4a3023;
+}
+
+.forest-message {
+    color: #d5e5ba;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.game-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(340px, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.wood-frame {
+    overflow: hidden;
+    border: 5px solid #725335;
+    border-radius: 5px;
+    box-shadow: 0 0 0 2px #bb9767, 0 0 0 5px #10262b, 0 14px 30px #06181e66;
+}
+
+.game-area {
+    min-width: 0;
+    background: #173735;
+}
+
+.area-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    color: #f0ddb4;
+    font-family: monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #ad8753;
+}
+
+.area-badge {
+    padding: 4px 8px;
+    color: #d5edaa;
+    border: 1px solid #688753;
+    background: #294937;
+    font-size: 11px;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+#game-container {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #244a33;
+}
+
+#game-container canvas {
+    display: block;
+    image-rendering: pixelated;
+}
+
+.field-note {
+    justify-content: center;
+    padding: 12px 18px;
+    color: #c7dfba;
+    font-size: 12px;
+    border-top: 2px solid #8b704c;
+}
+
+.learning-note {
+    align-items: flex-start;
+    padding: 20px 24px;
+    color: #eadcbb;
+    background: #102c2b;
+    border-top: 1px solid #36544a;
+}
+
+.learning-note h2 {
+    margin-bottom: 5px;
+    color: #eecb81;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.learning-note p {
+    max-width: 520px;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.game-panel {
+    background: #f4e8ca;
+}
+
+.panel-heading {
+    padding: 10px 16px;
+    border: 0;
+    border-bottom: 3px solid #604024;
+    box-shadow: inset 0 2px #c49357;
+}
+
+.panel-heading h2 {
+    font-size: 22px;
+    font-weight: 800;
+    text-shadow: 2px 2px #493222;
+}
+
+.panel-content {
+    padding: 20px;
+}
+
+.mission-instruction {
+    margin-bottom: 14px;
+    font-size: 14px;
+    line-height: 1.65;
+}
+
+.mission-target {
+    margin-bottom: 20px;
+    padding: 8px 12px;
+    background: #e1e9c8;
+    border: 1px solid #a7b880;
+    font-size: 14px;
+}
+
+.game-panel label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.editor-language {
+    color: #566547;
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.code-editor-wrapper {
+    position: relative;
+}
+
+#code-editor {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 150px;
+    padding: 14px;
+    border: 3px solid #836747;
+    border-radius: 3px;
+    background: #132c2e;
+    color: #e9efc4;
+    caret-color: #f3c866;
+    font-family: Consolas, monospace;
+    font-size: 16px;
+    line-height: 1.65;
+    resize: vertical;
+    tab-size: 4;
+    box-shadow: inset 0 3px 8px #06191d88;
+}
+
+#code-suggestions {
+    position: absolute;
+    z-index: 30;
+    min-width: min(300px, calc(100% - 16px));
+    max-height: 210px;
+    overflow-y: auto;
+    padding: 4px;
+    color: #243930;
+    border: 2px solid #96764f;
+    border-radius: 3px;
+    background: #fff4d3;
+    box-shadow: 4px 5px 0 #172c2980;
+}
+
+#code-suggestions[hidden] {
+    display: none;
+}
+
+#code-suggestions li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 8px 10px;
+    cursor: pointer;
+}
+
+#code-suggestions li.is-active {
+    color: #102c2b;
+    background: #b8cce9;
+}
+
+#code-suggestions code {
+    font-family: Consolas, monospace;
+    font-size: 15px;
+}
+
+#code-suggestions li span {
+    color: #5e685f;
+    font-size: 12px;
+}
+
+#editor-help kbd {
+    padding: 1px 4px;
+    color: #3f4d40;
+    border: 1px solid #aaa180;
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    background: #f7edcf;
+    font-family: Consolas, monospace;
+    font-size: 11px;
+}
+
+#editor-help,
+.run-note {
+    margin-top: 10px;
+    color: #57604d;
+    font-size: 12px;
+    line-height: 1.65;
+}
+
+.game-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 14px -7px 4px;
+}
+
+/* Frame tombol berasal dari PNG asli 1672 x 941. */
+.sprite-button {
+    display: block;
+    width: 100%;
+    aspect-ratio: 560 / 210;
+    border: 0;
+    background-image: var(--button-sheet);
+    background-repeat: no-repeat;
+    background-size: 298.571429% 448.095238%;
+    image-rendering: pixelated;
+    cursor: pointer;
+}
+
+.sprite-button--run {
+    background-position: 50.809353% 23.255814%;
+}
+
+.sprite-button--reset {
+    background-position: 100% 23.255814%;
+}
+
+.sprite-button:hover:not(:disabled) {
+    filter: brightness(1.13);
+}
+
+.sprite-button:active:not(:disabled) {
+    transform: translateY(2px);
+}
+
+.sprite-button:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
+
+.hint-button {
+    width: 100%;
+    padding: 8px;
+    color: #496039;
+    border: 1px dashed #a9966d;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.hint-button:hover {
+    background: #e8dfbc;
+}
+
+.game-panel button:focus-visible,
+#code-editor:focus-visible,
+.brand-title:focus-visible {
+    outline: 3px solid #2287b2;
+    outline-offset: 3px;
+}
+
+#hint-text {
+    margin-top: 12px;
+    color: #735123;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+#feedback {
+    margin-top: 14px;
+    padding: 12px;
+    border-left: 4px solid #567c82;
+    background: #e1e8dc;
+    color: #23484a;
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+#feedback:empty,
+#hint-text:empty {
+    display: none;
+}
+
+#feedback[data-state='error'] {
+    color: #822820;
+    background: #f4dace;
+    border-color: #b54a37;
+}
+
+#feedback[data-state='success'] {
+    color: #235428;
+    background: #d9e9bc;
+    border-color: #5d8a3e;
+}
+
+.game-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px 4px 0;
+    color: #94bfbe;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.game-footer span span {
+    color: #f26c5d;
+}
+
+/* Area 40 x 42 pada sheet ikon; tidak mengubah gambar sumber. */
+.asset-icon {
+    display: inline-block;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 42px;
+    background-image: var(--icon-sheet);
+    background-repeat: no-repeat;
+    background-size: 334.4px 188.2px;
+    image-rendering: pixelated;
+}
+
+.asset-icon--fire { background-position: -164px -11px; }
+.asset-icon--leaf { background-position: -132px -12px; }
+.asset-icon--book { background-position: -2px -55px; }
+.asset-icon--water { background-position: -98px -12px; }
+
+@media (max-width: 1100px) {
+    .forest-message { display: none; }
+    .game-header { grid-template-columns: 1fr 1.3fr; }
+}
+
+@media (max-width: 900px) {
+    .game-prototype { padding: 16px; }
+    .game-layout { grid-template-columns: 1fr; }
+    .game-panel { max-width: 100%; }
+    .game-buttons { max-width: 440px; }
+}
+
+@media (max-width: 560px) {
+    .game-header { grid-template-columns: 1fr; gap: 16px; }
+    .game-brand { justify-content: center; }
+    .level-title { padding: 10px 12px; }
+    .area-heading { padding: 10px; font-size: 10px; letter-spacing: 0; }
+    .panel-content { padding: 16px; }
+    .game-footer { flex-direction: column; align-items: center; text-align: center; }
+}
