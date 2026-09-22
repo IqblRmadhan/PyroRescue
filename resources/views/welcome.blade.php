@@ -7,20 +7,12 @@
     <title>PyroRescue — Belajar Python, Selamatkan Hutan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="landing-page" style="--icon-sheet: url('{{ asset('assets/ui/icons-sheet.png') }}')">
+<body class="landing-page" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <main class="landing-hero" id="beranda">
-        <div class="landing-world" aria-hidden="true"></div>
-        <div class="landing-sun" aria-hidden="true"></div>
-        <div class="landing-mist landing-mist--one" aria-hidden="true"></div>
-        <div class="landing-mist landing-mist--two" aria-hidden="true"></div>
-
         <nav class="landing-nav wood-plank" aria-label="Navigasi utama">
             <a class="landing-brand" href="#beranda" aria-label="PyroRescue, kembali ke beranda">
-                <span class="brand-flame" aria-hidden="true">🔥</span>
-                <span>
-                    <strong>PyroRescue</strong>
-                    <small>Kode Kecil, Hutan Lebih Aman</small>
-                </span>
+                <span class="page-logo" aria-hidden="true"></span>
+                <span class="sr-only">PyroRescue</span>
             </a>
 
             <div class="landing-nav__links">
@@ -40,7 +32,8 @@
 
         <section class="landing-copy" id="tentang">
             <p class="rescue-kicker">Misi Penyelamatan Hutan</p>
-            <h1><span class="hero-flame" aria-hidden="true">🔥</span>PyroRescue</h1>
+            <h1 class="sr-only">PyroRescue</h1>
+            <div class="hero-logo" aria-hidden="true"></div>
             <p class="hero-tagline">Belajar Python, Selamatkan Hutan</p>
             <p class="hero-description">
                 Game edukasi yang mengajak kamu belajar pemrograman Python sambil
@@ -57,14 +50,6 @@
             <strong>Kita Semua<br>Bisa Bahagia</strong>
             <i aria-hidden="true">♥</i>
         </aside>
-
-        <div class="landing-foreground" aria-hidden="true">
-            <div class="foreground-tree foreground-tree--left"></div>
-            <div class="foreground-tree foreground-tree--right"></div>
-            <div class="hero-firefighter"></div>
-            <div class="hero-orangutan"></div>
-            <div class="hero-toucan"></div>
-        </div>
 
         <section class="landing-features parchment-panel" id="fitur" aria-label="Keunggulan PyroRescue">
             <article>

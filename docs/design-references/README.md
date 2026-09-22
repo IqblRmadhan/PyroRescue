@@ -4,20 +4,13 @@ Gambar berikut disediakan pengguna dan disalin tanpa mengubah PNG aslinya.
 
 | File sumber | Lokasi dalam project |
 | --- | --- |
-| `image-gen-1(3).png` | `public/assets/characters/firefighter-sheet.png` |
-| `image-gen-2(3).png` | `public/assets/characters/wildlife-sheet.png` |
-| `image-gen-3(2).png` | `public/assets/effects/effects-sheet.png` |
-| `image-gen-4(2).png` | `public/assets/tiles/terrain-sheet.png` |
-| `image-gen-5(2).png` | `public/assets/objects/forest-sheet.png` |
-| `image-gen-6(2).png` | `public/assets/ui/buttons-sheet.png` |
-| `image-gen-7(2).png` | `public/assets/ui/learning-sheet.png` |
-| `image-gen-8(2).png` | `public/assets/ui/icons-sheet.png` |
+| `image-gen-6(2).png` | `public/assets/ui/buttons.png` |
+| `image-gen-8(2).png` | `public/assets/ui/icons.png` |
 | `image-gen-7(1).png` | `docs/design-references/level-result.png` |
 | `image-gen-8(1).png` | `docs/design-references/mission-complete.png` |
-| `ChatGPT Image Sep 12, 2026, 09_22_00 AM.png` | `public/assets/objects/forest-details-sheet.png` |
 | `ChatGPT Image Sep 12, 2026, 09_21_34 AM.png` | `docs/design-references/path-map.png` |
-| `air.png` | `public/assets/tiles/water-terrain-sheet.png` |
-| `tanah.png` | `public/assets/tiles/ground-terrain-sheet.png` |
+| `air.png` | `public/assets/tiles/water.png` |
+| `tanah.png` | `public/assets/tiles/ground.png` |
 | `ChatGPT Image Sep 12, 2026, 10_02_10 AM.png` | `docs/design-references/level-1-map-reference.png` |
 
 ## Penggunaan pada Level 1

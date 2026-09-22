@@ -12,7 +12,7 @@
 
 @font-face {
     font-family: 'Pixelify Sans';
-    src: url('/assets/fonts/PixelifySans-Variable.ttf') format('truetype');
+    src: url('/assets/fonts/pixelify-sans.ttf') format('truetype');
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
@@ -675,7 +675,7 @@
     margin: 0;
     color: #251b14;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    background: #103f45;
+    background: #103f45 url('/assets/tiles/game-bg.png') center / cover fixed;
 }
 
 .landing-hero {
@@ -686,53 +686,8 @@
     min-height: 100vh;
     overflow: hidden;
     padding: 18px clamp(18px, 5vw, 84px) 22px;
-    background: linear-gradient(#36a6d5 0 41%, #f2ad65 60%, #1a6d59 83%, #123e3a 100%);
+    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed;
 }
-
-.landing-world {
-    position: absolute;
-    z-index: -3;
-    inset: 82px 0 0;
-    background-color: #2280a2;
-    background-image: linear-gradient(180deg, #1d9cdb22, #0b3e4399), url('/assets/maps/level-1-map.png');
-    background-repeat: no-repeat;
-    background-position: center 43%;
-    background-size: cover;
-    image-rendering: pixelated;
-}
-
-.landing-world::after {
-    position: absolute;
-    inset: 0;
-    content: '';
-    background: linear-gradient(90deg, #073d35a8 0%, transparent 29%, transparent 69%, #073d35a8 100%), linear-gradient(0deg, #072e2985, transparent 43%);
-}
-
-.landing-sun {
-    position: absolute;
-    z-index: -2;
-    top: 25%;
-    right: 18%;
-    width: clamp(70px, 9vw, 140px);
-    aspect-ratio: 1;
-    border-radius: 50%;
-    background: #ffdf8f;
-    box-shadow: 0 0 55px 25px #ffd17d99;
-}
-
-.landing-mist {
-    position: absolute;
-    z-index: -1;
-    width: 43vw;
-    height: 8vw;
-    opacity: .32;
-    border-radius: 50%;
-    background: #e7f7e5;
-    filter: blur(15px);
-}
-
-.landing-mist--one { top: 42%; left: 5%; }
-.landing-mist--two { top: 53%; right: -9%; }
 
 .wood-plank,
 .forest-sign,
@@ -765,15 +720,14 @@
     text-decoration: none;
 }
 
-.brand-flame,
-.hero-flame {
-    display: inline-grid;
-    place-items: center;
-    line-height: 1;
-    filter: drop-shadow(3px 3px #201510);
+.page-logo {
+    display: block;
+    width: 180px;
+    aspect-ratio: 4.05 / 1;
+    background: url('/assets/ui/hud.png') 3.2% 75% / 313.3% auto no-repeat;
+    filter: drop-shadow(3px 4px 0 #0c2630);
 }
 
-.brand-flame { font-size: 42px; }
 .landing-brand strong {
     display: block;
     color: #ffb528;
@@ -847,19 +801,13 @@
     letter-spacing: 1.3px;
 }
 
-.landing-copy h1 {
-    margin: 0;
-    color: #ffba22;
-    font-family: Impact, 'Arial Black', sans-serif;
-    font-size: clamp(56px, 9vw, 125px);
-    font-weight: 900;
-    letter-spacing: -3px;
-    line-height: .9;
-    -webkit-text-stroke: clamp(2px, .35vw, 5px) #241611;
-    text-shadow: 5px 6px #7e2719, 9px 10px #201613;
+.hero-logo {
+    width: min(760px, 88vw);
+    margin: 8px auto 0;
+    aspect-ratio: 4.05 / 1;
+    background: url('/assets/ui/hud.png') 3.2% 75% / 313.3% auto no-repeat;
+    filter: drop-shadow(5px 7px 0 #0c2630);
 }
-
-.hero-flame { margin-right: 7px; font-size: .8em; vertical-align: 8%; }
 
 .hero-tagline {
     display: table;
@@ -927,53 +875,6 @@
 .forest-sign--left { top: 190px; left: clamp(18px, 4vw, 65px); }
 .forest-sign--right { right: clamp(18px, 4vw, 65px); bottom: 180px; transform: rotate(2deg); }
 
-.landing-foreground { position: absolute; z-index: 1; inset: auto 0 108px; pointer-events: none; }
-.foreground-tree {
-    position: absolute;
-    bottom: -20px;
-    width: 19vw;
-    height: 30vw;
-    max-height: 440px;
-    border-radius: 47% 47% 8% 8%;
-    background: radial-gradient(ellipse at 49% 18%, #83bc4d 0 5%, transparent 6%), radial-gradient(ellipse at 40% 33%, #2d7e3f 0 23%, transparent 24%), radial-gradient(ellipse at 70% 42%, #155a37 0 25%, transparent 26%), radial-gradient(ellipse at 47% 61%, #123f30 0 29%, transparent 30%);
-    filter: drop-shadow(0 5px #0c322c);
-}
-.foreground-tree--left { left: -5vw; }
-.foreground-tree--right { right: -5vw; transform: scaleX(-1); }
-.hero-firefighter, .hero-orangutan, .hero-toucan {
-    position: absolute;
-    background-repeat: no-repeat;
-    filter: drop-shadow(3px 4px #10251e);
-    image-rendering: pixelated;
-}
-.hero-firefighter {
-    bottom: -3px;
-    left: 17%;
-    width: clamp(95px, 10vw, 150px);
-    height: clamp(190px, 20vw, 300px);
-    background-image: url('/assets/characters/firefighter-idle-sheet.png');
-    background-position: 0 0;
-    background-size: 600% 400%;
-}
-.hero-orangutan {
-    bottom: 3px;
-    left: 5%;
-    width: clamp(80px, 9vw, 132px);
-    height: clamp(94px, 11vw, 162px);
-    background-image: url('/assets/characters/wildlife-sheet.png');
-    background-position: 0 0;
-    background-size: 500% 200%;
-}
-.hero-toucan {
-    right: 6%;
-    bottom: 36%;
-    width: clamp(64px, 7vw, 105px);
-    height: clamp(70px, 8vw, 120px);
-    background-image: url('/assets/characters/wildlife-sheet.png');
-    background-position: 75% 100%;
-    background-size: 500% 200%;
-}
-
 .parchment-panel { background: repeating-linear-gradient(90deg, #eedaa7 0 33%, #e2c38a 33.3% 34%, #f3dfaf 34.3% 66%, #e2c38a 66.3% 67%, #eedaa7 67.3% 100%); }
 .landing-features {
     z-index: 3;
@@ -1021,18 +922,20 @@
     min-height: 100vh;
     margin: 0;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    background: #123f42;
+    background: #123f42 url('/assets/tiles/game-bg.png') center / cover fixed;
 }
 
 .auth-layout {
     position: relative;
     isolation: isolate;
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
     min-height: 100vh;
-    overflow: hidden;
-    padding: 28px 16px 54px;
-    background: linear-gradient(180deg, #5662a9 0, #f57c4a 38%, #246d72 62%, #123b39 100%);
+    overflow-x: hidden;
+    padding: 18px clamp(16px, 5vw, 84px) 54px;
+    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed;
 }
 
 .auth-landscape {
@@ -1040,7 +943,7 @@
     z-index: -2;
     inset: 0;
     background-color: #236d73;
-    background-image: linear-gradient(180deg, #20265a44 0 28%, #ff813544 41%, #073c3a8c 100%), url('/assets/maps/level-1-map.png');
+    background-image: linear-gradient(180deg, #20265a44 0 28%, #ff813544 41%, #073c3a8c 100%), url('/assets/tiles/game-bg.png');
     background-position: center;
     background-size: cover;
     image-rendering: pixelated;
@@ -1053,35 +956,17 @@
     background: linear-gradient(90deg, #062e2ccc, transparent 30%, transparent 70%, #062e2ccc), linear-gradient(0deg, #062a2baa, transparent 38%);
 }
 
-.auth-brand {
-    position: absolute;
-    top: clamp(18px, 4vh, 45px);
-    left: 50%;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: #ffbc2a;
-    text-decoration: none;
-    transform: translateX(-50%);
+.auth-navbar {
+    position: relative;
+    flex: 0 0 auto;
+    box-sizing: border-box;
 }
-
-.auth-brand > span:first-child { font-size: clamp(46px, 5vw, 75px); filter: drop-shadow(3px 4px #1e1513); }
-.auth-brand strong {
-    display: block;
-    font-family: Impact, 'Arial Black', sans-serif;
-    font-size: clamp(42px, 5.5vw, 78px);
-    letter-spacing: -1px;
-    line-height: .83;
-    -webkit-text-stroke: 2px #311a13;
-    text-shadow: 4px 5px #713022, 7px 8px #1d1613;
-}
-.auth-brand small { display: block; margin-top: 9px; color: #e3edda; font-size: clamp(12px, 1.55vw, 20px); font-weight: 800; text-align: center; text-shadow: 2px 2px #20322d; }
 
 .auth-card {
     z-index: 1;
+    flex: 0 0 auto;
     width: min(490px, 100%);
-    margin-top: clamp(95px, 14vh, 140px);
+    margin: clamp(72px, 9vh, 105px) auto 0;
     border: 5px solid #38241a;
     border-radius: 7px;
     background: #ead39d;
@@ -1152,20 +1037,17 @@
 .auth-guest-note { margin: 9px 0 0; color: #6c5d4c; font-size: 11px; }
 .auth-footer { margin: 0; padding: 11px; color: #265063; border-top: 2px solid #be955b; font-size: 13px; font-weight: 800; text-align: center; }
 .auth-back { display: inline-block; margin-top: 17px; color: #27677a; font-size: 13px; font-weight: 800; }
-.auth-card--register { margin-top: clamp(90px, 13vh, 130px); }
+.auth-card--register { margin-top: clamp(72px, 9vh, 105px); }
 .auth-card--register .auth-banner { margin-bottom: 12px; }
 .auth-card--register .auth-card__content { padding-bottom: 28px; }
 
 /* Menu utama permainan dan pemilihan level. */
-.main-menu-page { min-width: 320px; margin: 0; color: #f8efd6; font-family: 'Trebuchet MS', Arial, sans-serif; background: #0e3639; }
-.main-menu { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; padding: 10px clamp(10px, 2vw, 28px) 18px; background: linear-gradient(#5499bc, #1d5960 30%, #123c3c); }
-.main-menu__world { position: absolute; z-index: -2; inset: 0; opacity: .35; background: url('/assets/maps/level-1-map.png') center / cover no-repeat; image-rendering: pixelated; }
-.main-menu__world::after { position: absolute; inset: 0; content: ''; background: linear-gradient(#135266aa, transparent 45%, #0a3034cc); }
-.main-menu__header { display: grid; grid-template-columns: 1fr minmax(320px, 1.2fr) 1fr; align-items: center; gap: 18px; max-width: 1450px; margin: 0 auto 12px; }
-.main-menu__brand { display: flex; align-items: center; gap: 8px; width: max-content; color: #ffb625; text-decoration: none; }
-.main-menu__brand > span:first-child { font-size: 42px; filter: drop-shadow(2px 3px #1a2622); }
-.main-menu__brand strong { display: block; font-family: Impact, 'Arial Black', sans-serif; font-size: clamp(30px, 3vw, 47px); letter-spacing: -1px; line-height: .8; -webkit-text-stroke: 1px #2f1b13; text-shadow: 3px 4px #723323; }
-.main-menu__brand small { display: block; margin-top: 6px; color: #d9ebd7; font-size: 10px; font-weight: 800; text-align: center; }
+.main-menu-page { min-width: 320px; margin: 0; color: #f8efd6; font-family: 'Trebuchet MS', Arial, sans-serif; background: #0e3639 url('/assets/tiles/game-bg.png') center / cover fixed; }
+.main-menu { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; padding: 10px clamp(10px, 2vw, 28px) 18px; background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed; }
+.main-menu-navbar { box-sizing: border-box; margin-bottom: 12px; }
+.main-menu-navbar form { margin: 0; }
+.main-menu-navbar .landing-login { font-family: inherit; cursor: pointer; }
+.main-menu__header { display: grid; grid-template-columns: minmax(320px, 1.2fr) 1fr; align-items: center; gap: 18px; max-width: 1050px; margin: 0 auto 12px; }
 .main-menu__title { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 16px; border: 4px solid #302016; border-radius: 7px; box-shadow: inset 0 0 0 2px #c98e4e, 0 4px #102526; text-align: center; }
 .main-menu__title > span { font-size: 30px; }.main-menu__title h1 { margin: 0; font-family: Impact, 'Arial Black', sans-serif; font-size: clamp(23px, 2.4vw, 34px); line-height: 1; text-shadow: 2px 2px #312016; }.main-menu__title p { margin: 4px 0 0; color: #f8db9c; font-size: 11px; font-weight: 700; }
 .main-menu__player { justify-self: end; padding: 8px 15px; color: #fff1c8; border: 3px solid #362217; border-radius: 4px; background: #75472c; box-shadow: inset 0 0 0 1px #cd9452; font-size: 14px; font-weight: 800; text-align: center; text-shadow: 1px 1px #372116; }.main-menu__player small { display: block; margin-top: 2px; color: #b8dc9b; font-size: 10px; }
@@ -1173,21 +1055,17 @@
 .main-menu .wood-frame { border-color: #332116; box-shadow: inset 0 0 0 2px #c99150, 0 4px 0 #102525, 0 9px 18px #061e20aa; }
 .main-menu__nav { align-self: start; overflow: hidden; background: #513321e8; }.main-menu__nav a, .main-menu__nav button { display: flex; align-items: center; gap: 12px; box-sizing: border-box; width: 100%; padding: 14px 15px; color: #f7ecd1; border: 0; border-bottom: 2px solid #8e5b36; background: transparent; font-size: 16px; font-weight: 800; text-align: left; text-decoration: none; text-shadow: 2px 2px #2c1b15; cursor: pointer; }.main-menu__nav a span, .main-menu__nav button span { font-size: 22px; }.main-menu__nav a:hover, .main-menu__nav a.is-active { color: #ffe490; background: #9a682f; box-shadow: inset 4px 0 #f9cf58; }.main-menu__nav form { margin: 0; }.main-menu__nav button { color: #e8c6aa; }
 .level-board, .progress-summary, .concept-panel { overflow: hidden; background: #d7b175; }.board-heading { display: flex; align-items: center; gap: 10px; padding: 10px 14px; color: #fff1d1; border-bottom: 3px solid #3b2519; background: repeating-linear-gradient(2deg, #704328 0 13px, #8e5934 13px 18px); text-shadow: 2px 2px #302018; }.board-heading span { font-size: 25px; }.board-heading h2 { margin: 0; font-family: Impact, 'Arial Black', sans-serif; font-size: 22px; letter-spacing: .3px; }
-.level-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 15px; background: #c39359e6; }.level-card { display: block; overflow: hidden; color: #fff4d8; border: 4px solid #3a2417; border-radius: 6px; background: #23483f; box-shadow: inset 0 0 0 2px #b98043, 0 4px #663d26; text-align: center; text-decoration: none; transition: transform .15s ease, filter .15s ease; }.level-card--one:hover { filter: brightness(1.1); transform: translateY(-4px); }.level-card__art { position: relative; height: 145px; background-image: linear-gradient(#113a2944, #05241e66), url('/assets/maps/level-1-map.png'); background-position: center 52%; background-size: cover; image-rendering: pixelated; }.level-card__art span { position: absolute; right: 13px; bottom: 7px; font-size: 46px; filter: drop-shadow(2px 3px #1c1712); }.level-card--two .level-card__art { filter: grayscale(.45) brightness(.7); }.level-card--three .level-card__art { filter: sepia(.7) saturate(1.9) brightness(.68); }.level-card h3 { margin: -5px 9px 0; padding: 5px; color: #fff7e0; border: 2px solid #452a1a; border-radius: 3px; background: #70432a; font-family: Impact, 'Arial Black', sans-serif; font-size: 21px; position: relative; }.level-card p { min-height: 35px; margin: 8px 7px 2px; color: #fff3cd; font-size: 13px; font-weight: 800; }.level-card__stars { margin: 7px 0; color: #ffc73b; font-size: clamp(20px, 2.2vw, 31px); letter-spacing: 1px; text-shadow: 2px 2px #5b361d; }.level-card__meter { height: 16px; margin: 5px 12px; overflow: hidden; border: 2px solid #211e1b; border-radius: 8px; background: #415457; }.level-card__meter span { display: block; height: 100%; background: #55bd49; }.level-card__status { display: block; margin-top: 8px; padding: 8px; color: #d2efb3; border-top: 2px solid #6d4b2d; font-size: 13px; }.level-card.is-locked { filter: grayscale(.76) brightness(.76); cursor: not-allowed; }.level-card.is-locked .level-card__status { color: #f1e6c9; }
+.level-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; padding: 15px; background: #c39359e6; }.level-card { display: block; overflow: hidden; color: #fff4d8; border: 4px solid #3a2417; border-radius: 6px; background: #23483f; box-shadow: inset 0 0 0 2px #b98043, 0 4px #663d26; text-align: center; text-decoration: none; transition: transform .15s ease, filter .15s ease; }.level-card--one:hover { filter: brightness(1.1); transform: translateY(-4px); }.level-card__art { position: relative; height: 145px; background-image: linear-gradient(#113a2944, #05241e66), url('/assets/maps/level1-map.png'); background-position: center 52%; background-size: cover; image-rendering: pixelated; }.level-card__art span { position: absolute; right: 13px; bottom: 7px; font-size: 46px; filter: drop-shadow(2px 3px #1c1712); }.level-card--two .level-card__art { filter: grayscale(.45) brightness(.7); }.level-card--three .level-card__art { filter: sepia(.7) saturate(1.9) brightness(.68); }.level-card h3 { margin: -5px 9px 0; padding: 5px; color: #fff7e0; border: 2px solid #452a1a; border-radius: 3px; background: #70432a; font-family: Impact, 'Arial Black', sans-serif; font-size: 21px; position: relative; }.level-card p { min-height: 35px; margin: 8px 7px 2px; color: #fff3cd; font-size: 13px; font-weight: 800; }.level-card__stars { margin: 7px 0; color: #ffc73b; font-size: clamp(20px, 2.2vw, 31px); letter-spacing: 1px; text-shadow: 2px 2px #5b361d; }.level-card__meter { height: 16px; margin: 5px 12px; overflow: hidden; border: 2px solid #211e1b; border-radius: 8px; background: #415457; }.level-card__meter span { display: block; height: 100%; background: #55bd49; }.level-card__status { display: block; margin-top: 8px; padding: 8px; color: #d2efb3; border-top: 2px solid #6d4b2d; font-size: 13px; }.level-card.is-locked { filter: grayscale(.76) brightness(.76); cursor: not-allowed; }.level-card.is-locked .level-card__status { color: #f1e6c9; }
 .forest-cheer { display: flex; align-items: center; gap: 8px; margin: 0 15px 15px; padding: 10px 18px; color: #274054; border: 3px solid #523a27; border-radius: 5px; background: #f5e4bd; box-shadow: inset 0 0 0 2px #fffae7; }.forest-cheer span { font-size: 50px; }.forest-cheer p { margin: 0; font-size: 13px; line-height: 1.4; }.forest-cheer strong { color: #315277; }
 .main-menu__sidebar { display: grid; align-content: start; gap: 13px; }.progress-summary dl { margin: 0; padding: 8px 14px; color: #2b4152; background: #f5e8c9; }.progress-summary dl div { display: flex; justify-content: space-between; gap: 8px; padding: 9px 0; border-bottom: 1px solid #c2aa82; font-size: 13px; font-weight: 800; }.progress-summary dl div:last-child { border: 0; }.progress-summary dt { color: #3a5061; }.progress-summary dd { margin: 0; color: #254c72; font-size: 15px; }.concept-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px; background: #c39359; }.concept-grid > div { display: grid; grid-template-columns: 32px 1fr; align-items: center; gap: 2px 7px; min-height: 64px; padding: 7px; color: #2e4759; border: 2px solid #806042; border-radius: 4px; background: #f4e8c9; font-size: 12px; }.concept-grid span { grid-row: span 2; font-size: 26px; }.concept-grid small { align-self: start; padding: 3px 5px; color: #eaffd9; border-radius: 3px; background: #359340; font-size: 10px; text-align: center; }.concept-grid .is-locked { filter: grayscale(.8); }.concept-grid .is-locked small { color: #e8e8e8; background: #59636a; }
 .main-menu__footer { max-width: 1450px; margin: 12px auto 0; padding: 9px; color: #b6e8d2; border-top: 2px solid #25575a; font-size: 13px; font-weight: 800; text-align: center; text-shadow: 1px 1px #123335; }
 
 @media (max-width: 1080px) { .main-menu__content { grid-template-columns: 165px minmax(0, 1fr); }.main-menu__sidebar { grid-column: 1 / -1; grid-template-columns: 1fr 1fr; }.main-menu__header { grid-template-columns: 1fr 1.3fr; }.main-menu__player { display: none; } }
-@media (max-width: 700px) { .main-menu { padding: 8px; }.main-menu__header { grid-template-columns: 1fr; gap: 8px; }.main-menu__brand { justify-self: center; }.main-menu__title { width: 100%; box-sizing: border-box; }.main-menu__content { grid-template-columns: 1fr; }.main-menu__nav { display: grid; grid-template-columns: repeat(3, 1fr); }.main-menu__nav a, .main-menu__nav button { justify-content: center; padding: 9px 3px; font-size: 0; }.main-menu__nav a span, .main-menu__nav button span { font-size: 21px; }.level-cards { grid-template-columns: 1fr; }.level-card__art { height: 110px; }.main-menu__sidebar { grid-column: auto; grid-template-columns: 1fr; }.forest-cheer { padding: 8px; }.forest-cheer span { font-size: 39px; } }
+@media (max-width: 700px) { .main-menu { padding: 8px; }.main-menu__header { grid-template-columns: 1fr; gap: 8px; }.main-menu__title { width: 100%; box-sizing: border-box; }.main-menu__content { grid-template-columns: 1fr; }.main-menu__nav { display: grid; grid-template-columns: repeat(3, 1fr); }.main-menu__nav a, .main-menu__nav button { justify-content: center; padding: 9px 3px; font-size: 0; }.main-menu__nav a span, .main-menu__nav button span { font-size: 21px; }.level-cards { grid-template-columns: 1fr; }.level-card__art { height: 110px; }.main-menu__sidebar { grid-column: auto; grid-template-columns: 1fr; }.forest-cheer { padding: 8px; }.forest-cheer span { font-size: 39px; } }
 
 @media (max-width: 560px) {
-    .auth-layout { padding: 20px 13px 30px; }
-    .auth-brand { top: 17px; gap: 7px; }
-    .auth-brand > span:first-child { font-size: 43px; }
-    .auth-brand strong { font-size: 41px; }
-    .auth-brand small { margin-top: 5px; font-size: 10px; }
-    .auth-card { margin-top: 95px; }
+    .auth-layout { padding: 10px 13px 30px; }
+    .auth-card { margin-top: 65px; }
     .auth-banner { margin: -59px -7px 14px; padding: 9px; font-size: 12px; }
     .auth-card__content { padding: 5px 22px 20px; }
     .auth-card h1 { font-size: 27px; }
@@ -1199,7 +1077,6 @@
     .landing-nav__links a { padding-inline: 12px; font-size: 15px; }
     .forest-sign { display: none; }
     .landing-copy { width: min(720px, 88vw); }
-    .hero-firefighter { left: 12%; }
     .landing-features article { gap: 7px; padding: 10px; }
 }
 
@@ -1207,20 +1084,12 @@
     .landing-hero { min-height: auto; padding-top: 10px; }
     .landing-nav { flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 9px 11px; }
     .landing-brand { margin-right: 0; }
-    .brand-flame { font-size: 32px; }
-    .landing-brand strong { font-size: 27px; }
-    .landing-brand small { font-size: 9px; }
     .landing-nav__links { order: 3; width: 100%; justify-content: center; margin: 2px 0 0; }
     .landing-nav__links a { padding: 5px 13px; font-size: 14px; }
     .landing-copy { width: 100%; margin: 45px auto 56px; }
     .rescue-kicker { font-size: 10px; }
-    .landing-copy h1 { font-size: clamp(52px, 17vw, 88px); letter-spacing: -2px; }
     .hero-tagline { margin-top: 13px; font-size: 19px; }
     .hero-description { font-size: 15px; }
-    .landing-foreground { inset: auto 0 208px; }
-    .hero-firefighter { left: 13%; width: 76px; height: 152px; }
-    .hero-orangutan { left: 3%; width: 62px; height: 76px; }
-    .hero-toucan { right: 3%; width: 50px; height: 60px; }
     .landing-features { grid-template-columns: repeat(2, 1fr); }
     .landing-features article { min-height: 74px; border-bottom: 2px solid #c69e64; font-size: 12px; }
     .landing-features article:nth-child(2) { border-right: 0; }
@@ -1256,7 +1125,7 @@
     min-height: 100dvh;
     padding: 0;
     color: #172c54;
-    background: url('/assets/tiles/Backgroud Game.png') center / cover fixed no-repeat;
+    background: url('/assets/tiles/game-bg.png') center / cover fixed no-repeat;
     font-family: 'Pixelify Sans', 'Trebuchet MS', sans-serif;
     touch-action: pan-x pan-y;
 }

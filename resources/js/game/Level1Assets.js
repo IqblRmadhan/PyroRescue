@@ -118,37 +118,37 @@ export const firefighterAnimations = {
 
 export const level1Assets = {
     groundTerrain: {
-        file: 'tiles/ground-terrain-sheet.png',
+        file: 'tiles/ground.png',
         frames: {
             grass: [60, 70, 140, 140],
             dirt: [60, 270, 140, 140],
         },
     },
     waterTerrain: {
-        file: 'tiles/water-terrain-sheet.png',
+        file: 'tiles/water.png',
         frames: {
             water: [65, 75, 155, 150],
         },
     },
     firefighterWalk: {
-        file: 'characters/firefighter-walk-v2-sheet.png',
+        file: 'characters/firefighter-walk.png',
         frames: createFrames(walkFrameRegions),
     },
     firefighterIdle: {
-        file: 'characters/firefighter-idle-sheet.png',
+        file: 'characters/firefighter-idle.png',
         frames: createFrames(idleFrameRegions),
     },
     firefighterSpray: {
-        file: 'characters/firefighter-spray-v2-sheet.png',
+        file: 'characters/firefighter-spray.png',
         frames: createFrames(sprayFrameRegions),
         pivots: createFramePivots(sprayFramePivots),
     },
     firefighterRespawn: {
-        file: 'characters/firefighter-respawn-v2-sheet.png',
+        file: 'characters/firefighter-respawn.png',
         frames: createFrames(respawnFrameRegions, 256),
     },
     actionMarker: {
-        file: 'effects/action-marker-sheet.png',
+        file: 'effects/action-marker.png',
         frames: {
             pulse1: [58, 249, 246, 246],
             pulse2: [420, 249, 246, 246],
@@ -159,7 +159,7 @@ export const level1Assets = {
         },
     },
     burningTree: {
-        file: 'objects/burning-tree-sheet.png',
+        file: 'objects/burning-tree.png',
         frames: {
             healthy: [0, 0, 40, 40],
             small1: [40, 0, 40, 40],
@@ -176,7 +176,7 @@ export const level1Assets = {
         },
     },
     waterPump: {
-        file: 'objects/water-pump-v2-sheet.png',
+        file: 'objects/water-pump.png',
         frames: {
             idle: [0, 0, 80, 80],
             start: [80, 0, 80, 80],
@@ -184,21 +184,6 @@ export const level1Assets = {
             flow: [0, 80, 80, 80],
             slow: [80, 80, 80, 80],
             drop: [160, 80, 80, 80],
-        },
-    },
-    effects: {
-        file: 'effects/effects-sheet.png',
-        frames: {
-            fire: [586, 88, 100, 153],
-            water: [781, 552, 229, 111],
-            ashes: [1317, 794, 86, 61],
-        },
-    },
-    icons: {
-        file: 'ui/icons-sheet.png',
-        frames: {
-            water: [522, 83, 130, 167],
-            fire: [839, 64, 146, 187],
         },
     },
 };
@@ -210,4 +195,4 @@ export const burningTreeFramesByWater = {
 };
 
 // Simpan map final 1600 x 1200 pada lokasi ini.
-export const level1MapImage = 'maps/level-1-map.png';
+export const level1MapImage = 'maps/level1-map.png';

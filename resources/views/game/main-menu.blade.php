@@ -6,11 +6,25 @@
     <title>Progress Pemain — PyroRescue</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="main-menu-page" style="--icon-sheet: url('{{ asset('assets/ui/icons-sheet.png') }}')">
+<body class="main-menu-page" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <main class="main-menu">
-        <div class="main-menu__world" aria-hidden="true"></div>
+        <nav class="landing-nav main-menu-navbar wood-plank" aria-label="Navigasi utama">
+            <a class="landing-brand" href="{{ route('home') }}" aria-label="PyroRescue, kembali ke beranda">
+                <span class="page-logo" aria-hidden="true"></span>
+                <span class="sr-only">PyroRescue</span>
+            </a>
+            <div class="landing-nav__links">
+                <a href="{{ route('home') }}">Beranda</a>
+                <a href="#petualangan">Petualangan</a>
+                <a href="#progress">Progress</a>
+            </div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button class="landing-login" type="submit">Keluar</button>
+            </form>
+        </nav>
+
         <header class="main-menu__header">
-            <a href="{{ route('home') }}" class="main-menu__brand"><span aria-hidden="true">🔥</span><span><strong>PyroRescue</strong><small>Kode Kecil, Hutan Lebih Aman</small></span></a>
             <div class="main-menu__title wood-plank"><span aria-hidden="true">🌳</span><div><h1>Progress Pemain</h1><p>Terus belajar, selamatkan lebih banyak hutan!</p></div></div>
             <div class="main-menu__player"><span>{{ $playerName }}</span><small>Penjaga Hutan</small></div>
         </header>
@@ -22,7 +36,6 @@
                 <a href="#konsep"><span aria-hidden="true">📖</span>Konsep</a>
                 <a href="#pencapaian"><span aria-hidden="true">🏆</span>Pencapaian</a>
                 <a href="#pengaturan"><span aria-hidden="true">⚙️</span>Pengaturan</a>
-                <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit"><span aria-hidden="true">↩</span>Keluar</button></form>
             </nav>
 
             <section class="level-board wood-frame" id="progress" aria-labelledby="levels-title">

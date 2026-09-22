@@ -6,7 +6,7 @@
     <title>PyroRescue - Level 1: Tepi Sungai Terbakar</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="game-prototype" style="--icon-sheet: url('{{ asset('assets/ui/icons-sheet.png') }}'); --button-sheet: url('{{ asset('assets/ui/buttons-sheet.png') }}'); --game-hud-sheet: url('{{ asset('assets/ui/game-hud-sheet.png') }}')">
+<body class="game-prototype" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}'); --button-sheet: url('{{ asset('assets/ui/buttons.png') }}'); --game-hud-sheet: url('{{ asset('assets/ui/hud.png') }}')">
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" data-game-page="prototype-page">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level 1</h1>
 
@@ -21,21 +21,21 @@
             </div>
 
             <article class="story-slide is-active" data-story-slide>
-                <img src="{{ asset('assets/story/Level1/1.png') }}" alt="Mobil pemadam PyroRescue tiba di pos kecil dekat hutan yang terbakar">
+                <img src="{{ asset('assets/story/level1/scene-1.png') }}" alt="Mobil pemadam PyroRescue tiba di pos kecil dekat hutan yang terbakar">
                 <div class="story-dialogue">
                     <p>Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.</p>
                 </div>
             </article>
 
             <article class="story-slide" data-story-slide hidden>
-                <img src="{{ asset('assets/story/Level1/2.png') }}" alt="Asap tebal, api hutan, dan burung-burung yang terbang menjauh">
+                <img src="{{ asset('assets/story/level1/scene-2.png') }}" alt="Asap tebal, api hutan, dan burung-burung yang terbang menjauh">
                 <div class="story-dialogue">
                     <p>Langit mulai tertutup asap, suara radio terdengar putus-putus, dan beberapa burung beterbangan keluar dari arah hutan.</p>
                 </div>
             </article>
 
             <article class="story-slide story-slide--commander" data-story-slide hidden>
-                <img src="{{ asset('assets/story/Level1/3.png') }}" alt="Komandan PyroRescue menyampaikan laporan melalui radio">
+                <img src="{{ asset('assets/story/level1/scene-3.png') }}" alt="Komandan PyroRescue menyampaikan laporan melalui radio">
                 <div class="story-dialogue story-dialogue--commander">
                     <strong class="story-speaker">KOMANDAN</strong>
                     <p>Asap semakin tebal. Tim pemantau menemukan jalur masuk menuju titik api pertama, tapi akses ke sana mulai tertutup.</p>
@@ -43,7 +43,7 @@
             </article>
 
             <article class="story-slide" data-story-slide hidden>
-                <img src="{{ asset('assets/story/Level1/4.png') }}" alt="Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad">
+                <img src="{{ asset('assets/story/level1/scene-4.png') }}" alt="Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad">
                 <div class="story-dialogue">
                     <p>Pemain turun dari mobil dan sudah memegang PyroPad. Ia bersiap untuk masuk ke jalur hutan.</p>
                 </div>

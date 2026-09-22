@@ -27,7 +27,7 @@ class Level1PageTest extends TestCase
             ->assertOk()
             ->assertSee('Tepi Sungai Terbakar')
             ->assertSee('id="level-story"', false)
-            ->assertSee('assets/story/Level1/1.png')
+            ->assertSee('assets/story/level1/scene-1.png')
             ->assertSee('Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.')
             ->assertSee('SKIP')
             ->assertSee('id="game-container"', false)

@@ -6,13 +6,22 @@
     <title>Masuk — PyroRescue</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="auth-page" style="--icon-sheet: url('{{ asset('assets/ui/icons-sheet.png') }}')">
+<body class="auth-page" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <main class="auth-layout">
         <div class="auth-landscape" aria-hidden="true"></div>
-        <a class="auth-brand" href="{{ route('home') }}" aria-label="Kembali ke beranda PyroRescue">
-            <span aria-hidden="true">🔥</span>
-            <span><strong>PyroRescue</strong><small>Kode Kecil, Hutan Lebih Aman</small></span>
-        </a>
+
+        <nav class="landing-nav auth-navbar wood-plank" aria-label="Navigasi utama">
+            <a class="landing-brand" href="{{ route('home') }}" aria-label="PyroRescue, kembali ke beranda">
+                <span class="page-logo" aria-hidden="true"></span>
+                <span class="sr-only">PyroRescue</span>
+            </a>
+            <div class="landing-nav__links">
+                <a href="{{ route('home') }}#tentang">Tentang</a>
+                <a href="{{ route('home') }}#fitur">Fitur</a>
+                <a href="mailto:pyrorescue@example.com">Kontak</a>
+            </div>
+            <a class="landing-login" href="{{ route('register') }}">Daftar</a>
+        </nav>
 
         <section class="auth-card" aria-labelledby="login-title">
             <p class="auth-banner">🌳 Selamatkan Hutan Kalimantan, Mulai dari Satu Langkah!</p>
