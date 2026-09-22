@@ -24,19 +24,13 @@ addVerticalRoad(9, 13, 18);
 addHorizontalRoad(18, 4, 14);
 addVerticalRoad(14, 18, 20);
 addHorizontalRoad(20, 14, 20);
-addVerticalRoad(20, 9, 20);
+addVerticalRoad(20, 11, 20);
 
-// Jalur utara dan loop kecil di bagian kanan atas.
-addHorizontalRoad(9, 20, 22);
-addVerticalRoad(22, 7, 9);
-addHorizontalRoad(7, 22, 27);
-addVerticalRoad(27, 7, 12);
-addHorizontalRoad(10, 27, 31);
-addVerticalRoad(31, 10, 12);
-addHorizontalRoad(12, 27, 34);
+// Jalan lurus di bagian atas yang menghubungkan kedua jembatan.
+addHorizontalRoad(11, 20, 34);
 
 // Jembatan kanan dan jalan menuju bagian bawah map.
-addVerticalRoad(34, 12, 24);
+addVerticalRoad(34, 11, 24);
 addHorizontalRoad(24, 34, 37);
 addVerticalRoad(37, 24, 29);
 
@@ -46,10 +40,7 @@ addHorizontalRoad(24, 4, 6);
 addVerticalRoad(4, 24, 27);
 addHorizontalRoad(27, 4, 10);
 addVerticalRoad(10, 26, 27);
-addHorizontalRoad(26, 10, 16);
-addVerticalRoad(16, 26, 27);
-addHorizontalRoad(27, 16, 18);
-addVerticalRoad(18, 26, 27);
+addHorizontalRoad(26, 10, 13);
 
 const terrain = Array.from({ length: rows }, (_, row) => (
     Array.from({ length: columns }, (_, column) => (

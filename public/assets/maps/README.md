@@ -8,3 +8,6 @@ level1-map.png
 
 Area sungai yang berwarna putih pada gambar akan dibuat transparan oleh
 `Level1Scene`, lalu menampilkan tekstur air bergerak di bawahnya.
+
+Bayangan tepi tanah disimpan pada `shadow_level1.png` dan dirender di bawah
+tekstur air. Ukuran gambar akan disesuaikan otomatis ke ukuran map.

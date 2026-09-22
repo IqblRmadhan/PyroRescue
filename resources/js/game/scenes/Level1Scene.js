@@ -4,10 +4,12 @@ import {
     firefighterAnimations,
     level1Assets,
     level1MapImage,
+    level1MapShadowImage,
 } from '../Level1Assets.js';
 import { getTerrain, isOnTile, isWalkable, level1Map, tileToWorld } from '../Level1Map.js';
 
 const cameraZoom = 1.15;
+const waterLayerAlpha = 0.84;
 const playerScale = 0.245;
 const playerSprayScale = 0.42;
 const playerShadowOffsetY = 4;
@@ -42,6 +44,7 @@ export default class Level1Scene extends Phaser.Scene {
         }
 
         this.load.image('levelMap', `${this.assetBaseUrl}/${level1MapImage}`);
+        this.load.image('levelMapShadow', `${this.assetBaseUrl}/${level1MapShadowImage}`);
     }
 
     create() {
@@ -80,6 +83,11 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     drawTerrain() {
+        this.add.image(0, 0, 'levelMapShadow')
+            .setOrigin(0)
+            .setDisplaySize(level1Map.width, level1Map.height)
+            .setDepth(0);
+
         this.waterLayer = this.add.tileSprite(
             0,
             0,
@@ -87,11 +95,11 @@ export default class Level1Scene extends Phaser.Scene {
             level1Map.height,
             'waterTerrain',
             'water',
-        ).setOrigin(0).setTileScale(0.45).setDepth(0);
+        ).setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
 
         if (this.textures.exists('levelMap')) {
             const mapTexture = this.createMapWithTransparentWater();
-            this.add.image(0, 0, mapTexture).setOrigin(0).setDepth(1);
+            this.add.image(0, 0, mapTexture).setOrigin(0).setDepth(2);
             return;
         }
 
@@ -135,7 +143,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     drawFallbackTerrain() {
         this.add.rectangle(0, 0, level1Map.width, level1Map.height, 0x6f9f55)
-            .setOrigin(0).setDepth(1);
+            .setOrigin(0).setDepth(2);
 
         const pathMaskShape = this.make.graphics({ add: false });
         pathMaskShape.fillStyle(0xffffff);
@@ -148,7 +156,7 @@ export default class Level1Scene extends Phaser.Scene {
             level1Map.height,
             'groundTerrain',
             'dirt',
-        ).setOrigin(0).setTileScale(0.38).setDepth(2);
+        ).setOrigin(0).setTileScale(0.38).setDepth(3);
         pathLayer.setMask(pathMaskShape.createGeometryMask());
     }
 

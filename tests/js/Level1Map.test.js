@@ -39,11 +39,11 @@ test('all main brown-road branches are walkable', () => {
         [4, 13],  // loop kiri atas
         [9, 18],  // pertemuan loop kiri
         [20, 16], // jembatan tengah
-        [27, 10], // loop kanan atas
+        [27, 11], // jalan lurus bagian atas
         [34, 18], // jembatan kanan
         [37, 28], // jalan kanan bawah
         [6, 23],  // cabang kiri bawah
-        [14, 26], // jalan bawah
+        [13, 26], // ujung jalan bawah
     ];
 
     for (const [column, row] of roadTiles) {
@@ -58,6 +58,9 @@ test('grass and river tiles are not walkable', () => {
         [16, 15],
         [25, 18],
         [30, 25],
+        [22, 7],  // jalur map lama
+        [27, 10], // jalur map lama
+        [16, 26], // melewati ujung jalan buntu
     ];
 
     for (const [column, row] of blockedTiles) {

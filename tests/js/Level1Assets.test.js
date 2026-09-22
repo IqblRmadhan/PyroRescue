@@ -4,7 +4,12 @@ import {
     burningTreeFramesByWater,
     firefighterAnimations,
     level1Assets,
+    level1MapShadowImage,
 } from '../../resources/js/game/Level1Assets.js';
+
+test('level map shadow uses the dedicated Level 1 image', () => {
+    assert.equal(level1MapShadowImage, 'maps/shadow_level1.png');
+});
 
 test('healthy tree is row 1 column 1 and is excluded from small fire frames', () => {
     assert.deepEqual(level1Assets.burningTree.frames.healthy, [0, 0, 40, 40]);
