@@ -10,7 +10,44 @@ const resetButton = document.getElementById('reset');
 const hintButton = document.getElementById('hint');
 const feedback = document.getElementById('feedback');
 const hintText = document.getElementById('hint-text');
+const waterCount = document.getElementById('water-count');
+const fireCount = document.getElementById('fire-count');
+const missionStars = document.getElementById('mission-stars');
+const targetWater = document.getElementById('target-water');
+const targetFire = document.getElementById('target-fire');
+const targetExtinguish = document.getElementById('target-extinguish');
 const starterCode = editor.value;
+const defaultHint = 'Susun instruksi dari atas ke bawah.';
+const completedTargets = {
+    water: false,
+    fire: false,
+    extinguish: false,
+};
+
+function renderMissionState(state = {}) {
+    if (Number.isFinite(state.water)) {
+        waterCount.textContent = state.water;
+    }
+
+    fireCount.textContent = state.fireExtinguished ? '0' : '1';
+    completedTargets.water ||= state.water >= state.requiredWater;
+    completedTargets.fire ||= state.atFire;
+    completedTargets.extinguish ||= state.fireExtinguished;
+
+    targetWater.classList.toggle('is-complete', completedTargets.water);
+    targetFire.classList.toggle('is-complete', completedTargets.fire);
+    targetExtinguish.classList.toggle('is-complete', completedTargets.extinguish);
+    missionStars.textContent = Object.values(completedTargets).filter(Boolean).length;
+}
+
+function resetMissionState() {
+    for (const target of Object.keys(completedTargets)) {
+        completedTargets[target] = false;
+    }
+
+    renderMissionState({ water: 0, fireExtinguished: false });
+}
+
 const scene = new Level1Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
     onReady() {
@@ -22,6 +59,7 @@ const scene = new Level1Scene({
         feedback.dataset.state = 'error';
         feedback.textContent = 'Aset game gagal dimuat. Muat ulang halaman untuk mencoba lagi.';
     },
+    onStateChange: renderMissionState,
 });
 const autocomplete = new CodeAutocomplete(
     editor,
@@ -36,6 +74,7 @@ const hints = [
 let hintIndex = 0;
 
 document.getElementById('required-water').textContent = scene.requiredWater;
+document.getElementById('target-water-amount').textContent = scene.requiredWater;
 
 runButton.addEventListener('click', async () => {
     const result = validator.validateVariable(editor.value, scene.requiredWater);
@@ -67,6 +106,7 @@ hintButton.addEventListener('click', () => {
 resetButton.addEventListener('click', async () => {
     runButton.disabled = true;
     resetButton.disabled = true;
+    resetMissionState();
 
     try {
         await scene.resetMission(true);
@@ -74,7 +114,7 @@ resetButton.addEventListener('click', async () => {
         autocomplete.hide();
         feedback.textContent = '';
         delete feedback.dataset.state;
-        hintText.textContent = '';
+        hintText.textContent = defaultHint;
         hintIndex = 0;
     } finally {
         runButton.disabled = false;
@@ -90,7 +130,7 @@ const config = {
     backgroundColor: '#222222',
     pixelArt: true,
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     scene: [scene],

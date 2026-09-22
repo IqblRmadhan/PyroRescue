@@ -17,12 +17,13 @@ const pumpCyclePause = 100;
 const sprayCyclePause = 300;
 
 export default class Level1Scene extends Phaser.Scene {
-    constructor({ assetBaseUrl, onReady, onLoadError }) {
+    constructor({ assetBaseUrl, onReady, onLoadError, onStateChange = () => {} }) {
         super('Level1Scene');
         this.requiredWater = 3;
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
+        this.onStateChange = onStateChange;
     }
 
     preload() {
@@ -290,6 +291,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     setWater(amount) {
         this.water = amount;
+        this.publishState();
     }
 
     async runCommands(commands) {
@@ -406,6 +408,7 @@ export default class Level1Scene extends Phaser.Scene {
                 },
             });
         });
+        this.publishState();
         return true;
     }
 
@@ -464,10 +467,22 @@ export default class Level1Scene extends Phaser.Scene {
     updateFireLevel() {
         if (this.currentFireLevel === 0) {
             this.burningTree.stop().setFrame('healthy');
+            this.fireExtinguished = true;
+            this.publishState();
             return;
         }
 
         this.burningTree.play(`tree-fire-${this.currentFireLevel}`);
+        this.publishState();
+    }
+
+    publishState() {
+        this.onStateChange({
+            water: this.water ?? 0,
+            requiredWater: this.requiredWater,
+            atFire: isOnTile(this.playerColumn, this.playerRow, level1Map.fireAction),
+            fireExtinguished: this.fireExtinguished ?? false,
+        });
     }
 
     getDirectionTo(target) {
