@@ -24,7 +24,6 @@
         </nav>
 
         <section class="auth-card" aria-labelledby="login-title">
-            <p class="auth-banner">🌳 Selamatkan Hutan Kalimantan, Mulai dari Satu Langkah!</p>
             <div class="auth-card__content">
                 <h1 id="login-title">Selamat Datang di PyroRescue!</h1>
                 <p class="auth-intro">Belajar Python sambil menyelamatkan<br>hutan Kalimantan.</p>

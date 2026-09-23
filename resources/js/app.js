@@ -17,8 +17,14 @@ if (gamePrototype) {
 
         const viewportWidth = window.visualViewport?.width ?? window.innerWidth;
         const viewportHeight = window.visualViewport?.height ?? window.innerHeight;
+        const bottomHeight = Number.parseFloat(
+            getComputedStyle(gamePrototype).getPropertyValue('--game-bottom-height'),
+        ) || 0;
+        const bottomGap = Number.parseFloat(
+            getComputedStyle(gamePrototype).getPropertyValue('--game-bottom-gap'),
+        ) || 0;
         const horizontalScale = viewportWidth / 1672;
-        const verticalScale = viewportHeight / 941;
+        const verticalScale = Math.max(viewportHeight - bottomHeight - bottomGap, 1) / 941;
         gamePrototype.style.setProperty(
             '--game-stage-scale',
             String(Math.min(horizontalScale, verticalScale)),

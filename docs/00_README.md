@@ -55,8 +55,7 @@ Untuk versi awal, jangan mengeksekusi kode Python bebas langsung di server Larav
 Contoh pola:
 
 ```python
-jumlah_air = 3
-semprot(jumlah_air)
+isi_air = 3
 ```
 
 ```python

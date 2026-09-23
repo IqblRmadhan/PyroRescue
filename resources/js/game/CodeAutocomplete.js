@@ -1,20 +1,30 @@
-export function createLevel1Suggestions(requiredWater = 2) {
-    return [
-        { label: 'atas(angka)', value: 'atas(1)', selectionStart: 5, selectionLength: 1 },
+export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) {
+    const movementSuggestions = [
+        { label: 'maju(angka)', value: 'maju(1)', selectionStart: 5, selectionLength: 1 },
+        { label: 'mundur(angka)', value: 'mundur(1)', selectionStart: 7, selectionLength: 1 },
         { label: 'kanan(angka)', value: 'kanan(1)', selectionStart: 6, selectionLength: 1 },
-        { label: 'bawah(angka)', value: 'bawah(1)', selectionStart: 6, selectionLength: 1 },
         { label: 'kiri(angka)', value: 'kiri(1)', selectionStart: 5, selectionLength: 1 },
+    ];
+
+    if (challengeNumber === 3) {
+        return [
+            ...movementSuggestions,
+            {
+                label: 'air_pos_2 = isi_air',
+                value: 'air_pos_2 = isi_air',
+                selectionStart: 19,
+                selectionLength: 0,
+            },
+        ];
+    }
+
+    return [
+        ...movementSuggestions,
         {
-            label: 'jumlah_air = angka',
-            value: `jumlah_air = ${requiredWater}`,
-            selectionStart: 13,
+            label: 'isi_air = angka',
+            value: `isi_air = ${requiredWater}`,
+            selectionStart: 10,
             selectionLength: String(requiredWater).length,
-        },
-        {
-            label: 'semprot(jumlah_air)',
-            value: 'semprot(jumlah_air)',
-            selectionStart: 20,
-            selectionLength: 0,
         },
     ];
 }
@@ -112,6 +122,11 @@ export default class CodeAutocomplete {
             event.preventDefault();
             this.hide();
         }
+    }
+
+    setSuggestions(suggestions) {
+        this.suggestions = suggestions;
+        this.hide();
     }
 
     update(showAll = false) {

@@ -1,5 +1,5 @@
 export default class CodeValidator {
-    validateVariable(code, requiredWater) {
+    validateVariable(code, requiredWater, challengeNumber = 1) {
         const result = {
             syntaxValid: false,
             conceptValid: false,
@@ -12,7 +12,7 @@ export default class CodeValidator {
             .filter((line) => line !== '');
 
         if (lines.length === 0) {
-            result.message = 'Tulis perintah seperti kanan(2), kiri(2), atas(2), atau bawah(2).';
+            result.message = 'Tulis perintah seperti maju(2), kanan(2), atau assignment variabel yang diminta.';
             return result;
         }
 
@@ -22,31 +22,52 @@ export default class CodeValidator {
         }
 
         const movementDirections = {
-            atas: 'north',
+            maju: 'north',
+            mundur: 'south',
             kanan: 'east',
-            bawah: 'south',
             kiri: 'west',
         };
         const commands = [];
-        let hasWaterVariable = false;
+        let hasWaterAssignment = false;
+        let hasPostAssignment = false;
         let water = 0;
-        let shouldSpray = false;
 
-        for (const [index, line] of lines.entries()) {
+        for (const line of lines) {
             const normalizedLine = line.replace(/[ \t]/g, '');
-            const assignment = normalizedLine.match(/^jumlah_air=(0|[1-9][0-9]*)$/);
-            const movementMatch = normalizedLine.match(/^(atas|kanan|bawah|kiri)\((0|[1-9][0-9]*)\)$/);
+            const waterAssignment = normalizedLine.match(/^isi_air=(0|[1-9][0-9]*)$/);
+            const movementMatch = normalizedLine.match(/^(maju|mundur|kanan|kiri)\((0|[1-9][0-9]*)\)$/);
 
-            if (assignment) {
-                water = Number(assignment[1]);
+            if (waterAssignment) {
+                if (challengeNumber === 3) {
+                    result.message = 'Pada Challenge 3, gunakan nilai isi_air yang sudah disiapkan di Challenge 2.';
+                    return result;
+                }
+
+                water = Number(waterAssignment[1]);
 
                 if (!Number.isSafeInteger(water)) {
                     result.message = 'Jumlah air terlalu besar. Gunakan bilangan bulat yang lebih kecil.';
                     return result;
                 }
 
-                hasWaterVariable = true;
+                hasWaterAssignment = true;
                 commands.push({ type: 'setWater', amount: water });
+                continue;
+            }
+
+            if (normalizedLine === 'air_pos_2=isi_air') {
+                if (challengeNumber !== 3) {
+                    result.message = 'air_pos_2 = isi_air baru digunakan pada Challenge 3.';
+                    return result;
+                }
+
+                if (hasPostAssignment) {
+                    result.message = 'Cukup tulis air_pos_2 = isi_air satu kali.';
+                    return result;
+                }
+
+                hasPostAssignment = true;
+                commands.push({ type: 'transferWater' });
                 continue;
             }
 
@@ -71,43 +92,29 @@ export default class CodeValidator {
                 continue;
             }
 
-            if (normalizedLine !== 'semprot(jumlah_air)') {
-                result.message = 'Gunakan hanya atas(angka), kanan(angka), bawah(angka), kiri(angka), dan semprot(jumlah_air).';
-                return result;
-            }
-
-            if (!hasWaterVariable) {
-                result.message = 'Buat jumlah_air = angka sebelum menggunakan semprot(jumlah_air).';
-                return result;
-            }
-
-            if (index !== lines.length - 1) {
-                result.message = 'Gunakan semprot(jumlah_air) satu kali pada akhir sequence.';
-                return result;
-            }
-
-            shouldSpray = true;
-            commands.push({ type: 'spray' });
-
-            if (commands.length > 120) {
-                result.message = 'Terlalu banyak gerakan. Gunakan maksimal 120 langkah dalam satu kali Run.';
-                return result;
-            }
+            result.message = challengeNumber === 3
+                ? 'Gunakan hanya perintah gerak dan air_pos_2 = isi_air.'
+                : 'Gunakan hanya perintah gerak dan isi_air = angka.';
+            return result;
         }
 
         result.syntaxValid = true;
         result.conceptValid = true;
-        result.missionSuccess = hasWaterVariable && shouldSpray && water >= requiredWater;
-        result.actions = { water, shouldSpray, commands };
+        result.missionSuccess = challengeNumber === 3
+            ? hasPostAssignment
+            : hasWaterAssignment && water === requiredWater;
+        result.actions = { water, commands };
 
-        if (!shouldSpray) {
-            result.message = hasWaterVariable
-                ? 'Kode valid. Jumlah air akan berubah jika pemadam sudah berada di dekat pompa.'
-                : 'Kode valid. Pemadam menjalankan urutan gerakanmu.';
+        if (challengeNumber === 3) {
+            result.message = hasPostAssignment
+                ? 'Kode valid. Persediaan isi_air akan diberikan ke Pos 2.'
+                : 'Kode valid. Bergeraklah ke Pos 2, lalu tulis air_pos_2 = isi_air.';
+        } else if (!hasWaterAssignment) {
+            result.message = 'Kode valid. Pemadam menjalankan urutan gerakanmu.';
         } else if (result.missionSuccess) {
-            result.message = 'Kode valid. Pemadam menjalankan urutan perintahmu.';
+            result.message = `Kode valid. Nilai isi_air akan diubah menjadi ${requiredWater}.`;
         } else {
-            result.message = `Jumlah air kurang. Api membutuhkan minimal ${requiredWater} unit air.`;
+            result.message = `Isi variabel isi_air dengan tepat ${requiredWater} unit.`;
         }
 
         return result;

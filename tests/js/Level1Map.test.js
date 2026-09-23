@@ -4,7 +4,6 @@ import {
     isNextTo,
     isOnTile,
     isWalkable,
-    isWithinOneTile,
     level1Map,
     tileToWorld,
 } from '../../resources/js/game/Level1Map.js';
@@ -79,12 +78,42 @@ test('water pump is beside the road but does not occupy a walkable tile', () => 
     assert.equal(isNextTo(4, 25, level1Map.pump), false);
 });
 
-test('burning tree is close to the starting area and beside the lower road', () => {
-    assert.deepEqual(level1Map.fire, { column: 8, row: 26 });
-    assert.deepEqual(level1Map.fireAction, { column: 8, row: 27 });
-    assert.equal(isWalkable(level1Map.fire.column, level1Map.fire.row), false);
-    assert.equal(isWalkable(level1Map.fireAction.column, level1Map.fireAction.row), true);
-    assert.equal(isNextTo(level1Map.fireAction.column, level1Map.fireAction.row, level1Map.fire), true);
-    assert.equal(isOnTile(8, 27, level1Map.fireAction), true);
-    assert.equal(isWithinOneTile(7, 27, level1Map.fire), true);
+test('Pos 1 interaction point is on the middle-left road', () => {
+    assert.deepEqual(level1Map.post1Action, { column: 14, row: 18 });
+    assert.equal(isWalkable(level1Map.post1Action.column, level1Map.post1Action.row), true);
+    assert.equal(isOnTile(14, 18, level1Map.post1Action), true);
+});
+
+test('the road from the pump to Pos 1 is fully walkable', () => {
+    for (let column = level1Map.waterAction.column; column <= 6; column += 1) {
+        assert.equal(isWalkable(column, level1Map.waterAction.row), true, `${column},24`);
+    }
+
+    for (let row = level1Map.waterAction.row; row >= level1Map.post1Action.row; row -= 1) {
+        assert.equal(isWalkable(6, row), true, `6,${row}`);
+    }
+
+    for (let column = 6; column <= level1Map.post1Action.column; column += 1) {
+        assert.equal(isWalkable(column, level1Map.post1Action.row), true, `${column},18`);
+    }
+});
+
+test('Pos 2 and the route from Pos 1 are fully walkable', () => {
+    assert.deepEqual(level1Map.post2Action, { column: 24, row: 11 });
+
+    for (let row = 18; row <= 20; row += 1) {
+        assert.equal(isWalkable(14, row), true, `14,${row}`);
+    }
+
+    for (let column = 14; column <= 20; column += 1) {
+        assert.equal(isWalkable(column, 20), true, `${column},20`);
+    }
+
+    for (let row = 20; row >= 11; row -= 1) {
+        assert.equal(isWalkable(20, row), true, `20,${row}`);
+    }
+
+    for (let column = 20; column <= level1Map.post2Action.column; column += 1) {
+        assert.equal(isWalkable(column, level1Map.post2Action.row), true, `${column},11`);
+    }
 });

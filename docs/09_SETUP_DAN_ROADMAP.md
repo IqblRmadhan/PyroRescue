@@ -111,7 +111,7 @@ Gunakan placeholder dulu.
 Target:
 
 ```python
-jumlah_air = 3
+isi_air = 3
 ```
 
 mengubah indikator game menjadi:
@@ -126,8 +126,8 @@ Checklist:
 [ ] editor bekerja
 [ ] Run Code bekerja
 [ ] validator variabel bekerja
-[ ] jumlah air berubah
-[ ] api bisa padam
+[ ] isi air berubah
+[ ] challenge selesai setelah air berhasil diambil di pompa
 ```
 
 ## Tahap 3 — Challenge system
@@ -138,7 +138,6 @@ Tambahkan:
 [ ] challenge 1
 [ ] challenge 2
 [ ] challenge 3
-[ ] evaluasi
 [ ] starter code
 [ ] hint
 [ ] feedback

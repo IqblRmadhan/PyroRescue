@@ -35,30 +35,42 @@
                 <a class="is-active" href="#progress"><span aria-hidden="true">📊</span>Progress</a>
                 <a href="#konsep"><span aria-hidden="true">📖</span>Konsep</a>
                 <a href="#pencapaian"><span aria-hidden="true">🏆</span>Pencapaian</a>
-                <a href="#pengaturan"><span aria-hidden="true">⚙️</span>Pengaturan</a>
+                <a href="#pengaturan"><img class="menu-link__icon" src="{{ asset('assets/ui/settings.png') }}" alt="" aria-hidden="true">Pengaturan</a>
             </nav>
 
             <section class="level-board wood-frame" id="progress" aria-labelledby="levels-title">
                 <header class="board-heading"><span aria-hidden="true">🗺️</span><h2 id="levels-title">Pilih Petualanganmu</h2></header>
                 <div class="level-cards" id="petualangan">
                     <a class="level-card level-card--one" href="{{ route('game.level1') }}">
-                        <div class="level-card__art"><span aria-hidden="true">🔥</span></div>
+                        <div class="level-card__art"><img class="level-card__fire" src="{{ asset('assets/ui/fire.png') }}" alt="" aria-hidden="true"></div>
                         <h3>Level 1</h3><p>Tepi Sungai Terbakar</p>
-                        <div class="level-card__stars" aria-label="Belum ada bintang">☆ ☆ ☆</div>
+                        <div class="level-card__stars" aria-label="Belum ada bintang">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                        </div>
                         <div class="level-card__meter"><span style="width: 0%"></span></div>
                         <strong class="level-card__status">▶ Mulai Misi</strong>
                     </a>
                     <article class="level-card level-card--two is-locked" aria-label="Level 2 terkunci">
                         <div class="level-card__art"><span aria-hidden="true">🌫️</span></div>
                         <h3>Level 2</h3><p>Hutan Gambut Berasap</p>
-                        <div class="level-card__stars">☆ ☆ ☆</div>
+                        <div class="level-card__stars" aria-label="Belum ada bintang">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                        </div>
                         <div class="level-card__meter"><span style="width: 0%"></span></div>
                         <strong class="level-card__status">🔒 Terkunci</strong>
                     </article>
                     <article class="level-card level-card--three is-locked" aria-label="Level 3 terkunci">
                         <div class="level-card__art"><span aria-hidden="true">🌋</span></div>
                         <h3>Level 3</h3><p>Suaka Bekantan</p>
-                        <div class="level-card__stars">☆ ☆ ☆</div>
+                        <div class="level-card__stars" aria-label="Belum ada bintang">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                        </div>
                         <div class="level-card__meter"><span style="width: 0%"></span></div>
                         <strong class="level-card__status">🔒 Terkunci</strong>
                     </article>
@@ -80,9 +92,9 @@
                 <section class="concept-panel wood-frame" id="konsep">
                     <header class="board-heading"><span aria-hidden="true">📘</span><h2>Konsep Python</h2></header>
                     <div class="concept-grid">
-                        <div class="is-open"><span>📦</span><strong>Variabel</strong><small>✓ Terbuka</small></div>
-                        <div class="is-locked"><span>🔁</span><strong>Perulangan</strong><small>🔒 Terkunci</small></div>
-                        <div class="is-locked"><span>🔀</span><strong>Percabangan</strong><small>🔒 Terkunci</small></div>
+                        <div class="concept-card--asset is-open"><img class="concept-card__image" src="{{ asset('assets/ui/concept-variable.png') }}" alt="Konsep Variabel"><small>✓ Terbuka</small></div>
+                        <div class="concept-card--asset is-locked"><img class="concept-card__image" src="{{ asset('assets/ui/concept-loop.png') }}" alt="Konsep Perulangan"><small>🔒 Terkunci</small></div>
+                        <div class="concept-card--asset is-locked"><img class="concept-card__image" src="{{ asset('assets/ui/concept-conditional.png') }}" alt="Konsep Percabangan"><small>🔒 Terkunci</small></div>
                         <div class="is-locked"><span>🧩</span><strong>Integrasi</strong><small>🔒 Terkunci</small></div>
                     </div>
                 </section>

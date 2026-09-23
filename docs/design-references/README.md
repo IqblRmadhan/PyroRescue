@@ -28,6 +28,6 @@ Gambar berikut disediakan pengguna dan disalin tanpa mengubah PNG aslinya.
 
 `level-result.png` dan `mission-complete.png` dipakai sebagai acuan warna, kayu, dan suasana hutan. Teks dan tombol dalam gambar adalah isi desain, bukan spesifikasi fitur baru. Skor, bintang, perintah gerakan, halaman ending, dan level lain belum diimplementasikan.
 
-Prototype tetap menggunakan assignment `jumlah_air` dan `semprot(jumlah_air)`. Api padam jika air tepat 2 unit; Reset mengembalikan kondisi awal. Validator tidak menjalankan Python bebas.
+Challenge 1 menggunakan assignment `isi_air` setelah pemain mencapai pompa. Belum ada aksi memadamkan api pada tahap ini; Reset mengembalikan kondisi awal. Validator tidak menjalankan Python bebas.
 
 Dalam checkout ini belum ada halaman login atau desain khusus halaman login. Halaman game tersedia di `/game/1` dan `/game-test`.

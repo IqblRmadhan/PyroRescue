@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import {
-    burningTreeFramesByWater,
     firefighterAnimations,
     level1Assets,
     level1MapImage,
@@ -11,17 +10,17 @@ import { getTerrain, isOnTile, isWalkable, level1Map, tileToWorld } from '../Lev
 const cameraZoom = 1.15;
 const waterLayerAlpha = 0.84;
 const playerScale = 0.245;
-const playerSprayScale = 0.42;
 const playerShadowOffsetY = 4;
 const pumpDisplaySize = 52;
 const actionMarkerDisplaySize = 20;
 const pumpCyclePause = 100;
-const sprayCyclePause = 300;
 
 export default class Level1Scene extends Phaser.Scene {
     constructor({ assetBaseUrl, onReady, onLoadError, onStateChange = () => {} }) {
         super('Level1Scene');
+        this.challengeNumber = 1;
         this.requiredWater = 3;
+        this.postWater = 0;
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
@@ -71,8 +70,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.drawGrid();
         this.drawMissionObjects();
         this.configureCamera();
-        this.resetMission();
-        this.onReady();
+        this.resetChallenge(1).then(() => this.onReady());
     }
 
     update() {
@@ -196,19 +194,6 @@ export default class Level1Scene extends Phaser.Scene {
             }
         }
 
-        for (const [water, frames] of Object.entries(burningTreeFramesByWater)) {
-            const key = `tree-fire-${water}`;
-
-            if (!this.anims.exists(key)) {
-                this.anims.create({
-                    key,
-                    frames: frames.map((frame) => ({ key: 'burningTree', frame })),
-                    frameRate: 5,
-                    repeat: -1,
-                });
-            }
-        }
-
         if (!this.anims.exists('pump-flow')) {
             this.anims.create({
                 key: 'pump-flow',
@@ -250,22 +235,10 @@ export default class Level1Scene extends Phaser.Scene {
             level1Map.waterAction.column,
             level1Map.waterAction.row,
         );
-        const firePosition = tileToWorld(level1Map.fire.column, level1Map.fire.row);
-        const fireActionPosition = tileToWorld(
-            level1Map.fireAction.column,
-            level1Map.fireAction.row,
-        );
 
-        this.waterActionMarker = this.add.sprite(
+        this.actionMarker = this.add.sprite(
             waterActionPosition.x,
             waterActionPosition.y,
-            'actionMarker',
-            'pulse1',
-        ).setDisplaySize(actionMarkerDisplaySize, actionMarkerDisplaySize).setDepth(6)
-            .play('action-marker-pulse');
-        this.fireActionMarker = this.add.sprite(
-            fireActionPosition.x,
-            fireActionPosition.y,
             'actionMarker',
             'pulse1',
         ).setDisplaySize(actionMarkerDisplaySize, actionMarkerDisplaySize).setDepth(6)
@@ -284,8 +257,6 @@ export default class Level1Scene extends Phaser.Scene {
         ).setDepth(9);
         this.player = this.add.sprite(playerPosition.x, playerPosition.y, 'firefighterIdle', 'idle-north-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(10);
-        this.burningTree = this.add.sprite(firePosition.x, firePosition.y + 18, 'burningTree', 'healthy')
-            .setOrigin(0.5, 0.8).setDisplaySize(64, 64).setDepth(7);
     }
 
     configureCamera() {
@@ -302,6 +273,21 @@ export default class Level1Scene extends Phaser.Scene {
         this.publishState();
     }
 
+    setChallenge(challengeNumber) {
+        this.challengeNumber = challengeNumber;
+        this.requiredWater = challengeNumber === 1 ? 3 : 5;
+        const targets = {
+            1: level1Map.waterAction,
+            2: level1Map.post1Action,
+            3: level1Map.post2Action,
+        };
+        const target = targets[challengeNumber] ?? targets[1];
+        const markerPosition = tileToWorld(target.column, target.row);
+
+        this.actionMarker.setPosition(markerPosition.x, markerPosition.y);
+        this.publishState();
+    }
+
     async runCommands(commands) {
         this.setPlayerIdle(this.direction);
 
@@ -315,37 +301,73 @@ export default class Level1Scene extends Phaser.Scene {
             }
 
             if (command.type === 'setWater') {
-                const result = await this.fillWater(command.amount);
+                const result = this.challengeNumber === 1
+                    ? await this.fillWater(command.amount)
+                    : this.challengeNumber === 2
+                        ? await this.updateWaterAtPost(command.amount)
+                        : { success: false, message: 'Challenge 3 hanya menggunakan air_pos_2 = isi_air.' };
                 if (!result.success) {
                     return { missionSuccess: false, message: result.message };
                 }
                 continue;
             }
 
-            if (command.type === 'spray') {
-                const result = await this.spray(this.water);
-                if (!result.missionSuccess) {
-                    return result;
+            if (command.type === 'transferWater') {
+                const result = await this.transferWaterToPost();
+                if (!result.success) {
+                    return { missionSuccess: false, message: result.message };
                 }
             }
         }
 
-        if (!commands.some((command) => command.type === 'spray')) {
-            return { missionSuccess: false, message: `Air tersedia ${this.water}. Lanjutkan sequence menuju pohon terbakar.` };
+        if (this.challengeNumber === 1 && this.water === this.requiredWater) {
+            return {
+                missionSuccess: true,
+                message: `Berhasil! Variabel isi_air sekarang menyimpan nilai ${this.water}.`,
+            };
         }
 
-        return { missionSuccess: this.fireExtinguished, message: 'Api berhasil dipadamkan! Sequence dan variabelmu bekerja.' };
+        if (this.challengeNumber === 2 && this.water === this.requiredWater) {
+            return {
+                missionSuccess: true,
+                message: `Berhasil! 3 unit bawaan ditambah 2 unit bantuan menjadi ${this.water} unit di isi_air.`,
+            };
+        }
+
+        if (this.challengeNumber === 3 && this.postWater === this.requiredWater) {
+            return {
+                missionSuccess: true,
+                message: `Berhasil! Penjaga Pos 2 menerima ${this.postWater} unit air.`,
+            };
+        }
+
+        return {
+            missionSuccess: false,
+            message: this.getIncompleteChallengeMessage(),
+        };
+    }
+
+    getIncompleteChallengeMessage() {
+        if (this.challengeNumber === 1) {
+            return `Tangki berisi ${this.water} unit. Isi isi_air dengan tepat ${this.requiredWater} unit di pompa.`;
+        }
+
+        if (this.challengeNumber === 2) {
+            if (isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
+                return `Kamu tiba di Pos 1. Penjaga memberikan 2 unit bantuan untuk Pos 2; tulis isi_air = ${this.requiredWater}.`;
+            }
+
+            return `Bawa ${this.water} unit air ke Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.`;
+        }
+
+        return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos_2 = isi_air.';
     }
 
     async fillWater(amount) {
         if (!isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction)) {
-            if (amount === this.water) {
-                return { success: true };
-            }
-
             return {
                 success: false,
-                message: 'Untuk mengubah jumlah_air, berdirilah di penanda pompa. Gunakan nilai yang sama dengan stok HUD jika ingin memakai air yang sudah dibawa.',
+                message: 'Untuk mengisi isi_air, berdirilah tepat di penanda merah dekat pompa.',
             };
         }
 
@@ -364,6 +386,50 @@ export default class Level1Scene extends Phaser.Scene {
         }
 
         this.setPlayerIdle(previousDirection);
+
+        return { success: true };
+    }
+
+    async updateWaterAtPost(amount) {
+        if (!isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
+            return {
+                success: false,
+                message: 'Pergi ke penanda merah di Pos 1 sebelum mengubah isi_air.',
+            };
+        }
+
+        if (this.water < amount) {
+            for (let total = this.water + 1; total <= amount; total += 1) {
+                await this.wait(250);
+                this.setWater(total);
+            }
+        } else {
+            await this.wait(250);
+            this.setWater(amount);
+        }
+
+        return { success: true };
+    }
+
+    async transferWaterToPost() {
+        if (!isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action)) {
+            return {
+                success: false,
+                message: 'Pergi ke penanda merah di Pos 2 sebelum memberikan air.',
+            };
+        }
+
+        if (this.water !== this.requiredWater) {
+            return {
+                success: false,
+                message: `Pos 2 membutuhkan ${this.requiredWater} unit dari isi_air.`,
+            };
+        }
+
+        await this.wait(350);
+        this.postWater = this.water;
+        this.water = 0;
+        this.publishState();
 
         return { success: true };
     }
@@ -420,76 +486,15 @@ export default class Level1Scene extends Phaser.Scene {
         return true;
     }
 
-    async spray(amount) {
-        if (!isOnTile(this.playerColumn, this.playerRow, level1Map.fireAction)) {
-            return {
-                missionSuccess: false,
-                message: 'Berdirilah tepat di atas penanda merah dekat api sebelum menyemprot.',
-            };
-        }
-
-        if (amount < 1) {
-            return {
-                missionSuccess: false,
-                message: 'Tangki air kosong. Ambil air di penanda dekat pompa terlebih dahulu.',
-            };
-        }
-
-        const sprayDirection = this.getDirectionTo(level1Map.fire);
-        const sprayAmount = Math.min(amount, this.currentFireLevel);
-        this.direction = sprayDirection;
-
-        for (let cycle = 1; cycle <= sprayAmount; cycle += 1) {
-            await this.playSprayCycle(sprayDirection);
-            this.setWater(this.water - 1);
-            this.currentFireLevel -= 1;
-            this.updateFireLevel();
-
-            if (cycle < sprayAmount) {
-                await this.wait(sprayCyclePause);
-            }
-        }
-
-        this.setPlayerIdle(sprayDirection);
-        this.fireExtinguished = this.currentFireLevel === 0;
-
-        if (this.fireExtinguished) {
-            return { missionSuccess: true, message: 'Api berhasil dipadamkan! Sequence dan variabelmu bekerja.' };
-        }
-
-        const fireSizes = { 1: 'kecil', 2: 'sedang', 3: 'besar' };
-        return {
-            missionSuccess: false,
-            message: `Api berubah menjadi ${fireSizes[this.currentFireLevel]}. Masih perlu ${this.currentFireLevel} unit air.`,
-        };
-    }
-
-    playSprayCycle(direction) {
-        return new Promise((resolve) => {
-            this.player.once(Phaser.Animations.Events.ANIMATION_COMPLETE, resolve);
-            this.player.play(`player-spray-${direction}`, true)
-                .setScale(playerSprayScale);
-        });
-    }
-
-    updateFireLevel() {
-        if (this.currentFireLevel === 0) {
-            this.burningTree.stop().setFrame('healthy');
-            this.fireExtinguished = true;
-            this.publishState();
-            return;
-        }
-
-        this.burningTree.play(`tree-fire-${this.currentFireLevel}`);
-        this.publishState();
-    }
-
     publishState() {
         this.onStateChange({
             water: this.water ?? 0,
+            postWater: this.postWater ?? 0,
             requiredWater: this.requiredWater,
-            atFire: isOnTile(this.playerColumn, this.playerRow, level1Map.fireAction),
-            fireExtinguished: this.fireExtinguished ?? false,
+            challengeNumber: this.challengeNumber,
+            atPump: isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction),
+            atPost1: isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action),
+            atPost2: isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action),
         });
     }
 
@@ -539,26 +544,31 @@ export default class Level1Scene extends Phaser.Scene {
         });
     }
 
-    async resetMission(animateReset = false) {
+    async resetChallenge(challengeNumber = this.challengeNumber, animateReset = false) {
         this.tweens.killTweensOf(this.player);
 
         if (animateReset) {
             await this.playPlayerAnimation('player-reset');
         }
 
-        const startPosition = tileToWorld(level1Map.start.column, level1Map.start.row);
-        this.playerColumn = level1Map.start.column;
-        this.playerRow = level1Map.start.row;
-        this.direction = level1Map.start.direction;
-        this.player.setPosition(startPosition.x, startPosition.y)
+        const checkpoints = {
+            1: { ...level1Map.start, water: 0 },
+            2: { ...level1Map.waterAction, direction: 'north', water: 3 },
+            3: { ...level1Map.post1Action, direction: 'east', water: 5 },
+        };
+        const checkpoint = checkpoints[challengeNumber] ?? checkpoints[1];
+        const checkpointPosition = tileToWorld(checkpoint.column, checkpoint.row);
+        this.playerColumn = checkpoint.column;
+        this.playerRow = checkpoint.row;
+        this.direction = checkpoint.direction;
+        this.player.setPosition(checkpointPosition.x, checkpointPosition.y)
             .stop().setTexture('firefighterIdle', `idle-${this.direction}-1`).setScale(playerScale);
         this.syncPlayerShadow();
-        this.setWater(0);
-        this.currentFireLevel = this.requiredWater;
-        this.fireExtinguished = false;
-        this.updateFireLevel();
+        this.water = checkpoint.water;
+        this.postWater = 0;
+        this.setChallenge(challengeNumber);
         this.pump.stop().setFrame('idle');
-        this.cameras.main.centerOn(startPosition.x, startPosition.y);
+        this.cameras.main.centerOn(checkpointPosition.x, checkpointPosition.y);
         await this.playPlayerAnimation('player-spawn');
         this.setPlayerIdle(this.direction);
     }

@@ -550,25 +550,25 @@
     margin: 14px -7px 4px;
 }
 
-/* Frame tombol berasal dari PNG asli 1672 x 941. */
+/* Tombol memakai aset satuan agar tidak bergantung pada posisi sprite sheet. */
 .sprite-button {
     display: block;
     width: 100%;
-    aspect-ratio: 560 / 210;
+    aspect-ratio: 1920 / 500;
     border: 0;
-    background-image: var(--button-sheet);
+    background-position: center;
     background-repeat: no-repeat;
-    background-size: 298.571429% 448.095238%;
+    background-size: contain;
     image-rendering: pixelated;
     cursor: pointer;
 }
 
 .sprite-button--run {
-    background-position: 50.809353% 23.255814%;
+    background-image: url('/assets/ui/button-run-code.png');
 }
 
 .sprite-button--reset {
-    background-position: 100% 23.255814%;
+    background-image: url('/assets/ui/button-reset.png');
 }
 
 .sprite-button:hover:not(:disabled) {
@@ -664,10 +664,18 @@
     image-rendering: pixelated;
 }
 
-.asset-icon--fire { background-position: -164px -11px; }
+.asset-icon--fire {
+    background-image: url('/assets/ui/fire.png');
+    background-position: center;
+    background-size: contain;
+}
 .asset-icon--leaf { background-position: -132px -12px; }
 .asset-icon--book { background-position: -2px -55px; }
-.asset-icon--water { background-position: -98px -12px; }
+.asset-icon--water {
+    background-image: url('/assets/ui/water.png');
+    background-position: center;
+    background-size: contain;
+}
 
 /* Landing page: dibuat dari aset peta dan ikon PyroRescue yang sudah tersedia. */
 .landing-page {
@@ -675,7 +683,7 @@
     margin: 0;
     color: #251b14;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    background: #103f45 url('/assets/tiles/game-bg.png') center / cover fixed;
+    background: #103f45 url('/assets/tiles/game_bg.webp') center / cover fixed;
 }
 
 .landing-hero {
@@ -686,7 +694,7 @@
     min-height: 100vh;
     overflow: hidden;
     padding: 18px clamp(18px, 5vw, 84px) 22px;
-    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed;
+    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game_bg.webp') center / cover fixed;
 }
 
 .wood-plank,
@@ -723,8 +731,8 @@
 .page-logo {
     display: block;
     width: 180px;
-    aspect-ratio: 4.05 / 1;
-    background: url('/assets/ui/hud.png') 3.2% 75% / 313.3% auto no-repeat;
+    aspect-ratio: 1920 / 500;
+    background: url('/assets/ui/logo-pyrorescue.png') center / contain no-repeat;
     filter: drop-shadow(3px 4px 0 #0c2630);
 }
 
@@ -804,8 +812,8 @@
 .hero-logo {
     width: min(760px, 88vw);
     margin: 8px auto 0;
-    aspect-ratio: 4.05 / 1;
-    background: url('/assets/ui/hud.png') 3.2% 75% / 313.3% auto no-repeat;
+    aspect-ratio: 1920 / 500;
+    background: url('/assets/ui/logo-pyrorescue.png') center / contain no-repeat;
     filter: drop-shadow(5px 7px 0 #0c2630);
 }
 
@@ -922,7 +930,7 @@
     min-height: 100vh;
     margin: 0;
     font-family: 'Trebuchet MS', Arial, sans-serif;
-    background: #123f42 url('/assets/tiles/game-bg.png') center / cover fixed;
+    background: #123f42 url('/assets/tiles/game_bg.webp') center / cover fixed;
 }
 
 .auth-layout {
@@ -935,7 +943,7 @@
     min-height: 100vh;
     overflow-x: hidden;
     padding: 18px clamp(16px, 5vw, 84px) 54px;
-    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed;
+    background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game_bg.webp') center / cover fixed;
 }
 
 .auth-landscape {
@@ -943,7 +951,7 @@
     z-index: -2;
     inset: 0;
     background-color: #236d73;
-    background-image: linear-gradient(180deg, #20265a44 0 28%, #ff813544 41%, #073c3a8c 100%), url('/assets/tiles/game-bg.png');
+    background-image: linear-gradient(180deg, #20265a44 0 28%, #ff813544 41%, #073c3a8c 100%), url('/assets/tiles/game_bg.webp');
     background-position: center;
     background-size: cover;
     image-rendering: pixelated;
@@ -1042,8 +1050,8 @@
 .auth-card--register .auth-card__content { padding-bottom: 28px; }
 
 /* Menu utama permainan dan pemilihan level. */
-.main-menu-page { min-width: 320px; margin: 0; color: #f8efd6; font-family: 'Trebuchet MS', Arial, sans-serif; background: #0e3639 url('/assets/tiles/game-bg.png') center / cover fixed; }
-.main-menu { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; padding: 10px clamp(10px, 2vw, 28px) 18px; background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game-bg.png') center / cover fixed; }
+.main-menu-page { min-width: 320px; margin: 0; color: #f8efd6; font-family: 'Trebuchet MS', Arial, sans-serif; background: #0e3639 url('/assets/tiles/game_bg.webp') center / cover fixed; }
+.main-menu { position: relative; isolation: isolate; min-height: 100vh; overflow: hidden; padding: 10px clamp(10px, 2vw, 28px) 18px; background: linear-gradient(#0d3341c7, #133f3bd9), url('/assets/tiles/game_bg.webp') center / cover fixed; }
 .main-menu-navbar { box-sizing: border-box; margin-bottom: 12px; }
 .main-menu-navbar form { margin: 0; }
 .main-menu-navbar .landing-login { font-family: inherit; cursor: pointer; }
@@ -1121,11 +1129,20 @@
 
 /* Layout misi Level 1: komposisi layar mengikuti mockup, PyroPad tetap menjadi editor. */
 .game-prototype {
+    --game-bottom-height: 52px;
+    --game-bottom-gap: 14px;
     min-width: 320px;
     min-height: 100dvh;
     padding: 0;
     color: #172c54;
-    background: url('/assets/tiles/game-bg.png') center / cover fixed no-repeat;
+    background-color: #103f45;
+    background-image:
+        url('/assets/tiles/game_bg_bottom.webp'),
+        url('/assets/tiles/game_bg.webp');
+    background-position: center bottom, center;
+    background-size: auto var(--game-bottom-height), cover;
+    background-attachment: fixed, fixed;
+    background-repeat: repeat-x, no-repeat;
     font-family: 'Pixelify Sans', 'Trebuchet MS', sans-serif;
     touch-action: pan-x pan-y;
 }
@@ -1158,12 +1175,12 @@
 .game-brand-logo {
     display: block;
     width: min(100%, 440px);
-    aspect-ratio: 4.05 / 1;
+    aspect-ratio: 1920 / 500;
     overflow: hidden;
-    background-image: var(--game-hud-sheet);
+    background-image: url('/assets/ui/logo-pyrorescue.png');
     background-repeat: no-repeat;
-    background-size: 313.3% auto;
-    background-position: 3.2% 75%;
+    background-size: contain;
+    background-position: center;
     filter: drop-shadow(3px 4px 0 #0c2630);
 }
 
@@ -1267,7 +1284,7 @@
     top: 10px;
     left: 12px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(130px, 1fr));
+    grid-template-columns: repeat(3, minmax(105px, 1fr));
     gap: 8px;
     width: min(55%, 555px);
     pointer-events: none;
@@ -1290,6 +1307,16 @@
 
 .hud-counter .asset-icon {
     transform: scale(.9);
+}
+
+.hud-counter--post {
+    gap: 8px;
+}
+
+.hud-counter--post small {
+    color: #fff0ad;
+    font-size: 14px;
+    line-height: 1;
 }
 
 #game-container {
@@ -1449,11 +1476,11 @@
 
 .sprite-button {
     min-height: 55px;
-    aspect-ratio: 560 / 210;
+    aspect-ratio: 1920 / 500;
 }
 
 .sprite-button--play {
-    background-position: 0 23.255814%;
+    background-image: url('/assets/ui/button-run-code.png');
 }
 
 .hint-strip {
@@ -1497,24 +1524,52 @@
 #feedback {
     position: absolute;
     z-index: 40;
-    right: 9%;
-    bottom: 108px;
-    left: 9%;
-    max-height: 44px;
+    right: 4%;
+    bottom: 18px;
+    left: 4%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
     margin: 0;
-    overflow: auto;
-    padding: 7px 10px;
-    border: 2px solid #375c63;
-    border-left-width: 5px;
-    border-radius: 4px;
-    background: #d9e7d5;
-    font-size: 12px;
-    line-height: 1.25;
-    box-shadow: 0 3px 8px #0a171780;
+    padding: 10px 12px 10px 16px;
+    color: #17345e;
+    border: 4px solid #3b281b;
+    border-radius: 10px;
+    background: linear-gradient(105deg, #fff9e9f2, #f2e0baf2);
+    font-size: clamp(13px, 1.05vw, 18px);
+    line-height: 1.3;
+    box-shadow: inset 0 0 0 2px #fffdf3, 0 4px 0 #57341f, 0 8px 18px #08171980;
 }
 
 #feedback:not([data-state]) {
     display: none;
+}
+
+#feedback-message {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+#feedback-ok {
+    min-width: 72px;
+    padding: 8px 14px;
+    color: #fff7df;
+    border: 3px solid #3a2519;
+    border-radius: 6px;
+    background: linear-gradient(#4eaa42, #2f7f35);
+    box-shadow: inset 0 0 0 2px #83d267, 0 3px 0 #173f21;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 800;
+    text-shadow: 2px 2px #1d5228;
+    cursor: pointer;
+}
+
+#feedback-ok:hover,
+#feedback-ok:focus-visible {
+    filter: brightness(1.12);
 }
 
 .game-footer {
@@ -1535,7 +1590,11 @@
     transform: scale(.55);
 }
 
-.asset-icon--star { background-position: -1px -11px; }
+.asset-icon--star {
+    background-image: url('/assets/ui/star-filled.png');
+    background-position: center;
+    background-size: contain;
+}
 
 @media (max-width: 1100px) {
     .game-prototype.game-mobile .prototype-page { height: auto; min-height: auto; }
@@ -1597,7 +1656,7 @@
 
 .game-prototype:not(.game-mobile) .prototype-page {
     position: fixed;
-    top: 50%;
+    top: calc((100dvh - var(--game-bottom-height) - var(--game-bottom-gap)) / 2);
     left: 50%;
     width: 1672px;
     height: 941px;
@@ -1621,3 +1680,69 @@
 .game-prototype:not(.game-mobile) #code-editor { font-size: 17px; }
 .game-prototype:not(.game-mobile) .hint-button { font-size: 20px; }
 .game-prototype:not(.game-mobile) #hint-text { font-size: 15px; }
+
+/* Aset UI satuan. */
+.main-menu__nav .menu-link__icon {
+    flex: 0 0 25px;
+    width: 25px;
+    height: 25px;
+    object-fit: contain;
+    transform: scale(1.75);
+}
+
+.level-card__art .level-card__fire {
+    position: absolute;
+    right: 4px;
+    bottom: -5px;
+    width: 82px;
+    height: 82px;
+    object-fit: contain;
+    filter: drop-shadow(2px 3px #1c1712);
+}
+
+.level-card__stars {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    min-height: 35px;
+}
+
+.level-card__stars img {
+    width: 39px;
+    height: 39px;
+    object-fit: contain;
+}
+
+.concept-grid > .concept-card--asset {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 0;
+    padding: 4px;
+}
+
+.concept-card__image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.concept-grid > .concept-card--asset small {
+    align-self: stretch;
+}
+
+.target-check {
+    border: 0;
+    background: url('/assets/ui/checkbox-empty.png') center / 190% no-repeat;
+    box-shadow: none;
+}
+
+.target-list li.is-complete .target-check {
+    background-image: url('/assets/ui/checkbox-checked.png');
+}
+
+.target-list li.is-complete .target-check::after {
+    display: none;
+}

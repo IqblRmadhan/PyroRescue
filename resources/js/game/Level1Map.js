@@ -58,8 +58,8 @@ export const level1Map = {
     start: { column: 4, row: 27, direction: 'north' },
     pump: { column: 3, row: 24 },
     waterAction: { column: 4, row: 24 },
-    fire: { column: 8, row: 26 },
-    fireAction: { column: 8, row: 27 },
+    post1Action: { column: 14, row: 18 },
+    post2Action: { column: 24, row: 11 },
 };
 
 export function getTerrain(column, row) {

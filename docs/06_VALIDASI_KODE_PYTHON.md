@@ -30,8 +30,7 @@ Jangan mengeksekusi kode pemain bebas di server.
 ```js
 export default class CodeValidator {
     validateVariable(code, requiredWater) {
-        const variablePattern = /jumlah_air\s*=\s*(\d+)/;
-        const sprayPattern = /semprot\s*\(\s*jumlah_air\s*\)/;
+        const variablePattern = /isi_air\s*=\s*(\d+)/;
 
         const variableMatch = code.match(variablePattern);
 
@@ -40,32 +39,21 @@ export default class CodeValidator {
                 syntaxValid: false,
                 conceptValid: false,
                 missionSuccess: false,
-                message: 'Buat variabel jumlah_air terlebih dahulu.'
+                message: 'Buat variabel isi_air terlebih dahulu.'
             };
         }
 
         const water = Number(variableMatch[1]);
-        const usesVariable = sprayPattern.test(code);
-
-        if (!usesVariable) {
-            return {
-                syntaxValid: true,
-                conceptValid: false,
-                missionSuccess: water >= requiredWater,
-                message: 'Gunakan jumlah_air pada semprot().'
-            };
-        }
 
         return {
             syntaxValid: true,
             conceptValid: true,
             missionSuccess: water === requiredWater,
             message: water === requiredWater
-                ? 'Jumlah air tepat.'
-                : 'Jumlah air belum sesuai.',
+                ? 'Variabel isi_air sudah tepat.'
+                : 'Nilai isi_air belum sesuai.',
             actions: {
-                water,
-                sprayCount: water
+                water
             }
         };
     }

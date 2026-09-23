@@ -1,62 +1,67 @@
 # Level dan Challenge PyroRescue
 
-# Level 1 — Tepi Sungai Terbakar
+# Level 1 — Variabel Persediaan Air
 
 ## Materi
 Variabel.
 
 ## Tujuan Pembelajaran
-Pemain mampu membuat, mengubah, dan menggunakan variabel sederhana sesuai kebutuhan misi.
+Pemain mampu membuat, mengubah, dan menggunakan nilai variabel sederhana melalui persediaan air.
 
 ## Misi
-Menyiapkan jumlah air dan memadamkan titik api pertama.
+Menyiapkan persediaan air untuk pos pemadam. Level 1 belum memiliki aksi memadamkan api.
 
-### Challenge 1 — Kenali Variabel
+### Tutorial Gerak
+
+Pemain mempelajari perintah gerak dasar:
 
 ```python
-jumlah_air = 3
+maju(1)
+mundur(1)
+kanan(1)
+kiri(1)
+```
+
+### Challenge 1 — Mengambil Air
+
+Pemain menuju pompa, lalu menyimpan tiga unit air ke dalam variabel:
+
+```python
+isi_air = 3
 ```
 
 Efek:
 
 ```text
-Tangki air terisi 3 unit.
+Pompa bergerak dan tangki pemain terisi 3 unit.
 ```
 
-### Challenge 2 — Mengubah Nilai
+### Challenge 2 — Mengubah Nilai di Pos 1
+
+Pemain membawa 3 unit air dari pompa. Penjaga Pos 1 memberikan 2 unit tambahan untuk dikirim ke Pos 2, sehingga muatan pemain menjadi 5 unit.
 
 ```python
-jumlah_air = 2
+isi_air = 5
 ```
 
 Efek:
 
 ```text
-Indikator air berubah menjadi 2.
+Indikator air berubah dari 3 menjadi 5 setelah pemain menerima 2 unit bantuan dari Pos 1.
 ```
 
-### Challenge 3 — Menggunakan Variabel
+### Challenge 3 — Memasok Air ke Pos 2
+
+Pemain pergi ke Pos 2 dan memberikan seluruh muatan kepada penjaga pos.
 
 ```python
-jumlah_air = 2
-semprot(jumlah_air)
+air_pos_2 = isi_air
 ```
 
-### Evaluasi
-
-Pemain diberi kondisi baru tanpa contoh lengkap.
-
-Contoh:
+Efek:
 
 ```text
-Api membutuhkan 4 unit air.
-```
-
-Pemain menyusun:
-
-```python
-jumlah_air = 4
-semprot(jumlah_air)
+Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain menjadi 0 dan Level 1 selesai.
 ```
 
 ---

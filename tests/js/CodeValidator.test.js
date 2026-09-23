@@ -4,87 +4,94 @@ import CodeValidator from '../../resources/js/game/CodeValidator.js';
 
 const validator = new CodeValidator();
 
-test('assignment fills water without extinguishing the fire', () => {
-    for (const water of [0, 2, 3]) {
-        const result = validator.validateVariable(`jumlah_air = ${water}`, 2);
+test('isi_air with the required amount completes the variable challenge', () => {
+    const result = validator.validateVariable('isi_air = 3', 3);
+
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.conceptValid, true);
+    assert.equal(result.missionSuccess, true);
+    assert.deepEqual(result.actions, {
+        water: 3,
+        commands: [{ type: 'setWater', amount: 3 }],
+    });
+});
+
+test('isi_air must contain exactly the amount requested by Challenge 1', () => {
+    for (const water of [0, 2, 4, 10]) {
+        const result = validator.validateVariable(`isi_air = ${water}`, 3);
+
         assert.equal(result.syntaxValid, true);
-        assert.equal(result.conceptValid, true);
         assert.equal(result.missionSuccess, false);
         assert.deepEqual(result.actions, {
             water,
-            shouldSpray: false,
             commands: [{ type: 'setWater', amount: water }],
         });
     }
 });
 
-test('spraying exactly the required water succeeds', () => {
-    const result = validator.validateVariable('jumlah_air = 2\nsemprot(jumlah_air)', 2);
+test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
+    const result = validator.validateVariable('kanan(2)\nmaju(6)\nkanan(8)\nisi_air = 5', 5, 2);
+
     assert.equal(result.syntaxValid, true);
     assert.equal(result.missionSuccess, true);
-    assert.deepEqual(result.actions, {
-        water: 2,
-        shouldSpray: true,
-        commands: [{ type: 'setWater', amount: 2 }, { type: 'spray' }],
-    });
+    assert.deepEqual(result.actions.commands.at(-1), { type: 'setWater', amount: 5 });
+
+    const wrongAmount = validator.validateVariable('isi_air = 3', 5, 2);
+    assert.equal(wrongAmount.syntaxValid, true);
+    assert.equal(wrongAmount.missionSuccess, false);
 });
 
-test('insufficient water does not extinguish the fire', () => {
-    for (const water of [0, 1]) {
-        const result = validator.validateVariable(`jumlah_air = ${water}\nsemprot(jumlah_air)`, 2);
-        assert.equal(result.syntaxValid, true);
-        assert.equal(result.missionSuccess, false);
-        assert.deepEqual(result.actions, {
-            water,
-            shouldSpray: true,
-            commands: [{ type: 'setWater', amount: water }, { type: 'spray' }],
-        });
-    }
-});
+test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {
+    const result = validator.validateVariable(
+        'mundur(2)\nkanan(6)\nmaju(9)\nkanan(4)\nair_pos_2 = isi_air',
+        5,
+        3,
+    );
 
-test('excess water is allowed and remains available after spraying', () => {
-    for (const water of [3, 10]) {
-        const result = validator.validateVariable(`jumlah_air = ${water}\nsemprot(jumlah_air)`, 2);
-        assert.equal(result.syntaxValid, true);
-        assert.equal(result.missionSuccess, true);
-        assert.deepEqual(result.actions, {
-            water,
-            shouldSpray: true,
-            commands: [{ type: 'setWater', amount: water }, { type: 'spray' }],
-        });
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.missionSuccess, true);
+    assert.deepEqual(result.actions.commands.at(-1), { type: 'transferWater' });
+
+    for (const invalidCode of [
+        'isi_air = 5',
+        'air_pos_2 = 5',
+        'air_pos = isi_air',
+        'air_pos_2 = isi_air\nair_pos_2 = isi_air',
+    ]) {
+        const invalidResult = validator.validateVariable(invalidCode, 5, 3);
+        assert.equal(invalidResult.syntaxValid, false, invalidCode);
+        assert.equal(invalidResult.actions, null, invalidCode);
     }
 });
 
 test('blank lines, Windows line endings, comments and spacing are supported', () => {
-    const result = validator.validateVariable('# Isi air\r\njumlah_air\t= 2 # unit\r\n\r\nsemprot ( jumlah_air )\r\n', 2);
+    const result = validator.validateVariable('# Isi air\r\nisi_air\t= 3 # unit\r\n\r\n', 3);
+
     assert.equal(result.missionSuccess, true);
 });
 
-test('invalid or unsupported code returns no actions, even after a valid prefix', () => {
+test('invalid, unsafe, and fire-extinguishing commands return no actions', () => {
     const invalidCodes = [
         '',
         '# komentar saja',
-        'semprot(jumlah_air)',
-        'semprot(jumlah_air)\njumlah_air = 2',
-        'air = 2',
-        'jumlah_air == 2',
-        'jumlah_air = -2',
-        'jumlah_air = 2.5',
-        'jumlah_air = 02',
-        'jumlah_air = 9007199254740992',
-        'jumlah_air = "2"',
-        'jumlah_air = 1 + 1',
-        'jumlah_air = 2; alert(1)',
-        'jumlah_air = 2\nsemprot(2)',
-        'jumlah_air = 2\nsemprot(air)',
-        'jumlah_air = 2\nsemprot(jumlah_air)\nimport os',
-        'jumlah_air = 2\nsemprot(jumlah_air)\nsemprot(jumlah_air)',
-        'jumlah_air = 2\nfor i in range(2):\n    semprot()',
-        'jumlah_air = 2\nif jumlah_air == 2:\n    semprot(jumlah_air)',
+        'semprot(isi_air)',
+        'jumlah_air = 3',
+        'air = 3',
+        'isi_air == 3',
+        'isi_air = -3',
+        'isi_air = 3.5',
+        'isi_air = 03',
+        'isi_air = 9007199254740992',
+        'isi_air = "3"',
+        'isi_air = 1 + 2',
+        'isi_air = 3; alert(1)',
+        'isi_air = 3\nimport os',
+        'isi_air = 3\nfor i in range(3):\n    semprot()',
+        'isi_air = 3\nif isi_air == 3:\n    semprot(isi_air)',
     ];
 
     for (const code of invalidCodes) {
-        const result = validator.validateVariable(code, 2);
+        const result = validator.validateVariable(code, 3);
         assert.equal(result.syntaxValid, false, code);
         assert.equal(result.missionSuccess, false, code);
         assert.equal(result.actions, null, code);
@@ -92,27 +99,18 @@ test('invalid or unsupported code returns no actions, even after a valid prefix'
     }
 });
 
-test('a previous run does not supply variables to a later run', () => {
-    validator.validateVariable('jumlah_air = 2\nsemprot(jumlah_air)', 2);
-    const result = validator.validateVariable('semprot(jumlah_air)', 2);
-    assert.equal(result.syntaxValid, false);
-    assert.equal(result.actions, null);
-});
-
 test('movement sequence is returned in source order', () => {
     const code = [
-        'jumlah_air = 2',
-        'atas(3)',
+        'maju(3)',
         'kiri(2)',
         'kanan(1)',
-        'bawah(1)',
-        'semprot(jumlah_air)',
+        'mundur(1)',
+        'isi_air = 3',
     ].join('\n');
-    const result = validator.validateVariable(code, 2);
+    const result = validator.validateVariable(code, 3);
 
     assert.equal(result.syntaxValid, true);
     assert.deepEqual(result.actions.commands, [
-        { type: 'setWater', amount: 2 },
         { type: 'move', direction: 'north' },
         { type: 'move', direction: 'north' },
         { type: 'move', direction: 'north' },
@@ -120,34 +118,33 @@ test('movement sequence is returned in source order', () => {
         { type: 'move', direction: 'west' },
         { type: 'move', direction: 'east' },
         { type: 'move', direction: 'south' },
-        { type: 'spray' },
+        { type: 'setWater', amount: 3 },
     ]);
 });
 
 test('assignment keeps its source order so movement can reach the pump first', () => {
     const result = validator.validateVariable([
-        'atas(3)',
-        'jumlah_air = 2',
-    ].join('\n'), 2);
+        'maju(3)',
+        'isi_air = 3',
+    ].join('\n'), 3);
 
     assert.equal(result.syntaxValid, true);
     assert.deepEqual(result.actions.commands, [
         { type: 'move', direction: 'north' },
         { type: 'move', direction: 'north' },
         { type: 'move', direction: 'north' },
-        { type: 'setWater', amount: 2 },
+        { type: 'setWater', amount: 3 },
     ]);
 });
 
-test('absolute movement works without declaring jumlah air', () => {
-    const result = validator.validateVariable('kanan(2)', 2);
+test('movement tutorial works without declaring isi_air', () => {
+    const result = validator.validateVariable('kanan(2)', 3);
 
     assert.equal(result.syntaxValid, true);
     assert.equal(result.conceptValid, true);
     assert.equal(result.missionSuccess, false);
     assert.deepEqual(result.actions, {
         water: 0,
-        shouldSpray: false,
         commands: [
             { type: 'move', direction: 'east' },
             { type: 'move', direction: 'east' },
@@ -156,9 +153,9 @@ test('absolute movement works without declaring jumlah air', () => {
 });
 
 test('unsupported movement and more than 120 commands are rejected', () => {
-    const unsupported = validator.validateVariable('jumlah_air = 2\nmundur()', 2);
-    const missingStepCount = validator.validateVariable('jumlah_air = 2\nkanan()', 2);
-    const tooLong = validator.validateVariable('jumlah_air = 2\natas(121)', 2);
+    const unsupported = validator.validateVariable('isi_air = 3\natas(1)', 3);
+    const missingStepCount = validator.validateVariable('isi_air = 3\nkanan()', 3);
+    const tooLong = validator.validateVariable('isi_air = 3\nmaju(121)', 3);
 
     assert.equal(unsupported.syntaxValid, false);
     assert.equal(unsupported.actions, null);

@@ -6,7 +6,7 @@
     <title>PyroRescue - Level 1: Tepi Sungai Terbakar</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="game-prototype" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}'); --button-sheet: url('{{ asset('assets/ui/buttons.png') }}'); --game-hud-sheet: url('{{ asset('assets/ui/hud.png') }}')">
+<body class="game-prototype" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" data-game-page="prototype-page">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level 1</h1>
 
@@ -64,7 +64,6 @@
 
             <div class="level-title wood-sign">
                 <h1>Level 1 - Tepi Sungai Terbakar</h1>
-                <p><span class="asset-icon asset-icon--leaf" aria-hidden="true"></span> Selamatkan hutan Kalimantan, mulai dari satu langkah!</p>
             </div>
 
             <div class="forest-message wood-sign">
@@ -80,26 +79,31 @@
                         <strong><span id="water-count">0</span>/<span id="required-water">3</span></strong>
                     </div>
                     <div class="hud-counter">
-                        <span class="asset-icon asset-icon--fire" aria-hidden="true"></span>
-                        <strong id="fire-count">1</strong>
-                    </div>
-                    <div class="hud-counter">
                         <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
-                        <strong><span id="mission-stars">0</span>/3</strong>
+                        <strong><span id="mission-stars">0</span>/<span id="mission-target-count">2</span></strong>
+                    </div>
+                    <div class="hud-counter hud-counter--post">
+                        <small>POS 2</small>
+                        <strong><span id="post-water-count">0</span></strong>
                     </div>
                 </div>
 
                 <div id="game-container" role="img"
                      aria-label="Peta hutan Kalimantan berukuran 1600 kali 1200 dengan kamera yang mengikuti pemadam"
                      data-asset-base-url="{{ asset('assets') }}"></div>
+
+                <div id="feedback" class="game-dialog" role="status" aria-live="polite">
+                    <p id="feedback-message"></p>
+                    <button id="feedback-ok" type="button">OK</button>
+                </div>
             </section>
 
             <aside class="game-panel wood-frame">
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
-                        <h2 id="mission-title">Misi Pertamamu</h2>
-                        <p>Api mulai menyala di tepi sungai. Ambil air, menuju titik api, lalu padamkan pohon yang terbakar.</p>
+                        <h2 id="mission-title">Challenge 1 - Mengambil Air</h2>
+                        <p id="mission-description">Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel <code>isi_air</code>.</p>
                     </div>
                 </section>
 
@@ -107,10 +111,9 @@
                     <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
                     <div>
                         <h2 id="target-title">Target</h2>
-                        <ul class="target-list">
-                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>Ambil <span id="target-water-amount">3</span> air</li>
-                            <li id="target-fire"><span class="target-check" aria-hidden="true"></span>Pergi ke titik api</li>
-                            <li id="target-extinguish"><span class="target-check" aria-hidden="true"></span>Padamkan api</li>
+                        <ul id="target-list" class="target-list">
+                            <li id="target-pump"><span class="target-check" aria-hidden="true"></span>Pergi ke pompa air</li>
+                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>Ambil 3 air</li>
                         </ul>
                     </div>
                 </section>
@@ -124,7 +127,7 @@
                         <ul id="code-suggestions" role="listbox" aria-label="Saran kode" hidden></ul>
                     </div>
                     <p id="editor-help" class="sr-only">
-                        Mulai ketik <code>atas(angka)</code>, <code>kanan(angka)</code>, <code>bawah(angka)</code>, <code>kiri(angka)</code>, <code>jumlah_air</code>, atau <code>semprot</code>.
+                        Mulai ketik <code>maju(angka)</code>, <code>mundur(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>, <code>isi_air</code>, atau <code>air_pos_2</code>.
                         Pilih dengan tombol panah dan Enter. Tekan Ctrl dan Space untuk melihat semua pilihan.
                     </p>
 
@@ -141,7 +144,6 @@
                         <button id="hint" class="hint-button" type="button"><span aria-hidden="true">💡</span> Hint</button>
                         <p id="hint-text" aria-live="polite">Susun instruksi dari atas ke bawah.</p>
                     </div>
-                    <div id="feedback" role="status" aria-live="polite">Memuat area game...</div>
                 </div>
             </aside>
         </main>
