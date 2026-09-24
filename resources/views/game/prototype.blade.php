@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PyroRescue - Level 1: Tepi Sungai Terbakar</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -67,7 +67,7 @@
             </div>
 
             <div class="forest-message wood-sign">
-                <span>Hutan Lestari<br>Masa Depan Kita</span>
+                <span>Belajar Python<br>Level 1 · Variabel</span>
             </div>
         </header>
 
@@ -82,18 +82,26 @@
                         <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
                         <strong><span id="mission-stars">0</span>/<span id="mission-target-count">2</span></strong>
                     </div>
-                    <div class="hud-counter hud-counter--post">
-                        <small>POS 2</small>
-                        <strong><span id="post-water-count">0</span></strong>
-                    </div>
                 </div>
 
                 <div id="game-container" role="img"
                      aria-label="Peta hutan Kalimantan berukuran 1600 kali 1200 dengan kamera yang mengikuti pemadam"
                      data-asset-base-url="{{ asset('assets') }}"></div>
 
+                <div id="game-hint" class="game-hint">
+                    <p id="hint-text" aria-live="polite" hidden>Susun instruksi dari atas ke bawah.</p>
+                    <button id="hint" class="hint-button" type="button" aria-expanded="false" aria-controls="hint-text">
+                        <span class="hint-button__icon" aria-hidden="true">&#128161;</span>
+                        <span class="hint-button__label">Hint</span>
+                    </button>
+                </div>
+
                 <div id="feedback" class="game-dialog" role="status" aria-live="polite">
-                    <p id="feedback-message"></p>
+                    <span class="feedback-icon" aria-hidden="true"></span>
+                    <div class="feedback-copy">
+                        <strong class="feedback-title" aria-hidden="true"></strong>
+                        <p id="feedback-message"></p>
+                    </div>
                     <button id="feedback-ok" type="button">OK</button>
                 </div>
             </section>
@@ -139,19 +147,69 @@
                     </p>
 
                     <div class="game-buttons">
-                        <button id="run-code" class="sprite-button sprite-button--play" type="button" disabled>
-                            <span class="sr-only">Run Code</span>
+                        <button id="run-code" class="game-action-button game-action-button--run" type="button" disabled>
+                            <span aria-hidden="true">&#9654;</span>
+                            Run Code
                         </button>
-                        <button id="reset" class="sprite-button sprite-button--reset" type="button" disabled>
-                            <span class="sr-only">Reset</span>
+                        <button id="reset" class="game-action-button game-action-button--reset" type="button" disabled>
+                            <span aria-hidden="true">&#8635;</span>
+                            Ulangi
                         </button>
                     </div>
 
-                    <div class="hint-strip">
-                        <button id="hint" class="hint-button" type="button"><span aria-hidden="true">💡</span> Hint</button>
-                        <p id="hint-text" aria-live="polite">Susun instruksi dari atas ke bawah.</p>
-                    </div>
+                    <section class="command-reference" aria-labelledby="command-reference-title">
+                        <h3 id="command-reference-title">Kamus perintah</h3>
+                        <p>Arahkan kursor atau pilih perintah untuk membaca penjelasannya.</p>
+                        <div id="command-reference-list" class="command-reference-list"></div>
+                    <aside id="code-suggestion-help" class="code-suggestion-help" aria-label="Penjelasan perintah" aria-live="polite" hidden>
+                        <div class="code-suggestion-help__heading">
+                            <code data-help-command></code>
+                            <span data-help-kind></span>
+                        </div>
+                        <p data-help-description></p>
+                        <div class="code-suggestion-help__example">
+                            <strong>Contoh</strong>
+                            <code data-help-example></code>
+                        </div>
+                        <div class="code-suggestion-help__parameter">
+                            <strong>Parameter</strong>
+                            <p><code data-help-parameter></code> <span data-help-parameter-description></span></p>
+                        </div>
+                        <small>Contoh dibaca dari atas ke bawah. Tulis satu perintah di setiap baris PyroPad.</small>
+                    </aside>
+                    </section>
                 </div>
+
+                <aside id="learning-panel" class="learning-panel" aria-label="Panduan belajar Python">
+                    <section class="learning-card">
+                        <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
+                        <h2>Variabel &amp; persediaan air</h2>
+                        <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
+                        <ol class="learning-steps" aria-label="Tahapan materi">
+                            <li data-lesson-step="1">1. Simpan</li>
+                            <li data-lesson-step="2">2. Ubah</li>
+                            <li data-lesson-step="3">3. Gunakan</li>
+                        </ol>
+                        <h3 id="lesson-title"></h3>
+                        <code id="lesson-code" class="lesson-code"></code>
+                        <p id="lesson-explanation"></p>
+                        <p id="lesson-effect" class="lesson-effect"></p>
+                        <p class="learning-note">Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan.</p>
+                    </section>
+
+                    <section class="learning-card variable-watch" aria-labelledby="variable-watch-title">
+                        <h3 id="variable-watch-title">Isi tangki sekarang</h3>
+                        <div class="variable-readout"><code>isi_air</code><span>=</span><output id="learning-water">0</output><small>unit air</small></div>
+                        <p id="learning-water-note">Amati nilainya setelah menjalankan kode.</p>
+                    </section>
+
+                    <section class="learning-card" aria-labelledby="code-explanation-title">
+                        <h3 id="code-explanation-title">Arti kode kamu</h3>
+                        <p>Penjelasan mengikuti kode yang kamu ketik. Gerakan dan perubahan air terjadi setelah Run Code.</p>
+                        <ol id="code-explanations" class="code-explanations"></ol>
+                        <p id="code-explanations-empty">Mulai dengan perintah gerak, misalnya <code>atas(1)</code>. Angka dalam kurung menentukan jumlah petak.</p>
+                    </section>
+                </aside>
             </aside>
         </main>
 

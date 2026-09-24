@@ -67,6 +67,14 @@ const npcPost1FramePivots = {
         [0.613, 0.92], [0.615, 0.925], [0.61, 0.92],
     ],
 };
+const npcPost2FramePivots = {
+    idle: [
+        [0.47, 0.93], [0.47, 0.93], [0.47, 0.93],
+    ],
+    'receive-water': [
+        [0.433, 0.93], [0.428, 0.93], [0.44, 0.93], [0.445, 0.93],
+    ],
+};
 const respawnFrameRegions = {
     reset: [180, 310],
     spawn: [540, 340],
@@ -164,14 +172,14 @@ export const npcAnimations = {
     },
     'post2-idle': {
         texture: 'npcPost2',
-        frames: animationFrameNames('idle'),
-        frameRate: 4,
+        frames: animationFrameNames('idle').slice(0, 3),
+        frameRate: 5,
         repeat: -1,
     },
     'post2-receive-water': {
         texture: 'npcPost2',
-        frames: animationFrameNames('receive-water'),
-        frameRate: 7,
+        frames: animationFrameNames('receive-water').slice(0, 4),
+        frameRate: 8,
         repeat: 0,
     },
 };
@@ -214,7 +222,8 @@ export const level1Assets = {
     },
     npcPost2: {
         file: 'characters/npc-post2.png',
-        frames: createGridFrames(1774, 887, ['idle', 'receive-water']),
+        frames: createGridFrames(1200, 400, ['idle', 'receive-water']),
+        pivots: createFramePivots(npcPost2FramePivots),
     },
     actionMarker: {
         file: 'effects/action-marker.png',

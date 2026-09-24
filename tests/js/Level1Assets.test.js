@@ -94,8 +94,12 @@ test('both post NPC sheets provide idle and water action animations', () => {
     assert.equal(level1Assets.npcPost1.pivots['idle-4'], undefined);
     assert.deepEqual(level1Assets.npcPost1.pivots['give-water-1'], [0.613, 0.935]);
     assert.deepEqual(level1Assets.npcPost1.pivots['give-water-6'], [0.61, 0.92]);
-    assert.deepEqual(level1Assets.npcPost2.frames['idle-1'], [0, 0, 296, 444]);
-    assert.deepEqual(level1Assets.npcPost2.frames['receive-water-6'], [1478, 444, 296, 443]);
+    assert.deepEqual(level1Assets.npcPost2.frames['idle-1'], [0, 0, 200, 200]);
+    assert.deepEqual(level1Assets.npcPost2.frames['receive-water-4'], [600, 200, 200, 200]);
+    assert.deepEqual(level1Assets.npcPost2.pivots['idle-1'], [0.47, 0.93]);
+    assert.equal(level1Assets.npcPost2.pivots['idle-4'], undefined);
+    assert.deepEqual(level1Assets.npcPost2.pivots['receive-water-1'], [0.433, 0.93]);
+    assert.deepEqual(level1Assets.npcPost2.pivots['receive-water-4'], [0.445, 0.93]);
     assert.equal(npcAnimations['post1-give-water'].texture, 'npcPost1');
     assert.equal(npcAnimations['post2-receive-water'].texture, 'npcPost2');
     assert.equal(npcAnimations['post1-idle'].repeat, -1);
@@ -103,4 +107,13 @@ test('both post NPC sheets provide idle and water action animations', () => {
     assert.equal(npcAnimations['post1-idle'].frameRate, 5);
     assert.equal(npcAnimations['post1-give-water'].frameRate, 8);
     assert.equal(npcAnimations['post2-idle'].repeat, -1);
+    assert.deepEqual(npcAnimations['post2-idle'].frames, ['idle-1', 'idle-2', 'idle-3']);
+    assert.deepEqual(npcAnimations['post2-receive-water'].frames, [
+        'receive-water-1',
+        'receive-water-2',
+        'receive-water-3',
+        'receive-water-4',
+    ]);
+    assert.equal(npcAnimations['post2-idle'].frameRate, 5);
+    assert.equal(npcAnimations['post2-receive-water'].frameRate, 8);
 });

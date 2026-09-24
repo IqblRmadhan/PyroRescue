@@ -2,66 +2,23 @@ import Phaser from 'phaser';
 import CodeAutocomplete, { createLevel1Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
+import Level1Learning from './Level1Learning.js';
+import challengeDefinitions from './Level1Challenges.js';
 
-const challengeDefinitions = {
-    1: {
-        title: 'Challenge 1 - Mengambil Air',
-        description: 'Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel isi_air.',
-        requiredWater: 3,
-        targets: [
-            { key: 'location', label: 'Pergi ke pompa air' },
-            { key: 'water', label: 'Ambil 3 unit air' },
-        ],
-        hints: [
-            'Perintah dibaca dari atas ke bawah. Berdirilah tepat di atas penanda merah dekat pompa.',
-            'Dari titik awal, gunakan atas(3) untuk mencapai penanda pompa.',
-            'Setelah sampai, simpan 3 unit air dengan menulis isi_air = 3.',
-        ],
-        nextMessage: 'Pos 1 memiliki 2 unit air bantuan untuk Pos 2. Bawa 3 unitmu ke sana agar muatan menjadi 5.',
-    },
-    2: {
-        title: 'Challenge 2 - Mengubah Nilai',
-        description: 'Pos 1 menyiapkan 2 unit air tambahan untuk Pos 2. Bawa 3 unitmu ke sana, lalu perbarui isi_air menjadi 5 unit.',
-        requiredWater: 5,
-        targets: [
-            { key: 'location', label: 'Bawa 3 unit air ke Pos 1' },
-            { key: 'water', label: 'Tambah muatan isi_air menjadi 5' },
-        ],
-        hints: [
-            'Ikuti penanda merah menuju Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.',
-            'Dari pompa, gunakan kanan(2), atas(6), kanan(8), lalu bawah(1).',
-            'Tambahkan 2 unit bantuan ke 3 unit bawaan, lalu tulis isi_air = 5.',
-        ],
-        nextMessage: 'Muatan 5 unit sudah siap. Antar seluruhnya kepada penjaga Pos 2.',
-    },
-    3: {
-        title: 'Challenge 3 - Pasok Air ke Pos 2',
-        description: 'Pergi ke Pos 2 dan serahkan seluruh 5 unit air kepada penjaga menggunakan nilai isi_air.',
-        requiredWater: 5,
-        targets: [
-            { key: 'location', label: 'Pergi ke Pos 2' },
-            { key: 'transfer', label: 'Berikan 5 unit ke air_pos_2' },
-        ],
-        hints: [
-            'Nilai isi_air = 5 dari Challenge 2 masih tersimpan. Ikuti penanda menuju Pos 2.',
-            'Dari Pos 1, gunakan bawah(1), kanan(6), atas(9), lalu kanan(4).',
-            'Setelah tiba, tulis air_pos_2 = isi_air.',
-        ],
-    },
-};
-
+// 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
 const editor = document.getElementById('code-editor');
+const learning = new Level1Learning(editor, document.getElementById('learning-panel'));
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
 const hintButton = document.getElementById('hint');
+const hintButtonLabel = hintButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
 const hintText = document.getElementById('hint-text');
 const waterCount = document.getElementById('water-count');
-const postWaterCount = document.getElementById('post-water-count');
 const requiredWater = document.getElementById('required-water');
 const missionStars = document.getElementById('mission-stars');
 const missionTargetCount = document.getElementById('mission-target-count');
@@ -83,10 +40,6 @@ function updateLineNumbers() {
     lineNumbers.style.transform = `translateY(-${editor.scrollTop}px)`;
 }
 
-editor.addEventListener('input', updateLineNumbers);
-editor.addEventListener('scroll', updateLineNumbers);
-updateLineNumbers();
-
 function showFeedback(message, state = 'info') {
     feedbackMessage.textContent = message;
     feedback.dataset.state = state;
@@ -98,6 +51,20 @@ function hideFeedback() {
     delete feedback.dataset.state;
 }
 
+// Run dan Reset dikunci bersama selama animasi berjalan.
+function setControlsDisabled(disabled) {
+    runButton.disabled = disabled;
+    resetButton.disabled = disabled;
+}
+
+function hideHint() {
+    hintText.hidden = true;
+    hintButton.setAttribute('aria-expanded', 'false');
+    hintButton.setAttribute('aria-label', 'Buka hint');
+    hintButtonLabel.textContent = 'Hint';
+}
+
+// 2. Cocokkan keadaan game dengan target, lalu perbarui panel misi.
 function isTargetComplete(targetKey, state) {
     if (targetKey === 'location') {
         if (currentChallenge === 1) {
@@ -117,13 +84,10 @@ function isTargetComplete(targetKey, state) {
 
 function renderMissionState(state = {}) {
     latestState = { ...latestState, ...state };
+    learning.renderState(latestState);
 
     if (Number.isFinite(latestState.water)) {
         waterCount.textContent = latestState.water;
-    }
-
-    if (Number.isFinite(latestState.postWater)) {
-        postWaterCount.textContent = latestState.postWater;
     }
 
     for (const target of challengeDefinitions[currentChallenge].targets) {
@@ -164,9 +128,11 @@ function configureChallenge({ updateScene = true } = {}) {
     missionDescription.textContent = definition.description;
     requiredWater.textContent = definition.requiredWater;
     hintText.textContent = defaultHint;
+    hideHint();
     editor.value = '';
     updateLineNumbers();
     renderTargets();
+    learning.setChallenge(currentChallenge);
     missionStars.textContent = '0';
     autocomplete.setSuggestions(createLevel1Suggestions(
         definition.requiredWater,
@@ -194,18 +160,14 @@ function advanceChallenge(successMessage) {
         `${successMessage} ${challengeDefinitions[completedChallenge].nextMessage}`,
         'success',
     );
-
-    if (completedChallenge === 1) {
-        postWaterCount.textContent = '0';
-    }
 }
 
+// 3. Hubungkan panel HTML dengan scene Phaser dan bantuan penulisan kode.
 const scene = new Level1Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
     onReady() {
         configureChallenge();
-        runButton.disabled = false;
-        resetButton.disabled = false;
+        setControlsDisabled(false);
         showFeedback('Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
     },
     onLoadError() {
@@ -217,9 +179,12 @@ const autocomplete = new CodeAutocomplete(
     editor,
     document.getElementById('code-suggestions'),
     createLevel1Suggestions(3, 1),
+    document.getElementById('code-suggestion-help'),
+    document.getElementById('command-reference-list'),
 );
 
-runButton.addEventListener('click', async () => {
+// 4. Validasi dahulu, jalankan aksi, lalu tampilkan hasilnya.
+async function runCode() {
     const definition = challengeDefinitions[currentChallenge];
     const result = validator.validateVariable(
         editor.value,
@@ -233,8 +198,7 @@ runButton.addEventListener('click', async () => {
     }
 
     hideFeedback();
-    runButton.disabled = true;
-    resetButton.disabled = true;
+    setControlsDisabled(true);
 
     try {
         const outcome = await scene.runCommands(result.actions.commands);
@@ -245,22 +209,27 @@ runButton.addEventListener('click', async () => {
             showFeedback(outcome.message);
         }
     } finally {
-        runButton.disabled = false;
-        resetButton.disabled = false;
+        setControlsDisabled(false);
     }
-});
+}
 
-hintButton.addEventListener('click', () => {
+function toggleHint() {
+    if (!hintText.hidden) {
+        hideHint();
+        return;
+    }
+
     const hints = challengeDefinitions[currentChallenge].hints;
     hintText.textContent = hints[hintIndex];
+    hintText.hidden = false;
+    hintButton.setAttribute('aria-expanded', 'true');
+    hintButton.setAttribute('aria-label', 'Tutup hint');
+    hintButtonLabel.textContent = 'Tutup';
     hintIndex = Math.min(hintIndex + 1, hints.length - 1);
-});
+}
 
-feedbackOkButton.addEventListener('click', hideFeedback);
-
-resetButton.addEventListener('click', async () => {
-    runButton.disabled = true;
-    resetButton.disabled = true;
+async function resetChallenge() {
+    setControlsDisabled(true);
     configureChallenge({ updateScene: false });
 
     try {
@@ -268,10 +237,18 @@ resetButton.addEventListener('click', async () => {
         autocomplete.hide();
         hideFeedback();
     } finally {
-        runButton.disabled = false;
-        resetButton.disabled = false;
+        setControlsDisabled(false);
     }
-});
+}
+
+// 5. Pasang semua tombol, lalu mulai game.
+editor.addEventListener('input', updateLineNumbers);
+editor.addEventListener('scroll', updateLineNumbers);
+runButton.addEventListener('click', runCode);
+resetButton.addEventListener('click', resetChallenge);
+hintButton.addEventListener('click', toggleHint);
+feedbackOkButton.addEventListener('click', hideFeedback);
+updateLineNumbers();
 
 const config = {
     type: Phaser.AUTO,

@@ -1,5 +1,25 @@
 # Phaser dan UI Sederhana
 
+## Implementasi ruang belajar Level 1
+
+Halaman game memakai lebar viewport, dengan peta di kiri dan panel belajar di
+kanan. Pada layar lebar, editor dan materi berdampingan di dalam panel kanan;
+pada layar kecil, panel disusun vertikal dan dapat digulir. Ukuran teks tidak
+lagi bergantung pada skala stage tetap.
+
+- `Level1Learning.js` menjelaskan setiap baris di PyroPad tanpa menjalankan kode.
+  Materi mengikuti challenge: membuat variabel, mengganti nilai, lalu memakai nilainya.
+- Nilai `isi_air` pada panel belajar mengikuti state Phaser setelah aksi berlangsung.
+- Kamus perintah selalu tersedia di bawah tombol Run/Ulangi, dengan penjelasan
+  melalui hover, fokus keyboard, atau sentuhan.
+- `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
+  game. Materi membedakannya dari assignment Python.
+- `air_pos_2 = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
+  adalah aturan game, bukan perilaku assignment Python.
+- Tombol lampu di sisi kanan peta membuka dan menutup panduan challenge.
+
+Contoh prototype awal di bawah tetap menjadi referensi dasar integrasi Phaser.
+
 ## Instalasi Phaser
 
 ```bash

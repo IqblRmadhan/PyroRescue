@@ -1,10 +1,22 @@
 export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) {
-    const movementSuggestions = [
-        { label: 'atas(angka)', value: 'atas(1)', selectionStart: 5, selectionLength: 1 },
-        { label: 'bawah(angka)', value: 'bawah(1)', selectionStart: 6, selectionLength: 1 },
-        { label: 'kanan(angka)', value: 'kanan(1)', selectionStart: 6, selectionLength: 1 },
-        { label: 'kiri(angka)', value: 'kiri(1)', selectionStart: 5, selectionLength: 1 },
+    // Empat arah memakai format yang sama; hanya nama dan contoh yang berbeda.
+    const movements = [
+        { direction: 'atas', exampleSteps: 3 },
+        { direction: 'bawah', exampleSteps: 2 },
+        { direction: 'kanan', exampleSteps: 4 },
+        { direction: 'kiri', exampleSteps: 2 },
     ];
+    const movementSuggestions = movements.map(({ direction, exampleSteps }) => ({
+        label: `${direction}(angka)`,
+        value: `${direction}(1)`,
+        selectionStart: direction.length + 1, // Pilih angka di dalam kurung.
+        selectionLength: 1,
+        kind: 'Perintah gerak',
+        description: `Menggerakkan pemadam ke ${direction} sebanyak jumlah petak yang ditentukan.`,
+        example: `${direction}(${exampleSteps})`,
+        parameter: 'angka',
+        parameterDescription: 'Jumlah petak, berupa bilangan bulat minimal 1.',
+    }));
 
     if (challengeNumber === 3) {
         return [
@@ -14,6 +26,11 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
                 value: 'air_pos_2 = isi_air',
                 selectionStart: 19,
                 selectionLength: 0,
+                kind: 'Assignment variabel',
+                description: 'Menyimpan nilai isi_air ke air_pos_2. Di penanda Pos 2, game menyerahkan air lalu mengosongkan tangki. Dalam Python biasa, assignment ini tidak mengubah isi_air.',
+                example: 'air_pos_2 = isi_air',
+                parameter: 'isi_air',
+                parameterDescription: 'Variabel berisi jumlah air yang sedang dibawa pemain.',
             },
         ];
     }
@@ -25,10 +42,18 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
             value: `isi_air = ${requiredWater}`,
             selectionStart: 10,
             selectionLength: String(requiredWater).length,
+            kind: 'Assignment variabel',
+            description: challengeNumber === 1
+                ? 'isi_air adalah nama variabel; tanda = menyimpan nilai angka di sebelah kanan. Di penanda pompa, kode ini mengisi tangki.'
+                : 'Mengganti nilai isi_air dengan jumlah akhir. isi_air = 5 mengganti nilai 3 menjadi 5, bukan menambahkan 5. Jalankan di penanda Pos 1.',
+            example: `isi_air = ${requiredWater}`,
+            parameter: 'angka',
+            parameterDescription: 'Jumlah air yang diminta pada challenge saat ini.',
         },
     ];
 }
 
+// Ambil baris tempat kursor berada, tanpa menghapus spasi di awal baris.
 export function getCompletionContext(value, caretPosition) {
     const lineStart = value.lastIndexOf('\n', caretPosition - 1) + 1;
     const nextLineBreak = value.indexOf('\n', caretPosition);
@@ -55,6 +80,7 @@ export function getAutocompleteMatches(suggestions, query) {
     ));
 }
 
+// Ganti baris aktif saja. Baris sebelum dan sesudahnya tetap dipertahankan.
 export function applyAutocompleteSuggestion(value, context, suggestion) {
     const nextValue = value.slice(0, context.replacementStart)
         + suggestion.value
@@ -69,13 +95,21 @@ export function applyAutocompleteSuggestion(value, context, suggestion) {
 }
 
 export default class CodeAutocomplete {
-    constructor(editor, list, suggestions) {
+    constructor(editor, list, suggestions, helpPanel = null, referenceList = null) {
         this.editor = editor;
         this.list = list;
+        this.helpPanel = helpPanel;
+        this.referenceList = referenceList;
         this.suggestions = suggestions;
         this.matches = [];
         this.activeIndex = 0;
+        this.previewedIndex = -1;
+        this.renderReference();
+        this.bindEvents();
+    }
 
+    // Hubungkan interaksi pengguna dengan fungsi yang menanganinya.
+    bindEvents() {
         this.editor.addEventListener('input', () => this.update());
         this.editor.addEventListener('click', () => this.update());
         this.editor.addEventListener('scroll', () => this.positionList());
@@ -83,14 +117,27 @@ export default class CodeAutocomplete {
             window.setTimeout(() => this.hide(), 100);
         });
         this.editor.addEventListener('keydown', (event) => this.handleKeydown(event));
-        this.list.addEventListener('mousedown', (event) => {
-            event.preventDefault();
-            const option = event.target.closest('[data-suggestion-index]');
+        this.list.addEventListener('pointerover', (event) => this.handlePointer(event));
+        this.list.addEventListener('pointerdown', (event) => this.handlePointer(event));
+    }
 
-            if (option) {
-                this.choose(Number(option.dataset.suggestionIndex));
-            }
-        });
+    handlePointer(event) {
+        const isHover = event.type === 'pointerover';
+        if (isHover && event.pointerType && event.pointerType !== 'mouse') return;
+        if (!isHover) event.preventDefault(); // Jangan pindahkan fokus dari editor.
+
+        const option = event.target.closest('[data-suggestion-index]');
+        if (!option) return;
+
+        const index = Number(option.dataset.suggestionIndex);
+        // Layar sentuh: sentuhan pertama membuka penjelasan, kedua memasukkan kode.
+        const isTouchPreview = event.pointerType !== 'mouse'
+            && (this.previewedIndex !== index || this.helpPanel?.hidden);
+        if (isHover || isTouchPreview) {
+            this.preview(index);
+        } else {
+            this.choose(index);
+        }
     }
 
     handleKeydown(event) {
@@ -107,8 +154,9 @@ export default class CodeAutocomplete {
         if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
             event.preventDefault();
             const offset = event.key === 'ArrowDown' ? 1 : -1;
-            this.activeIndex = (this.activeIndex + offset + this.matches.length) % this.matches.length;
-            this.render();
+            const nextIndex = (this.activeIndex + offset + this.matches.length) % this.matches.length;
+            this.highlightOption(nextIndex);
+            this.showDocumentation(this.activeIndex);
             return;
         }
 
@@ -127,6 +175,26 @@ export default class CodeAutocomplete {
     setSuggestions(suggestions) {
         this.suggestions = suggestions;
         this.hide();
+        this.renderReference();
+    }
+
+    renderReference() {
+        if (!this.referenceList) return;
+
+        this.referenceList.replaceChildren(...this.suggestions.map((suggestion) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.textContent = suggestion.label;
+            button.setAttribute('aria-controls', this.helpPanel.id);
+            const show = () => this.renderDocumentation(suggestion);
+            button.addEventListener('pointerenter', (event) => {
+                if (event.pointerType === 'mouse') show();
+            });
+            button.addEventListener('focus', show);
+            button.addEventListener('click', show);
+            return button;
+        }));
+        this.renderDocumentation(this.suggestions.at(-1));
     }
 
     update(showAll = false) {
@@ -140,6 +208,7 @@ export default class CodeAutocomplete {
 
         this.matches = getAutocompleteMatches(this.suggestions, query);
         this.activeIndex = 0;
+        this.previewedIndex = -1;
 
         if (this.matches.length === 0) {
             this.hide();
@@ -158,22 +227,14 @@ export default class CodeAutocomplete {
             option.id = `code-suggestion-${index}`;
             option.dataset.suggestionIndex = index;
             option.setAttribute('role', 'option');
-            option.setAttribute('aria-selected', String(index === this.activeIndex));
-            option.className = index === this.activeIndex ? 'is-active' : '';
 
             const command = document.createElement('code');
             command.textContent = suggestion.label;
             option.append(command);
 
-            if (index === this.activeIndex) {
-                const action = document.createElement('span');
-                action.textContent = 'Enter';
-                option.append(action);
-                this.editor.setAttribute('aria-activedescendant', option.id);
-            }
-
             return option;
         }));
+        this.highlightOption(this.activeIndex);
     }
 
     positionList() {
@@ -206,6 +267,63 @@ export default class CodeAutocomplete {
         this.list.style.top = `${top}px`;
     }
 
+    preview(index) {
+        if (!this.matches[index]) {
+            return;
+        }
+
+        if (this.activeIndex === index
+            && this.previewedIndex === index
+            && this.helpPanel
+            && !this.helpPanel.hidden) {
+            return;
+        }
+
+        this.highlightOption(index);
+        this.showDocumentation(index);
+        this.positionList();
+    }
+
+    // Dipakai bersama oleh mouse dan keyboard, tanpa mengganti elemen yang diklik.
+    highlightOption(index) {
+        this.activeIndex = index;
+        for (const [optionIndex, option] of [...this.list.children].entries()) {
+            option.classList.toggle('is-active', optionIndex === index);
+            option.setAttribute('aria-selected', String(optionIndex === index));
+            option.querySelector('span')?.remove();
+            if (optionIndex === index) {
+                const action = document.createElement('span');
+                action.textContent = 'Enter';
+                option.append(action);
+            }
+        }
+        this.editor.setAttribute('aria-activedescendant', `code-suggestion-${index}`);
+    }
+
+    showDocumentation(index) {
+        const suggestion = this.matches[index];
+
+        this.renderDocumentation(suggestion);
+        this.previewedIndex = index;
+    }
+
+    renderDocumentation(suggestion) {
+        if (!suggestion || !this.helpPanel) {
+            return;
+        }
+
+        this.helpPanel.querySelector('[data-help-command]').textContent = suggestion.label;
+        this.helpPanel.querySelector('[data-help-kind]').textContent = suggestion.kind;
+        this.helpPanel.querySelector('[data-help-description]').textContent = suggestion.description;
+        this.helpPanel.querySelector('[data-help-example]').textContent = suggestion.example;
+        this.helpPanel.querySelector('[data-help-parameter]').textContent = suggestion.parameter;
+        this.helpPanel.querySelector('[data-help-parameter-description]').textContent = suggestion.parameterDescription;
+        this.helpPanel.hidden = false;
+        for (const button of this.referenceList?.children ?? []) {
+            button.setAttribute('aria-pressed', String(button.textContent === suggestion.label));
+        }
+    }
+
     choose(index) {
         const suggestion = this.matches[index];
 
@@ -224,6 +342,12 @@ export default class CodeAutocomplete {
 
     hide() {
         this.list.hidden = true;
+        this.previewedIndex = -1;
+
+        if (this.helpPanel && !this.referenceList) {
+            this.helpPanel.hidden = true;
+        }
+
         this.editor.setAttribute('aria-expanded', 'false');
         this.editor.removeAttribute('aria-activedescendant');
     }
