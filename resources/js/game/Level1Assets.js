@@ -56,6 +56,17 @@ const sprayFramePivots = {
         [0.5, 0.943], [0.481, 0.943], [0.459, 0.949],
     ],
 };
+// NPC Pos 1 memakai frame 200 x 200. Pivot mengikuti posisi telapak kaki
+// agar transisi idle ke aksi tidak menggeser NPC dari petaknya.
+const npcPost1FramePivots = {
+    idle: [
+        [0.478, 0.925], [0.48, 0.925], [0.483, 0.925],
+    ],
+    'give-water': [
+        [0.613, 0.935], [0.593, 0.925], [0.613, 0.925],
+        [0.613, 0.92], [0.615, 0.925], [0.61, 0.92],
+    ],
+};
 const respawnFrameRegions = {
     reset: [180, 310],
     spawn: [540, 340],
@@ -141,14 +152,14 @@ export const firefighterAnimations = {
 export const npcAnimations = {
     'post1-idle': {
         texture: 'npcPost1',
-        frames: animationFrameNames('idle'),
-        frameRate: 4,
+        frames: animationFrameNames('idle').slice(0, 3),
+        frameRate: 5,
         repeat: -1,
     },
     'post1-give-water': {
         texture: 'npcPost1',
         frames: animationFrameNames('give-water'),
-        frameRate: 7,
+        frameRate: 8,
         repeat: 0,
     },
     'post2-idle': {
@@ -198,7 +209,8 @@ export const level1Assets = {
     },
     npcPost1: {
         file: 'characters/npc-post1.png',
-        frames: createGridFrames(2172, 724, ['idle', 'give-water']),
+        frames: createGridFrames(1200, 400, ['idle', 'give-water']),
+        pivots: createFramePivots(npcPost1FramePivots),
     },
     npcPost2: {
         file: 'characters/npc-post2.png',

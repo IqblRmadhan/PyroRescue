@@ -88,12 +88,19 @@ test('all firefighter animations provide six frames', () => {
 });
 
 test('both post NPC sheets provide idle and water action animations', () => {
-    assert.deepEqual(level1Assets.npcPost1.frames['idle-1'], [0, 0, 362, 362]);
-    assert.deepEqual(level1Assets.npcPost1.frames['give-water-6'], [1810, 362, 362, 362]);
+    assert.deepEqual(level1Assets.npcPost1.frames['idle-1'], [0, 0, 200, 200]);
+    assert.deepEqual(level1Assets.npcPost1.frames['give-water-6'], [1000, 200, 200, 200]);
+    assert.deepEqual(level1Assets.npcPost1.pivots['idle-1'], [0.478, 0.925]);
+    assert.equal(level1Assets.npcPost1.pivots['idle-4'], undefined);
+    assert.deepEqual(level1Assets.npcPost1.pivots['give-water-1'], [0.613, 0.935]);
+    assert.deepEqual(level1Assets.npcPost1.pivots['give-water-6'], [0.61, 0.92]);
     assert.deepEqual(level1Assets.npcPost2.frames['idle-1'], [0, 0, 296, 444]);
     assert.deepEqual(level1Assets.npcPost2.frames['receive-water-6'], [1478, 444, 296, 443]);
     assert.equal(npcAnimations['post1-give-water'].texture, 'npcPost1');
     assert.equal(npcAnimations['post2-receive-water'].texture, 'npcPost2');
     assert.equal(npcAnimations['post1-idle'].repeat, -1);
+    assert.deepEqual(npcAnimations['post1-idle'].frames, ['idle-1', 'idle-2', 'idle-3']);
+    assert.equal(npcAnimations['post1-idle'].frameRate, 5);
+    assert.equal(npcAnimations['post1-give-water'].frameRate, 8);
     assert.equal(npcAnimations['post2-idle'].repeat, -1);
 });

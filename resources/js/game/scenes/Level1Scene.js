@@ -12,7 +12,7 @@ const cameraZoom = 1.15;
 const waterLayerAlpha = 0.84;
 const playerScale = 0.245;
 const playerShadowOffsetY = 4;
-const npcPost1Scale = 0.2;
+const npcPost1Scale = 0.37;
 const npcPost2Scale = 0.19;
 const pumpDisplaySize = 52;
 const actionMarkerDisplaySize = 20;
@@ -275,7 +275,8 @@ export default class Level1Scene extends Phaser.Scene {
             post1NpcPosition.y,
             'npcPost1',
             'idle-1',
-        ).setOrigin(0.5, 0.9).setScale(npcPost1Scale).setDepth(9);
+        ).setOrigin(0.5, 0.9).setScale(npcPost1Scale).setDepth(9)
+            .play('npc-post1-idle');
         this.add.ellipse(post2NpcPosition.x, post2NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
             .setDepth(8);
         this.npcPost2 = this.add.sprite(
@@ -441,6 +442,7 @@ export default class Level1Scene extends Phaser.Scene {
         await this.playNpcAction(
             this.npcPost1,
             'npc-post1-give-water',
+            'npc-post1-idle',
         );
 
         if (this.water < amount) {
@@ -637,7 +639,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.postWater = 0;
         this.setChallenge(challengeNumber);
         this.pump.stop().setFrame('idle');
-        this.npcPost1.stop().setFrame('idle-1');
+        this.npcPost1.play('npc-post1-idle', true);
         this.npcPost2.play('npc-post2-idle', true);
         this.cameras.main.centerOn(checkpointPosition.x, checkpointPosition.y);
         await this.playPlayerAnimation('player-spawn');

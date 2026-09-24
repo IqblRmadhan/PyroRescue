@@ -29,7 +29,7 @@ const challengeDefinitions = {
         ],
         hints: [
             'Ikuti penanda merah menuju Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.',
-            'Dari pompa, gunakan kanan(2), atas(6), lalu kanan(8).',
+            'Dari pompa, gunakan kanan(2), atas(6), kanan(8), lalu bawah(1).',
             'Tambahkan 2 unit bantuan ke 3 unit bawaan, lalu tulis isi_air = 5.',
         ],
         nextMessage: 'Muatan 5 unit sudah siap. Antar seluruhnya kepada penjaga Pos 2.',
@@ -44,7 +44,7 @@ const challengeDefinitions = {
         ],
         hints: [
             'Nilai isi_air = 5 dari Challenge 2 masih tersimpan. Ikuti penanda menuju Pos 2.',
-            'Dari Pos 1, gunakan bawah(2), kanan(6), atas(9), lalu kanan(4).',
+            'Dari Pos 1, gunakan bawah(1), kanan(6), atas(9), lalu kanan(4).',
             'Setelah tiba, tulis air_pos_2 = isi_air.',
         ],
     },
@@ -206,7 +206,7 @@ const scene = new Level1Scene({
         configureChallenge();
         runButton.disabled = false;
         resetButton.disabled = false;
-        showFeedback('Siap. Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
+        showFeedback('Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
     },
     onLoadError() {
         showFeedback('Aset game gagal dimuat. Muat ulang halaman untuk mencoba lagi.', 'error');

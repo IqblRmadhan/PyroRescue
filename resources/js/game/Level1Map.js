@@ -58,8 +58,8 @@ export const level1Map = {
     start: { column: 4, row: 27, direction: 'north' },
     pump: { column: 3, row: 24 },
     waterAction: { column: 4, row: 24 },
-    post1Action: { column: 14, row: 18 },
-    post1Npc: { column: 15, row: 19 },
+    post1Action: { column: 14, row: 19 },
+    post1Npc: { column: 16, row: 19 },
     post2Action: { column: 24, row: 11 },
     post2Npc: { column: 26, row: 10 },
 };
