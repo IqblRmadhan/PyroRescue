@@ -30,7 +30,7 @@ test('isi_air must contain exactly the amount requested by Challenge 1', () => {
 });
 
 test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
-    const result = validator.validateVariable('kanan(2)\nmaju(6)\nkanan(8)\nisi_air = 5', 5, 2);
+    const result = validator.validateVariable('kanan(2)\natas(6)\nkanan(8)\nisi_air = 5', 5, 2);
 
     assert.equal(result.syntaxValid, true);
     assert.equal(result.missionSuccess, true);
@@ -43,7 +43,7 @@ test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
 
 test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {
     const result = validator.validateVariable(
-        'mundur(2)\nkanan(6)\nmaju(9)\nkanan(4)\nair_pos_2 = isi_air',
+        'kanan(6)\natas(7)\nkanan(4)\nair_pos_2 = isi_air',
         5,
         3,
     );
@@ -101,10 +101,10 @@ test('invalid, unsafe, and fire-extinguishing commands return no actions', () =>
 
 test('movement sequence is returned in source order', () => {
     const code = [
-        'maju(3)',
+        'atas(3)',
         'kiri(2)',
         'kanan(1)',
-        'mundur(1)',
+        'bawah(1)',
         'isi_air = 3',
     ].join('\n');
     const result = validator.validateVariable(code, 3);
@@ -124,7 +124,7 @@ test('movement sequence is returned in source order', () => {
 
 test('assignment keeps its source order so movement can reach the pump first', () => {
     const result = validator.validateVariable([
-        'maju(3)',
+        'atas(3)',
         'isi_air = 3',
     ].join('\n'), 3);
 
@@ -153,12 +153,15 @@ test('movement tutorial works without declaring isi_air', () => {
 });
 
 test('unsupported movement and more than 120 commands are rejected', () => {
-    const unsupported = validator.validateVariable('isi_air = 3\natas(1)', 3);
+    const unsupported = validator.validateVariable('isi_air = 3\nmaju(1)', 3);
+    const oldBackwardCommand = validator.validateVariable('isi_air = 3\nmundur(1)', 3);
     const missingStepCount = validator.validateVariable('isi_air = 3\nkanan()', 3);
-    const tooLong = validator.validateVariable('isi_air = 3\nmaju(121)', 3);
+    const tooLong = validator.validateVariable('isi_air = 3\natas(121)', 3);
 
     assert.equal(unsupported.syntaxValid, false);
     assert.equal(unsupported.actions, null);
+    assert.equal(oldBackwardCommand.syntaxValid, false);
+    assert.equal(oldBackwardCommand.actions, null);
     assert.equal(missingStepCount.syntaxValid, false);
     assert.equal(missingStepCount.actions, null);
     assert.equal(tooLong.syntaxValid, false);

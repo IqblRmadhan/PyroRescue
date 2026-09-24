@@ -14,7 +14,7 @@ const challengeDefinitions = {
         ],
         hints: [
             'Perintah dibaca dari atas ke bawah. Berdirilah tepat di atas penanda merah dekat pompa.',
-            'Dari titik awal, gunakan maju(3) untuk mencapai penanda pompa.',
+            'Dari titik awal, gunakan atas(3) untuk mencapai penanda pompa.',
             'Setelah sampai, simpan 3 unit air dengan menulis isi_air = 3.',
         ],
         nextMessage: 'Pos 1 memiliki 2 unit air bantuan untuk Pos 2. Bawa 3 unitmu ke sana agar muatan menjadi 5.',
@@ -29,7 +29,7 @@ const challengeDefinitions = {
         ],
         hints: [
             'Ikuti penanda merah menuju Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.',
-            'Dari pompa, gunakan kanan(2), maju(6), lalu kanan(8).',
+            'Dari pompa, gunakan kanan(2), atas(6), lalu kanan(8).',
             'Tambahkan 2 unit bantuan ke 3 unit bawaan, lalu tulis isi_air = 5.',
         ],
         nextMessage: 'Muatan 5 unit sudah siap. Antar seluruhnya kepada penjaga Pos 2.',
@@ -44,7 +44,7 @@ const challengeDefinitions = {
         ],
         hints: [
             'Nilai isi_air = 5 dari Challenge 2 masih tersimpan. Ikuti penanda menuju Pos 2.',
-            'Dari Pos 1, gunakan mundur(2), kanan(6), maju(9), lalu kanan(4).',
+            'Dari Pos 1, gunakan bawah(2), kanan(6), atas(9), lalu kanan(4).',
             'Setelah tiba, tulis air_pos_2 = isi_air.',
         ],
     },
@@ -52,6 +52,7 @@ const challengeDefinitions = {
 
 const validator = new CodeValidator();
 const editor = document.getElementById('code-editor');
+const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
 const hintButton = document.getElementById('hint');
@@ -72,6 +73,19 @@ let currentChallenge = 1;
 let hintIndex = 0;
 let latestState = {};
 let completedTargets = new Set();
+
+function updateLineNumbers() {
+    const lineCount = editor.value.split('\n').length;
+    lineNumbers.textContent = Array.from(
+        { length: lineCount },
+        (_, index) => `${index + 1}.`,
+    ).join('\n');
+    lineNumbers.style.transform = `translateY(-${editor.scrollTop}px)`;
+}
+
+editor.addEventListener('input', updateLineNumbers);
+editor.addEventListener('scroll', updateLineNumbers);
+updateLineNumbers();
 
 function showFeedback(message, state = 'info') {
     feedbackMessage.textContent = message;
@@ -151,6 +165,7 @@ function configureChallenge({ updateScene = true } = {}) {
     requiredWater.textContent = definition.requiredWater;
     hintText.textContent = defaultHint;
     editor.value = '';
+    updateLineNumbers();
     renderTargets();
     missionStars.textContent = '0';
     autocomplete.setSuggestions(createLevel1Suggestions(

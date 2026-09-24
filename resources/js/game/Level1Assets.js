@@ -93,6 +93,28 @@ function createFramePivots(animationPivots) {
     )));
 }
 
+function createGridFrames(imageWidth, imageHeight, rowNames, columnCount = 6) {
+    const frames = {};
+
+    for (let row = 0; row < rowNames.length; row += 1) {
+        const top = Math.round(row * imageHeight / rowNames.length);
+        const bottom = Math.round((row + 1) * imageHeight / rowNames.length);
+
+        for (let column = 0; column < columnCount; column += 1) {
+            const left = Math.round(column * imageWidth / columnCount);
+            const right = Math.round((column + 1) * imageWidth / columnCount);
+            frames[`${rowNames[row]}-${column + 1}`] = [
+                left,
+                top,
+                right - left,
+                bottom - top,
+            ];
+        }
+    }
+
+    return frames;
+}
+
 export const firefighterAnimations = {
     ...Object.fromEntries(Object.keys(walkFrameRegions).map((animation) => [
         animation,
@@ -113,6 +135,33 @@ export const firefighterAnimations = {
     spawn: {
         texture: 'firefighterRespawn',
         frames: animationFrameNames('spawn'),
+    },
+};
+
+export const npcAnimations = {
+    'post1-idle': {
+        texture: 'npcPost1',
+        frames: animationFrameNames('idle'),
+        frameRate: 4,
+        repeat: -1,
+    },
+    'post1-give-water': {
+        texture: 'npcPost1',
+        frames: animationFrameNames('give-water'),
+        frameRate: 7,
+        repeat: 0,
+    },
+    'post2-idle': {
+        texture: 'npcPost2',
+        frames: animationFrameNames('idle'),
+        frameRate: 4,
+        repeat: -1,
+    },
+    'post2-receive-water': {
+        texture: 'npcPost2',
+        frames: animationFrameNames('receive-water'),
+        frameRate: 7,
+        repeat: 0,
     },
 };
 
@@ -146,6 +195,14 @@ export const level1Assets = {
     firefighterRespawn: {
         file: 'characters/firefighter-respawn.png',
         frames: createFrames(respawnFrameRegions, 256),
+    },
+    npcPost1: {
+        file: 'characters/npc-post1.png',
+        frames: createGridFrames(2172, 724, ['idle', 'give-water']),
+    },
+    npcPost2: {
+        file: 'characters/npc-post2.png',
+        frames: createGridFrames(1774, 887, ['idle', 'receive-water']),
     },
     actionMarker: {
         file: 'effects/action-marker.png',

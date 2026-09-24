@@ -4,6 +4,7 @@ import {
     level1Assets,
     level1MapImage,
     level1MapShadowImage,
+    npcAnimations,
 } from '../Level1Assets.js';
 import { getTerrain, isOnTile, isWalkable, level1Map, tileToWorld } from '../Level1Map.js';
 
@@ -11,6 +12,8 @@ const cameraZoom = 1.15;
 const waterLayerAlpha = 0.84;
 const playerScale = 0.245;
 const playerShadowOffsetY = 4;
+const npcPost1Scale = 0.2;
+const npcPost2Scale = 0.19;
 const pumpDisplaySize = 52;
 const actionMarkerDisplaySize = 20;
 const pumpCyclePause = 100;
@@ -194,6 +197,22 @@ export default class Level1Scene extends Phaser.Scene {
             }
         }
 
+        for (const [animation, definition] of Object.entries(npcAnimations)) {
+            const key = `npc-${animation}`;
+
+            if (!this.anims.exists(key)) {
+                this.anims.create({
+                    key,
+                    frames: definition.frames.map((frame) => ({
+                        key: definition.texture,
+                        frame,
+                    })),
+                    frameRate: definition.frameRate,
+                    repeat: definition.repeat,
+                });
+            }
+        }
+
         if (!this.anims.exists('pump-flow')) {
             this.anims.create({
                 key: 'pump-flow',
@@ -235,6 +254,8 @@ export default class Level1Scene extends Phaser.Scene {
             level1Map.waterAction.column,
             level1Map.waterAction.row,
         );
+        const post1NpcPosition = tileToWorld(level1Map.post1Npc.column, level1Map.post1Npc.row);
+        const post2NpcPosition = tileToWorld(level1Map.post2Npc.column, level1Map.post2Npc.row);
 
         this.actionMarker = this.add.sprite(
             waterActionPosition.x,
@@ -247,6 +268,23 @@ export default class Level1Scene extends Phaser.Scene {
             .setOrigin(0.5, 0.9)
             .setDisplaySize(pumpDisplaySize, pumpDisplaySize)
             .setDepth(7);
+        this.add.ellipse(post1NpcPosition.x, post1NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
+            .setDepth(8);
+        this.npcPost1 = this.add.sprite(
+            post1NpcPosition.x,
+            post1NpcPosition.y,
+            'npcPost1',
+            'idle-1',
+        ).setOrigin(0.5, 0.9).setScale(npcPost1Scale).setDepth(9);
+        this.add.ellipse(post2NpcPosition.x, post2NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
+            .setDepth(8);
+        this.npcPost2 = this.add.sprite(
+            post2NpcPosition.x,
+            post2NpcPosition.y,
+            'npcPost2',
+            'idle-1',
+        ).setOrigin(0.5, 0.9).setScale(npcPost2Scale).setDepth(9)
+            .play('npc-post2-idle');
         this.playerShadow = this.add.ellipse(
             playerPosition.x,
             playerPosition.y + playerShadowOffsetY,
@@ -398,6 +436,13 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
+        const previousDirection = this.direction;
+        this.setPlayerIdle(this.getDirectionTo(level1Map.post1Npc));
+        await this.playNpcAction(
+            this.npcPost1,
+            'npc-post1-give-water',
+        );
+
         if (this.water < amount) {
             for (let total = this.water + 1; total <= amount; total += 1) {
                 await this.wait(250);
@@ -407,6 +452,8 @@ export default class Level1Scene extends Phaser.Scene {
             await this.wait(250);
             this.setWater(amount);
         }
+
+        this.setPlayerIdle(previousDirection);
 
         return { success: true };
     }
@@ -426,10 +473,17 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
-        await this.wait(350);
+        const previousDirection = this.direction;
+        this.setPlayerIdle(this.getDirectionTo(level1Map.post2Npc));
+        await this.playNpcAction(
+            this.npcPost2,
+            'npc-post2-receive-water',
+            'npc-post2-idle',
+        );
         this.postWater = this.water;
         this.water = 0;
         this.publishState();
+        this.setPlayerIdle(previousDirection);
 
         return { success: true };
     }
@@ -441,6 +495,21 @@ export default class Level1Scene extends Phaser.Scene {
                 resolve();
             });
             this.pump.play('pump-flow', true);
+        });
+    }
+
+    playNpcAction(npc, actionAnimation, idleAnimation = '') {
+        return new Promise((resolve) => {
+            npc.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+                if (idleAnimation) {
+                    npc.play(idleAnimation, true);
+                } else {
+                    npc.stop().setFrame('idle-1');
+                }
+
+                resolve();
+            });
+            npc.play(actionAnimation, true);
         });
     }
 
@@ -568,6 +637,8 @@ export default class Level1Scene extends Phaser.Scene {
         this.postWater = 0;
         this.setChallenge(challengeNumber);
         this.pump.stop().setFrame('idle');
+        this.npcPost1.stop().setFrame('idle-1');
+        this.npcPost2.play('npc-post2-idle', true);
         this.cameras.main.centerOn(checkpointPosition.x, checkpointPosition.y);
         await this.playPlayerAnimation('player-spawn');
         this.setPlayerIdle(this.direction);

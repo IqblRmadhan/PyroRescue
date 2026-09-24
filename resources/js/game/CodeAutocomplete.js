@@ -1,7 +1,7 @@
 export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) {
     const movementSuggestions = [
-        { label: 'maju(angka)', value: 'maju(1)', selectionStart: 5, selectionLength: 1 },
-        { label: 'mundur(angka)', value: 'mundur(1)', selectionStart: 7, selectionLength: 1 },
+        { label: 'atas(angka)', value: 'atas(1)', selectionStart: 5, selectionLength: 1 },
+        { label: 'bawah(angka)', value: 'bawah(1)', selectionStart: 6, selectionLength: 1 },
         { label: 'kanan(angka)', value: 'kanan(1)', selectionStart: 6, selectionLength: 1 },
         { label: 'kiri(angka)', value: 'kiri(1)', selectionStart: 5, selectionLength: 1 },
     ];

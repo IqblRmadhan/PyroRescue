@@ -16,8 +16,8 @@ Menyiapkan persediaan air untuk pos pemadam. Level 1 belum memiliki aksi memadam
 Pemain mempelajari perintah gerak dasar:
 
 ```python
-maju(1)
-mundur(1)
+atas(1)
+bawah(1)
 kanan(1)
 kiri(1)
 ```

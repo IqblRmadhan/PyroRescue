@@ -121,13 +121,20 @@
                 <div class="panel-content">
                     <label class="sr-only" for="code-editor">Kode Python untuk PyroPad</label>
                     <div class="code-editor-wrapper">
-                        <textarea id="code-editor" rows="12" spellcheck="false" autocapitalize="off" autocomplete="off"
-                                  aria-autocomplete="list" aria-controls="code-suggestions" aria-expanded="false"
-                                  aria-describedby="editor-help" placeholder="Tulis kode Python di sini..."></textarea>
-                        <ul id="code-suggestions" role="listbox" aria-label="Saran kode" hidden></ul>
+                        <div class="code-editor-screen">
+                            <div class="code-line-numbers" aria-hidden="true">
+                                <div id="code-line-numbers-content">1.</div>
+                            </div>
+                            <div class="code-editor-input">
+                                <textarea id="code-editor" rows="12" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off"
+                                          aria-autocomplete="list" aria-controls="code-suggestions" aria-expanded="false"
+                                          aria-describedby="editor-help" placeholder="Tulis kode Python di sini..."></textarea>
+                                <ul id="code-suggestions" role="listbox" aria-label="Saran kode" hidden></ul>
+                            </div>
+                        </div>
                     </div>
                     <p id="editor-help" class="sr-only">
-                        Mulai ketik <code>maju(angka)</code>, <code>mundur(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>, <code>isi_air</code>, atau <code>air_pos_2</code>.
+                        Mulai ketik <code>atas(angka)</code>, <code>bawah(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>, <code>isi_air</code>, atau <code>air_pos_2</code>.
                         Pilih dengan tombol panah dan Enter. Tekan Ctrl dan Space untuk melihat semua pilihan.
                     </p>
 

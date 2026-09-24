@@ -21,12 +21,12 @@ test('autocomplete filters commands from the current prefix', () => {
 });
 
 test('autocomplete replaces only the active line and selects its number', () => {
-    const value = 'maju(3)\n  is';
+    const value = 'atas(3)\n  is';
     const context = getCompletionContext(value, value.length);
     const suggestion = createLevel1Suggestions(2)[4];
     const completion = applyAutocompleteSuggestion(value, context, suggestion);
 
-    assert.equal(completion.value, 'maju(3)\n  isi_air = 2');
+    assert.equal(completion.value, 'atas(3)\n  isi_air = 2');
     assert.equal(completion.value.slice(completion.selectionStart, completion.selectionEnd), '2');
 });
 
@@ -34,6 +34,10 @@ test('autocomplete can show every supported Level 1 command', () => {
     const suggestions = createLevel1Suggestions(2);
 
     assert.equal(getAutocompleteMatches(suggestions, '').length, 5);
+    assert.deepEqual(
+        suggestions.slice(0, 2).map(({ value }) => value),
+        ['atas(1)', 'bawah(1)'],
+    );
     assert.equal(suggestions.at(-1).value, 'isi_air = 2');
 });
 

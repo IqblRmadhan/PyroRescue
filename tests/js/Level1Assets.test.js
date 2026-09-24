@@ -5,6 +5,7 @@ import {
     firefighterAnimations,
     level1Assets,
     level1MapShadowImage,
+    npcAnimations,
 } from '../../resources/js/game/Level1Assets.js';
 
 test('level map shadow uses the dedicated Level 1 image', () => {
@@ -84,4 +85,15 @@ test('all firefighter animations provide six frames', () => {
         'reset-1',
     ]);
     assert.equal(firefighterAnimations.spawn.texture, 'firefighterRespawn');
+});
+
+test('both post NPC sheets provide idle and water action animations', () => {
+    assert.deepEqual(level1Assets.npcPost1.frames['idle-1'], [0, 0, 362, 362]);
+    assert.deepEqual(level1Assets.npcPost1.frames['give-water-6'], [1810, 362, 362, 362]);
+    assert.deepEqual(level1Assets.npcPost2.frames['idle-1'], [0, 0, 296, 444]);
+    assert.deepEqual(level1Assets.npcPost2.frames['receive-water-6'], [1478, 444, 296, 443]);
+    assert.equal(npcAnimations['post1-give-water'].texture, 'npcPost1');
+    assert.equal(npcAnimations['post2-receive-water'].texture, 'npcPost2');
+    assert.equal(npcAnimations['post1-idle'].repeat, -1);
+    assert.equal(npcAnimations['post2-idle'].repeat, -1);
 });

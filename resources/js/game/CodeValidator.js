@@ -12,7 +12,7 @@ export default class CodeValidator {
             .filter((line) => line !== '');
 
         if (lines.length === 0) {
-            result.message = 'Tulis perintah seperti maju(2), kanan(2), atau assignment variabel yang diminta.';
+            result.message = 'Tulis perintah seperti atas(2), kanan(2), atau assignment variabel yang diminta.';
             return result;
         }
 
@@ -22,8 +22,8 @@ export default class CodeValidator {
         }
 
         const movementDirections = {
-            maju: 'north',
-            mundur: 'south',
+            atas: 'north',
+            bawah: 'south',
             kanan: 'east',
             kiri: 'west',
         };
@@ -35,7 +35,7 @@ export default class CodeValidator {
         for (const line of lines) {
             const normalizedLine = line.replace(/[ \t]/g, '');
             const waterAssignment = normalizedLine.match(/^isi_air=(0|[1-9][0-9]*)$/);
-            const movementMatch = normalizedLine.match(/^(maju|mundur|kanan|kiri)\((0|[1-9][0-9]*)\)$/);
+            const movementMatch = normalizedLine.match(/^(atas|bawah|kanan|kiri)\((0|[1-9][0-9]*)\)$/);
 
             if (waterAssignment) {
                 if (challengeNumber === 3) {
