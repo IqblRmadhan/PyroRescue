@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import {
     firefighterAnimations,
     level1Assets,
@@ -72,11 +73,13 @@ export default class Level1Scene extends Phaser.Scene {
         this.drawTerrain();
         this.drawGrid();
         this.drawMissionObjects();
+        this.atmosphere = createLevel1Atmosphere(this);
         this.configureCamera();
         this.resetChallenge(1).then(() => this.onReady());
     }
 
-    update() {
+    update(time, delta) {
+        this.atmosphere?.update(delta);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
             this.waterLayer.tilePositionX += 0.02;
