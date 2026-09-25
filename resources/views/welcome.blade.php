@@ -1,76 +1,88 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="PyroRescue, game edukasi untuk belajar Python sambil menyelamatkan hutan Kalimantan.">
+    <meta name="description" content="Belajar Python melalui petualangan penyelamatan hutan Kalimantan di PyroRescue.">
     <title>PyroRescue — Belajar Python, Selamatkan Hutan</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="landing-page" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
-    <main class="landing-hero" id="beranda">
-        <nav class="landing-nav wood-plank" aria-label="Navigasi utama">
-            <a class="landing-brand" href="#beranda" aria-label="PyroRescue, kembali ke beranda">
-                <span class="page-logo" aria-hidden="true"></span>
-                <span class="sr-only">PyroRescue</span>
-            </a>
+<body class="landing-page">
+    <header class="adventure-topbar home-topbar">
+        <a class="adventure-brand" href="#beranda" aria-label="PyroRescue, ke awal halaman">
+            <img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue">
+        </a>
 
-            <div class="landing-nav__links">
-                <a href="#tentang">Tentang</a>
-                <a href="#fitur">Fitur</a>
-                <a href="mailto:pyrorescue@example.com">Kontak</a>
-            </div>
-
-            <a class="landing-login" href="{{ route('login') }}">Masuk</a>
+        <nav class="adventure-topbar__links" aria-label="Navigasi utama">
+            <a href="#tentang">Tentang</a>
+            <a href="#cara-main">Cara Bermain</a>
         </nav>
 
-        <aside class="forest-sign forest-sign--left" aria-label="Pesan pelestarian hutan">
-            <span>Hutan Kalimantan</span>
-            <strong>Rumah Kita<br>Bersama</strong>
-            <i aria-hidden="true">♥</i>
-        </aside>
+        <a class="home-login" href="{{ route('login') }}">Masuk <span aria-hidden="true">↗</span></a>
+    </header>
 
-        <section class="landing-copy" id="tentang">
-            <p class="rescue-kicker">Misi Penyelamatan Hutan</p>
-            <h1 class="sr-only">PyroRescue</h1>
-            <div class="hero-logo" aria-hidden="true"></div>
-            <p class="hero-tagline">Belajar Python, Selamatkan Hutan</p>
-            <p class="hero-description">
-                Game edukasi yang mengajak kamu belajar pemrograman Python sambil
-                melakukan misi penyelamatan hutan dan satwa Indonesia.
-            </p>
-            <a class="start-game-button" href="{{ route('login') }}">
-                <span aria-hidden="true">▶</span>
-                Mulai Belajar
-            </a>
+    <main id="beranda">
+        <section class="home-stage" id="tentang" aria-labelledby="home-heading">
+            <div class="home-stage__inner">
+                <div class="home-copy">
+                    <span class="adventure-eyebrow">PETUALANGAN KODE DIMULAI DI SINI</span>
+                    <h1 id="home-heading">Belajar Python.<br><em>Selamatkan Hutan.</em></h1>
+                    <p>Jelajahi hutan Kalimantan, tulis kode untuk menyelesaikan misi, dan lihat setiap baris Python membawa perubahan.</p>
+                    <div class="home-actions">
+                        <a class="adventure-play home-start" href="{{ route('login') }}"><span aria-hidden="true">▶</span> Mulai Petualangan</a>
+                        <a class="home-secondary" href="#cara-main">Lihat cara bermain <span aria-hidden="true">↓</span></a>
+                    </div>
+                    <div class="home-highlights" aria-label="Isi petualangan">
+                        <span><strong>03</strong> Level</span>
+                        <span><strong>01</strong> Hutan Kalimantan</span>
+                        <span><strong>∞</strong> Rasa ingin tahu</span>
+                    </div>
+                </div>
+
+                <div class="home-art" aria-label="Logo PyroRescue dan karakter pemadam hutan">
+                    <img class="home-art__logo" src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue">
+                    <div class="home-art__stage" aria-hidden="true">
+                        <div class="home-art__forest"></div>
+                        <div class="home-art__glow"></div>
+                        <span class="home-art__spark home-art__spark--one"></span>
+                        <span class="home-art__spark home-art__spark--two"></span>
+                        <span class="home-art__spark home-art__spark--three"></span>
+                        <div class="home-mascot"><div class="home-mascot__sprite"></div></div>
+                        <div class="home-art__ground"></div>
+                    </div>
+                    <p class="home-art__caption"><strong>Penjaga Hutan</strong><span>Siap beraksi bersama kode buatanmu</span></p>
+                </div>
+            </div>
+            <a class="home-scroll" href="#cara-main">Jelajahi cara bermain <span aria-hidden="true">↓</span></a>
         </section>
 
-        <aside class="forest-sign forest-sign--right" aria-label="Pesan pelestarian alam">
-            <span>Alam Terjaga</span>
-            <strong>Kita Semua<br>Bisa Bahagia</strong>
-            <i aria-hidden="true">♥</i>
-        </aside>
-
-        <section class="landing-features parchment-panel" id="fitur" aria-label="Keunggulan PyroRescue">
-            <article>
-                <span class="asset-icon asset-icon--book" aria-hidden="true"></span>
-                <p>Belajar Python<br><strong>dengan mudah</strong></p>
-            </article>
-            <article>
-                <span class="feature-emoji" aria-hidden="true">🎮</span>
-                <p>Misi seru<br><strong>di dunia nyata</strong></p>
-            </article>
-            <article>
-                <span class="asset-icon asset-icon--leaf" aria-hidden="true"></span>
-                <p>Bersama menjaga<br><strong>hutan Indonesia</strong></p>
-            </article>
-            <article>
-                <span class="feature-emoji" aria-hidden="true">🐾</span>
-                <p>Kode kecil,<br><strong>dampak besar untuk alam kita</strong></p>
-            </article>
+        <section class="home-how" id="cara-main" aria-labelledby="how-heading">
+            <div class="home-how__heading">
+                <span class="adventure-eyebrow">BELAJAR SAMBIL BERPETUALANG</span>
+                <h2 id="how-heading">Kode kecil, dampak besar.</h2>
+                <p>Setiap tantangan mengubah kode Python menjadi aksi nyata di dalam game.</p>
+            </div>
+            <div class="home-steps">
+                <article>
+                    <span class="home-steps__number">01</span>
+                    <h3>Terima misi</h3>
+                    <p>Temukan masalah di hutan dan pahami apa yang perlu dilakukan.</p>
+                </article>
+                <article>
+                    <span class="home-steps__number">02</span>
+                    <h3>Tulis kode</h3>
+                    <p>Gunakan variabel, perulangan, dan percabangan Python.</p>
+                </article>
+                <article>
+                    <span class="home-steps__number">03</span>
+                    <h3>Lihat hasilnya</h3>
+                    <p>Jalankan kode dan saksikan perubahan di dunia PyroRescue.</p>
+                </article>
+            </div>
+            <a class="home-how__link" href="{{ route('login') }}">Siap menjelajah? Mulai sekarang <span aria-hidden="true">→</span></a>
         </section>
-
-        <p class="landing-quote"><span aria-hidden="true">❧</span> “Satu Baris Kode, Sejuta Harapan untuk Hutan Kalimantan” <span aria-hidden="true">❧</span></p>
     </main>
+
+    <footer class="adventure-footer">PyroRescue · Belajar Python, selamatkan hutan Kalimantan</footer>
 </body>
 </html>

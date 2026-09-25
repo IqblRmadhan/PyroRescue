@@ -3,105 +3,118 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Progress Pemain — PyroRescue</title>
+    <meta name="description" content="Pilih petualangan PyroRescue dan belajar Python sambil menjaga hutan Kalimantan.">
+    <title>Peta Petualangan — PyroRescue</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="main-menu-page" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
-    <main class="main-menu">
-        <nav class="landing-nav main-menu-navbar wood-plank" aria-label="Navigasi utama">
-            <a class="landing-brand" href="{{ route('home') }}" aria-label="PyroRescue, kembali ke beranda">
-                <span class="page-logo" aria-hidden="true"></span>
-                <span class="sr-only">PyroRescue</span>
+<body class="main-menu-page">
+    <div class="main-menu">
+        <header class="adventure-topbar">
+            <a class="adventure-brand" href="{{ route('home') }}" aria-label="PyroRescue, ke beranda">
+                <img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue">
             </a>
-            <div class="landing-nav__links">
-                <a href="{{ route('home') }}">Beranda</a>
-                <a href="#petualangan">Petualangan</a>
+
+            <nav class="adventure-topbar__links" aria-label="Navigasi utama">
+                <a class="is-current" href="#petualangan" aria-current="page">Petualangan</a>
                 <a href="#progress">Progress</a>
-            </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="landing-login" type="submit">Keluar</button>
-            </form>
-        </nav>
-
-        <header class="main-menu__header">
-            <div class="main-menu__title wood-plank"><span aria-hidden="true">🌳</span><div><h1>Progress Pemain</h1><p>Terus belajar, selamatkan lebih banyak hutan!</p></div></div>
-            <div class="main-menu__player"><span>{{ $playerName }}</span><small>Penjaga Hutan</small></div>
-        </header>
-
-        <div class="main-menu__content">
-            <nav class="main-menu__nav wood-frame" aria-label="Menu utama">
-                <a href="#petualangan"><span aria-hidden="true">🗺️</span>Petualangan</a>
-                <a class="is-active" href="#progress"><span aria-hidden="true">📊</span>Progress</a>
-                <a href="#konsep"><span aria-hidden="true">📖</span>Konsep</a>
-                <a href="#pencapaian"><span aria-hidden="true">🏆</span>Pencapaian</a>
-                <a href="#pengaturan"><img class="menu-link__icon" src="{{ asset('assets/ui/settings.png') }}" alt="" aria-hidden="true">Pengaturan</a>
+                <a href="{{ route('module.download') }}">Download Modul</a>
             </nav>
 
-            <section class="level-board wood-frame" id="progress" aria-labelledby="levels-title">
-                <header class="board-heading"><span aria-hidden="true">🗺️</span><h2 id="levels-title">Pilih Petualanganmu</h2></header>
-                <div class="level-cards" id="petualangan">
-                    <a class="level-card level-card--one" href="{{ route('game.level1') }}">
-                        <div class="level-card__art"><img class="level-card__fire" src="{{ asset('assets/ui/fire.png') }}" alt="" aria-hidden="true"></div>
-                        <h3>Level 1</h3><p>Tepi Sungai Terbakar</p>
-                        <div class="level-card__stars" aria-label="Belum ada bintang">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+            <div class="adventure-account">
+                <span class="adventure-account__name" title="{{ $playerName }}">{{ $playerName }}</span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit">Keluar</button>
+                </form>
+            </div>
+        </header>
+
+        <main>
+            <section class="adventure-world" id="petualangan" aria-labelledby="adventure-heading">
+                <div class="adventure-world__intro">
+                    <span class="adventure-eyebrow">PETA PETUALANGAN</span>
+                    <h1 id="adventure-heading">Pilih Misi Penyelamatanmu</h1>
+                    <p>Tulis kode Python, jelajahi Kalimantan, dan bantu jaga hutannya.</p>
+                </div>
+
+                <div class="adventure-world__counter" aria-label="Progress level">
+                    <span aria-hidden="true">✦</span>
+                    <strong>0 / 3</strong>
+                    <small>Level selesai</small>
+                </div>
+
+                <div class="adventure-islands">
+                    <article class="adventure-level adventure-level--locked adventure-level--two" aria-labelledby="level-two-title">
+                        <div class="adventure-level__image-wrap">
+                            <img src="{{ asset('assets/menu/level-2-island.webp') }}" alt="Pulau hutan gambut berkabut" loading="lazy">
                         </div>
-                        <div class="level-card__meter"><span style="width: 0%"></span></div>
-                        <strong class="level-card__status">▶ Mulai Misi</strong>
-                    </a>
-                    <article class="level-card level-card--two is-locked" aria-label="Level 2 terkunci">
-                        <div class="level-card__art"><span aria-hidden="true">🌫️</span></div>
-                        <h3>Level 2</h3><p>Hutan Gambut Berasap</p>
-                        <div class="level-card__stars" aria-label="Belum ada bintang">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+                        <div class="adventure-level__copy">
+                            <span class="adventure-level__number">LEVEL 02</span>
+                            <h2 id="level-two-title">Hutan Gambut Berasap</h2>
+                            <span class="adventure-level__lock">🔒 Terkunci</span>
+                            <p>Pelajari perulangan untuk menghadapi titik api.</p>
                         </div>
-                        <div class="level-card__meter"><span style="width: 0%"></span></div>
-                        <strong class="level-card__status">🔒 Terkunci</strong>
                     </article>
-                    <article class="level-card level-card--three is-locked" aria-label="Level 3 terkunci">
-                        <div class="level-card__art"><span aria-hidden="true">🌋</span></div>
-                        <h3>Level 3</h3><p>Suaka Bekantan</p>
-                        <div class="level-card__stars" aria-label="Belum ada bintang">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
-                            <img src="{{ asset('assets/ui/star-empty.png') }}" alt="">
+
+                    <article class="adventure-level adventure-level--active" aria-labelledby="level-one-title">
+                        <div class="adventure-level__image-wrap">
+                            <img src="{{ asset('assets/menu/level-1-island.webp') }}" alt="Pulau hutan dengan sungai, pos pemadam, dan titik api">
                         </div>
-                        <div class="level-card__meter"><span style="width: 0%"></span></div>
-                        <strong class="level-card__status">🔒 Terkunci</strong>
+                        <div class="adventure-level__copy">
+                            <span class="adventure-level__number">LEVEL 01 · MISI TERSEDIA</span>
+                            <h2 id="level-one-title">Tepi Sungai Terbakar</h2>
+                            <p>Siapkan persediaan air dengan variabel Python.</p>
+                            <a class="adventure-play" href="{{ route('game.level1') }}">
+                                <span aria-hidden="true">▶</span> Mainkan
+                            </a>
+                            <span class="adventure-level__progress">Misi pertama menantimu</span>
+                        </div>
+                    </article>
+
+                    <article class="adventure-level adventure-level--locked adventure-level--three" aria-labelledby="level-three-title">
+                        <div class="adventure-level__image-wrap">
+                            <img src="{{ asset('assets/menu/level-3-island.webp') }}" alt="Pulau suaka bekantan dengan menara pengawas" loading="lazy">
+                        </div>
+                        <div class="adventure-level__copy">
+                            <span class="adventure-level__number">LEVEL 03</span>
+                            <h2 id="level-three-title">Suaka Bekantan</h2>
+                            <span class="adventure-level__lock">🔒 Terkunci</span>
+                            <p>Gunakan percabangan untuk membuka jalur penyelamatan.</p>
+                        </div>
                     </article>
                 </div>
-                <div class="forest-cheer"><span aria-hidden="true">🧑‍🚒</span><p><strong>Setiap baris kode yang kamu pelajari membantu menyelamatkan hutan!</strong><br>Mulai misi pertamamu, pahlawan hutan.</p></div>
+
+                <a class="adventure-scroll" href="#progress">Lihat perjalananmu <span aria-hidden="true">↓</span></a>
             </section>
 
-            <aside class="main-menu__sidebar">
-                <section class="progress-summary wood-frame">
-                    <header class="board-heading"><span aria-hidden="true">📊</span><h2>Ringkasan Progress</h2></header>
-                    <dl>
-                        <div><dt>🌲 Level Diselesaikan</dt><dd>0 / 3</dd></div>
-                        <div><dt>⭐ Total Bintang</dt><dd>0 / 15</dd></div>
-                        <div><dt>📖 Konsep Terbuka</dt><dd>1 / 4</dd></div>
-                        <div><dt>🏆 Pencapaian Diraih</dt><dd>0 / 8</dd></div>
-                        <div><dt>🕒 Total Waktu Bermain</dt><dd>0 menit</dd></div>
-                    </dl>
-                </section>
-                <section class="concept-panel wood-frame" id="konsep">
-                    <header class="board-heading"><span aria-hidden="true">📘</span><h2>Konsep Python</h2></header>
-                    <div class="concept-grid">
-                        <div class="concept-card--asset is-open"><img class="concept-card__image" src="{{ asset('assets/ui/concept-variable.png') }}" alt="Konsep Variabel"><small>✓ Terbuka</small></div>
-                        <div class="concept-card--asset is-locked"><img class="concept-card__image" src="{{ asset('assets/ui/concept-loop.png') }}" alt="Konsep Perulangan"><small>🔒 Terkunci</small></div>
-                        <div class="concept-card--asset is-locked"><img class="concept-card__image" src="{{ asset('assets/ui/concept-conditional.png') }}" alt="Konsep Percabangan"><small>🔒 Terkunci</small></div>
-                        <div class="is-locked"><span>🧩</span><strong>Integrasi</strong><small>🔒 Terkunci</small></div>
+            <section class="adventure-details" id="progress" aria-labelledby="progress-heading">
+                <div class="adventure-details__heading">
+                    <span class="adventure-eyebrow">PERJALANANMU</span>
+                    <h2 id="progress-heading">Progress Pemain</h2>
+                    <p>Setiap baris kode membantumu menjaga hutan.</p>
+                </div>
+                <div class="adventure-details__grid">
+                    <div class="adventure-detail-panel">
+                        <h3>Ringkasan Progress</h3>
+                        <dl class="adventure-stats">
+                            <div><dt>Level Diselesaikan</dt><dd>0 / 3</dd></div>
+                            <div><dt>Total Bintang</dt><dd>0 / 15</dd></div>
+                            <div><dt>Misi Tersedia</dt><dd>1 / 3</dd></div>
+                        </dl>
                     </div>
-                </section>
-            </aside>
-        </div>
+                    <div class="adventure-detail-panel adventure-module">
+                        <div class="adventure-module__icon" aria-hidden="true">PDF</div>
+                        <div class="adventure-module__content">
+                            <h3>Download Modul</h3>
+                            <p>Materi pendamping petualangan PyroRescue tersedia dalam satu file PDF.</p>
+                            <a class="adventure-module__button" href="{{ route('module.download') }}">Unduh Modul <span aria-hidden="true">↓</span></a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
 
-        <footer class="main-menu__footer">❧ Python untuk Hutan yang Lebih Baik ❧</footer>
-    </main>
+        <footer class="adventure-footer">PyroRescue · Belajar Python, selamatkan hutan Kalimantan</footer>
+    </div>
 </body>
 </html>

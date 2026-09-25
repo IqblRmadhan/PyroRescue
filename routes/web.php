@@ -20,5 +20,11 @@ Route::view('/game-test', 'game.prototype')->name('game.test');
 
 Route::middleware('player')->group(function () {
     Route::get('/main-menu', [MainMenuController::class, 'index'])->name('main-menu');
+    Route::get('/download-modul', function () {
+        return response()->download(
+            public_path('assets/modules/Modul-PyroRescue.pdf'),
+            'Modul-PyroRescue.pdf'
+        );
+    })->name('module.download');
     Route::view('/game/1', 'game.prototype')->name('game.level1');
 });
