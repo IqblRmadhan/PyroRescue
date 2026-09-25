@@ -2009,6 +2009,132 @@
     .game-prototype #hint-text { min-width: 0; font-size: 13px; }
 }
 
+/* Bingkai Level 1 mengikuti warna menu utama, sementara isi belajar tetap sama. */
+.game-prototype {
+    position: relative;
+    isolation: isolate;
+    background-color: #102d3d;
+    background-image:
+        radial-gradient(ellipse at 50% 0, #28728b66, transparent 55%),
+        radial-gradient(circle at 8% 85%, #1d876b3d, transparent 30%),
+        radial-gradient(circle at center, #e5f8ee12 1px, transparent 1.5px),
+        linear-gradient(135deg, #142d3d, #0a2233);
+    background-position: center, center, center, center;
+    background-size: auto, auto, 34px 34px, auto;
+    background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+    background-attachment: fixed;
+}
+
+.game-prototype::before {
+    position: fixed;
+    z-index: 0;
+    inset: -12px;
+    content: '';
+    background: url('/assets/tiles/game_bg.webp') center 56% / cover no-repeat;
+    filter: blur(6px) saturate(.5) brightness(.62);
+    opacity: .55;
+    pointer-events: none;
+}
+
+.game-prototype .prototype-page {
+    position: relative;
+    z-index: 1;
+    height: 100dvh;
+    padding: 0 14px 14px;
+}
+
+.game-prototype .game-header {
+    grid-template-columns: minmax(170px, .8fr) minmax(280px, 1.3fr) minmax(170px, .7fr);
+    min-height: 76px;
+    margin: 0 -14px;
+    padding: 8px 24px;
+    border-bottom: 1px solid #426273;
+    background: linear-gradient(90deg, #141d2be8, #17293add), url('/assets/tiles/game_bg.webp') center 22% / cover no-repeat;
+    box-shadow: 0 6px 20px #061b29a6;
+}
+
+.game-prototype .game-brand-logo {
+    width: min(100%, 250px);
+    filter: drop-shadow(2px 3px 0 #08131c);
+}
+
+.game-prototype .wood-sign {
+    color: #f8f4e6;
+    border: 1px solid #5f8390;
+    border-radius: 10px;
+    background: linear-gradient(120deg, #253f52, #1a3144);
+    box-shadow: inset 0 1px #ffffff26, 0 5px 14px #06172480;
+    text-shadow: none;
+}
+.game-prototype .wood-sign::before,
+.game-prototype .wood-sign::after { display: none; }
+
+.game-prototype .level-title { padding: 7px 14px 8px; }
+.game-prototype .level-title__eyebrow {
+    display: block;
+    margin-bottom: 3px;
+    color: #f8c56b;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .16em;
+}
+.game-prototype .level-title h1 {
+    font-size: clamp(20px, 1.5vw, 27px);
+    line-height: 1.1;
+}
+.game-prototype .forest-message {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-height: 54px;
+    padding: 7px 12px;
+    color: #f5f4e9;
+    font-size: 15px;
+    line-height: 1.25;
+}
+.game-prototype .forest-message__label {
+    color: #a8d9ca;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .12em;
+}
+.game-prototype .forest-message strong { font-size: 15px; }
+
+.game-prototype .game-layout { gap: 14px; padding-top: 14px; }
+.game-prototype .wood-frame {
+    border: 1px solid #5a8490;
+    border-radius: 14px;
+    box-shadow: 0 14px 30px #031c2d9c, inset 0 0 0 1px #ffffff1c;
+}
+.game-prototype .game-area { border-color: #67a191; background: #183f45; }
+.game-prototype .game-panel {
+    padding: 12px;
+    background: linear-gradient(145deg, #19394ac4, #0e2b3bd6), url('/assets/tiles/game_bg.webp') 18% 56% / cover no-repeat;
+    scrollbar-color: #648695 #1a3748;
+}
+.game-prototype .mission-card {
+    border: 1px solid #cbd9ce;
+    border-radius: 10px;
+    background: #faf7ec;
+    box-shadow: 0 3px 10px #061e2b4a;
+}
+.game-prototype .mission-card::before,
+.game-prototype .mission-card::after { display: none; }
+.game-prototype .hud-counter {
+    color: #fff8e9;
+    border: 1px solid #a2c1ad;
+    border-radius: 9px;
+    background: #142e3edb;
+    box-shadow: 0 5px 15px #071e2ba6, inset 0 1px #ffffff38;
+    text-shadow: 1px 2px #071b26;
+}
+
+@media (max-width: 900px) {
+    .game-prototype.game-mobile .prototype-page { height: auto; padding: 0 10px 20px; }
+    .game-prototype.game-mobile .game-header { margin: 0 -10px 8px; padding: 12px; }
+    .game-prototype.game-mobile .game-layout { padding-top: 4px; }
+}
+
 /* Peta petualangan pada menu utama. */
 .main-menu-page {
     min-width: 320px;

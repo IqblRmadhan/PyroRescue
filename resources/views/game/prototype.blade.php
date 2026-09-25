@@ -63,11 +63,13 @@
             <a href="{{ route('main-menu') }}" class="game-brand-logo" aria-label="Kembali ke menu utama PyroRescue"></a>
 
             <div class="level-title wood-sign">
-                <h1>Level 1 - Tepi Sungai Terbakar</h1>
+                <span class="level-title__eyebrow">MISI PENYELAMATAN · LEVEL 01</span>
+                <h1>Tepi Sungai Terbakar</h1>
             </div>
 
             <div class="forest-message wood-sign">
-                <span>Belajar Python<br>Level 1 · Variabel</span>
+                <span class="forest-message__label">MODUL BELAJAR</span>
+                <strong>Python · Variabel</strong>
             </div>
         </header>
 
