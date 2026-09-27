@@ -48,11 +48,11 @@ export function createLevel1Atmosphere(scene) {
     createTexture(scene, 'level1-smoke', 64, 64, [[32, 32, 31]]);
 
     const clouds = [
-        [330, 720, 1.05], [530, 825, 1.2], [610, 1035, 0.95],
-        [1050, 690, 1.15], [1370, 390, 1.05], [440, 230, 1.2],
-        [1250, 990, 1.1],
+        [120, 70, 1.05], [510, 155, 1.2],
+        [940, 85, 0.95], [1350, 175, 1.1],
     ].map(([x, y, scale], index) => ({
-        image: scene.add.image(x, y, 'level1-cloud').setScale(scale).setAlpha(0.48).setDepth(13),
+        // Awan hanya melintas di bagian atas map, di belakang karakter dan penanda misi.
+        image: scene.add.image(x, y, 'level1-cloud').setScale(scale).setAlpha(0.38).setDepth(5.5),
         shadow: scene.add.image(x + 38, y + 52, 'level1-cloud')
             .setScale(scale).setTint(0x24444b).setAlpha(0.12).setDepth(4),
         speed: 18 + index * 1.5,

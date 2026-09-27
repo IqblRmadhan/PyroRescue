@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
+import { enableMapCameraControls } from '../MapCameraControls.js';
 import {
     firefighterAnimations,
     level1Assets,
@@ -308,6 +309,7 @@ export default class Level1Scene extends Phaser.Scene {
         camera.setRoundPixels(true);
         camera.startFollow(this.player, true, 0.09, 0.09);
         camera.centerOn(this.player.x, this.player.y);
+        enableMapCameraControls(this, level1Map);
     }
 
     setWater(amount) {
@@ -331,6 +333,7 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     async runCommands(commands) {
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         this.setPlayerIdle(this.direction);
 
         for (const command of commands) {
@@ -644,6 +647,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.pump.stop().setFrame('idle');
         this.npcPost1.play('npc-post1-idle', true);
         this.npcPost2.play('npc-post2-idle', true);
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         this.cameras.main.centerOn(checkpointPosition.x, checkpointPosition.y);
         await this.playPlayerAnimation('player-spawn');
         this.setPlayerIdle(this.direction);

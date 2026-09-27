@@ -2,21 +2,30 @@
 
 ## Implementasi ruang belajar Level 1
 
-Halaman game memakai lebar viewport, dengan peta di kiri dan panel belajar di
-kanan. Pada layar lebar, editor dan materi berdampingan di dalam panel kanan;
-pada layar kecil, panel disusun vertikal dan dapat digulir. Ukuran teks tidak
-lagi bergantung pada skala stage tetap.
+Halaman game memakai peta di kiri serta target misi, PyroPad, dan tombol aksi
+di kanan. Materi, kamus perintah, penjelasan kode, dan tips berada dalam area
+lebar di bawah kedua panel. Halaman digulir secara utuh agar materi tidak
+terpotong dalam panel sempit. Pada layar kecil, map, PyroPad, dan panduan
+disusun vertikal. Tautan di bawah tombol aksi menuju panduan; tautan di panduan
+mengembalikan fokus ke PyroPad.
 
 - `Level1Learning.js` menjelaskan setiap baris di PyroPad tanpa menjalankan kode.
   Materi mengikuti challenge: membuat variabel, mengganti nilai, lalu memakai nilainya.
 - Nilai `isi_air` pada panel belajar mengikuti state Phaser setelah aksi berlangsung.
-- Kamus perintah selalu tersedia di bawah tombol Run/Ulangi, dengan penjelasan
+- Kamus perintah tersedia di area panduan di bawah map dan PyroPad, dengan penjelasan
   melalui hover, fokus keyboard, atau sentuhan.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
 - `air_pos_2 = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
   adalah aturan game, bukan perilaku assignment Python.
 - Tombol lampu di sisi kanan peta membuka dan menutup panduan challenge.
+- Cubit touchpad (atau Ctrl + scroll) di peta untuk zoom. Geser dua jari atau
+  klik dan seret untuk menggeser kamera tanpa tombol tambahan. Zoom keluar
+  dibatasi hingga seluruh map terlihat; zoom masuk maksimal 2,5 kali.
+- Navigasi manual menghentikan kamera mengikuti pemain. Run atau Reset
+  mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
+- Awan bergerak hanya di bagian atas dunia map dan digambar di belakang
+  karakter serta penanda misi agar tidak menutupinya.
 
 Contoh prototype awal di bawah tetap menjadi referensi dasar integrasi Phaser.
 

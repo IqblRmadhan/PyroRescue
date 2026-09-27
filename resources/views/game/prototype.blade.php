@@ -6,7 +6,7 @@
     <title>PyroRescue - Level 1: Tepi Sungai Terbakar</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="game-prototype" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
+<body class="game-prototype game-workspace" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" data-game-page="prototype-page">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level 1</h1>
 
@@ -87,7 +87,7 @@
                 </div>
 
                 <div id="game-container" role="img"
-                     aria-label="Peta hutan Kalimantan berukuran 1600 kali 1200 dengan kamera yang mengikuti pemadam"
+                     aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
                      data-asset-base-url="{{ asset('assets') }}"></div>
 
                 <div id="game-hint" class="game-hint">
@@ -108,7 +108,7 @@
                 </div>
             </section>
 
-            <aside class="game-panel wood-frame">
+            <aside class="game-panel wood-frame" aria-label="Misi dan editor PyroPad">
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
@@ -159,60 +159,84 @@
                         </button>
                     </div>
 
-                    <section class="command-reference" aria-labelledby="command-reference-title">
-                        <h3 id="command-reference-title">Kamus perintah</h3>
-                        <p>Arahkan kursor atau pilih perintah untuk membaca penjelasannya.</p>
-                        <div id="command-reference-list" class="command-reference-list"></div>
-                    <aside id="code-suggestion-help" class="code-suggestion-help" aria-label="Penjelasan perintah" aria-live="polite" hidden>
-                        <div class="code-suggestion-help__heading">
-                            <code data-help-command></code>
-                            <span data-help-kind></span>
-                        </div>
-                        <p data-help-description></p>
-                        <div class="code-suggestion-help__example">
-                            <strong>Contoh</strong>
-                            <code data-help-example></code>
-                        </div>
-                        <div class="code-suggestion-help__parameter">
-                            <strong>Parameter</strong>
-                            <p><code data-help-parameter></code> <span data-help-parameter-description></span></p>
-                        </div>
-                        <small>Contoh dibaca dari atas ke bawah. Tulis satu perintah di setiap baris PyroPad.</small>
-                    </aside>
-                    </section>
+                    <a class="game-guide-link" href="#learning-panel">Baca materi &amp; tips bermain <span aria-hidden="true">↓</span></a>
+
                 </div>
-
-                <aside id="learning-panel" class="learning-panel" aria-label="Panduan belajar Python">
-                    <section class="learning-card">
-                        <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
-                        <h2>Variabel &amp; persediaan air</h2>
-                        <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
-                        <ol class="learning-steps" aria-label="Tahapan materi">
-                            <li data-lesson-step="1">1. Simpan</li>
-                            <li data-lesson-step="2">2. Ubah</li>
-                            <li data-lesson-step="3">3. Gunakan</li>
-                        </ol>
-                        <h3 id="lesson-title"></h3>
-                        <code id="lesson-code" class="lesson-code"></code>
-                        <p id="lesson-explanation"></p>
-                        <p id="lesson-effect" class="lesson-effect"></p>
-                        <p class="learning-note">Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan.</p>
-                    </section>
-
-                    <section class="learning-card variable-watch" aria-labelledby="variable-watch-title">
-                        <h3 id="variable-watch-title">Isi tangki sekarang</h3>
-                        <div class="variable-readout"><code>isi_air</code><span>=</span><output id="learning-water">0</output><small>unit air</small></div>
-                        <p id="learning-water-note">Amati nilainya setelah menjalankan kode.</p>
-                    </section>
-
-                    <section class="learning-card" aria-labelledby="code-explanation-title">
-                        <h3 id="code-explanation-title">Arti kode kamu</h3>
-                        <p>Penjelasan mengikuti kode yang kamu ketik. Gerakan dan perubahan air terjadi setelah Run Code.</p>
-                        <ol id="code-explanations" class="code-explanations"></ol>
-                        <p id="code-explanations-empty">Mulai dengan perintah gerak, misalnya <code>atas(1)</code>. Angka dalam kurung menentukan jumlah petak.</p>
-                    </section>
-                </aside>
             </aside>
+
+            <section id="learning-panel" class="learning-panel game-study wood-frame" aria-labelledby="study-title">
+                <header class="game-study__heading">
+                    <div>
+                        <span class="game-study__eyebrow">BACA, COBA, LALU AMATI</span>
+                        <h2 id="study-title">Panduan belajar &amp; bermain</h2>
+                        <p>Pelajari materinya di sini, lalu terapkan di PyroPad. Penjelasan mengikuti challenge yang sedang kamu mainkan.</p>
+                    </div>
+                    <a href="#code-editor" class="game-study__return">Kembali ke PyroPad ↑</a>
+                </header>
+                <ol class="game-study__flow" aria-label="Cara memainkan misi">
+                    <li><span>01</span><div><strong>Amati map dan target</strong><p>Temukan penanda merah dan hitung petak jalan menuju tujuan.</p></div></li>
+                    <li><span>02</span><div><strong>Susun kode di PyroPad</strong><p>Tulis perintah gerak berurutan, lalu kode variabel sesuai misi.</p></div></li>
+                    <li><span>03</span><div><strong>Jalankan dan periksa</strong><p>Tekan Run Code, amati gerakan, isi tangki, dan target yang tercentang.</p></div></li>
+                </ol>
+                <section class="learning-card">
+                    <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
+                    <h2>Variabel &amp; persediaan air</h2>
+                    <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
+                    <ol class="learning-steps" aria-label="Tahapan materi">
+                        <li data-lesson-step="1">1. Simpan</li>
+                        <li data-lesson-step="2">2. Ubah</li>
+                        <li data-lesson-step="3">3. Gunakan</li>
+                    </ol>
+                    <h3 id="lesson-title"></h3>
+                    <code id="lesson-code" class="lesson-code"></code>
+                    <p id="lesson-explanation"></p>
+                    <p id="lesson-effect" class="lesson-effect"></p>
+                    <p class="learning-note">Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan.</p>
+                </section>
+
+                <section class="command-reference learning-card" aria-labelledby="command-reference-title">
+                    <h3 id="command-reference-title">Kamus perintah</h3>
+                    <p>Arahkan kursor atau pilih perintah untuk membaca penjelasannya.</p>
+                    <div id="command-reference-list" class="command-reference-list"></div>
+                <aside id="code-suggestion-help" class="code-suggestion-help" aria-label="Penjelasan perintah" aria-live="polite" hidden>
+                    <div class="code-suggestion-help__heading">
+                        <code data-help-command></code>
+                        <span data-help-kind></span>
+                    </div>
+                    <p data-help-description></p>
+                    <div class="code-suggestion-help__example">
+                        <strong>Contoh</strong>
+                        <code data-help-example></code>
+                    </div>
+                    <div class="code-suggestion-help__parameter">
+                        <strong>Parameter</strong>
+                        <p><code data-help-parameter></code> <span data-help-parameter-description></span></p>
+                    </div>
+                    <small>Contoh dibaca dari atas ke bawah. Tulis satu perintah di setiap baris PyroPad.</small>
+                </aside>
+                </section>
+
+                <section class="learning-card variable-watch" aria-labelledby="variable-watch-title">
+                    <h3 id="variable-watch-title">Isi tangki sekarang</h3>
+                    <div class="variable-readout"><code>isi_air</code><span>=</span><output id="learning-water">0</output><small>unit air</small></div>
+                    <p id="learning-water-note">Amati nilainya setelah menjalankan kode.</p>
+                </section>
+
+                <section class="learning-card" aria-labelledby="code-explanation-title">
+                    <h3 id="code-explanation-title">Arti kode kamu</h3>
+                    <p>Penjelasan mengikuti kode yang kamu ketik. Gerakan dan perubahan air terjadi setelah Run Code.</p>
+                    <ol id="code-explanations" class="code-explanations"></ol>
+                    <p id="code-explanations-empty">Mulai dengan perintah gerak, misalnya <code>atas(1)</code>. Angka dalam kurung menentukan jumlah petak.</p>
+                </section>
+                <section class="learning-card game-study__tips" aria-labelledby="study-tips-title">
+                    <h3 id="study-tips-title">Tips agar misi lebih mudah</h3>
+                    <ul>
+                        <li><strong>Gerak lewat jalan tanah.</strong> Angka pada <code>atas(2)</code> berarti bergerak dua petak ke atas.</li>
+                        <li><strong>Datangi penanda dahulu.</strong> Jalankan kode variabel setelah pemadam sampai di lokasi yang diminta.</li>
+                        <li><strong>Baca hasil setiap percobaan.</strong> Perhatikan pesan di map. Gunakan Hint saat membutuhkan petunjuk berikutnya.</li>
+                    </ul>
+                </section>
+            </section>
         </main>
 
         <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
