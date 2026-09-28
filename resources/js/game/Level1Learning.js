@@ -10,14 +10,14 @@ export const variableLessons = {
     2: {
         title: '2. Mengubah nilai variabel',
         code: 'isi_air = 5',
-        explanation: 'Nama variabelnya tetap isi_air, tetapi nilai lama 3 diganti menjadi 5. Assignment ini menetapkan jumlah akhir, bukan menambahkan 5.',
-        effect: 'Di game: Pos 1 memberikan 2 unit bantuan. Muatan 3 unit menjadi 5 unit. Jalankan assignment di penanda Pos 1.',
+        explanation: 'Dari pompa kamu membawa 3 unit. Penjaga Pos 1 memberi 2 unit lagi, jadi 3 + 2 = 5 unit. Tulis isi_air = 5 untuk menyimpan jumlah akhir. Tanda = mengganti nilai lama 3 dengan 5; angka 5 bukan air tambahan.',
+        effect: 'Di game: berdiri di penanda Pos 1 saat menjalankan isi_air = 5. Kamu akan melihat indikator tangki naik dari 3 ke 5.',
     },
     3: {
         title: '3. Menggunakan nilai variabel',
         code: 'air_pos_2 = isi_air',
-        explanation: 'Baca nilai isi_air di sebelah kanan, lalu simpan nilai itu ke air_pos_2. Jika isi_air bernilai 5, air_pos_2 menerima nilai 5.',
-        effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air. Setelah penyerahan, game mengosongkan isi_air menjadi 0. Dalam Python biasa, assignment saja tidak mengosongkan variabel asal.',
+        explanation: 'Nilai isi_air sekarang 5, hasil 3 unit dari pompa + 2 unit dari Pos 1. Baris ini membaca nilai 5 dari isi_air dan menyimpannya ke air_pos_2.',
+        effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air, lalu berjalan ke petak FINISH. Game mengosongkan isi_air setelah penyerahan; dalam Python biasa, assignment tidak mengosongkan variabel asal.',
     },
 };
 
@@ -51,7 +51,7 @@ export function explainLevel1Code(code, challengeNumber = 1) {
             line.text = 'Membaca nilai isi_air dan menyimpannya ke air_pos_2. Di penanda Pos 2, game menyerahkan air, lalu mengosongkan tangki pemain. Pengosongan ini adalah aturan game.';
         } else {
             const amount = validation.actions.water;
-            line.text = `Menyimpan bilangan bulat ${amount} ke variabel isi_air. ${challengeNumber === 1 ? 'Di penanda pompa, tangki diisi sampai jumlah tersebut.' : 'Di penanda Pos 1, nilai sebelumnya diganti dengan jumlah ini, bukan ditambah.'}`;
+            line.text = `Menyimpan bilangan bulat ${amount} ke variabel isi_air. ${challengeNumber === 1 ? 'Di penanda pompa, tangki diisi sampai jumlah tersebut.' : 'Di Pos 1, 3 unit bawaan + 2 unit bantuan = 5 unit. Nilai lama 3 diganti dengan jumlah akhir, bukan ditambah 5 lagi.'}`;
             if (amount !== requiredWater) {
                 line.text += ` Target challenge ini adalah ${requiredWater} unit.`;
             }

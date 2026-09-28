@@ -50,6 +50,10 @@ Efek:
 Indikator air berubah dari 3 menjadi 5 setelah pemain menerima 2 unit bantuan dari Pos 1.
 ```
 
+Penjelasan untuk pemain: `isi_air = 3` adalah muatan dari pompa. Pos 1 memberi
+2 unit lagi, sehingga `3 + 2 = 5`. Karena assignment mengganti nilai variabel,
+`isi_air = 5` menyimpan **jumlah akhir**, bukan menambahkan 5 unit baru.
+
 ### Challenge 3 — Memasok Air ke Pos 2
 
 Pemain pergi ke Pos 2 dan memberikan seluruh muatan kepada penjaga pos.
@@ -61,8 +65,13 @@ air_pos_2 = isi_air
 Efek:
 
 ```text
-Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain menjadi 0 dan Level 1 selesai.
+Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain menjadi 0.
 ```
+
+Pemain kemudian mengikuti jalan ke kanan sampai petak **FINISH** di ujung map.
+Setelah ketiga challenge selesai dan petak itu dicapai, layar hasil Level 1
+menampilkan tiga bintang. Pengosongan `isi_air` adalah aturan game saat air
+diserahkan; assignment Python biasa hanya menyalin nilai.
 
 ---
 

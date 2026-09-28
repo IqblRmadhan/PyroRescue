@@ -26,6 +26,8 @@ mengembalikan fokus ke PyroPad.
   mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
 - Awan bergerak hanya di bagian atas dunia map dan digambar di belakang
   karakter serta penanda misi agar tidak menutupinya.
+- Map Level 1 berakhir pada petak FINISH setelah Pos 2. Setelah air diserahkan,
+  pemain berjalan ke petak itu untuk membuka layar hasil tiga bintang.
 
 Contoh prototype awal di bawah tetap menjadi referensi dasar integrasi Phaser.
 

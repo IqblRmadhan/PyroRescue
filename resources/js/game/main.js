@@ -25,11 +25,17 @@ const missionTargetCount = document.getElementById('mission-target-count');
 const missionTitle = document.getElementById('mission-title');
 const missionDescription = document.getElementById('mission-description');
 const targetList = document.getElementById('target-list');
+const levelResult = document.getElementById('level-result');
+const resultStars = document.getElementById('result-stars');
+const resultReplay = document.getElementById('result-replay');
+const prototypePage = document.getElementById('prototype-page');
 const defaultHint = 'Susun instruksi dari atas ke bawah.';
 let currentChallenge = 1;
 let hintIndex = 0;
 let latestState = {};
 let completedTargets = new Set();
+const completedChallenges = new Set();
+let levelCompleted = false;
 
 function updateLineNumbers() {
     const lineCount = editor.value.split('\n').length;
@@ -76,6 +82,10 @@ function isTargetComplete(targetKey, state) {
 
     if (targetKey === 'water') {
         return state.water === challengeDefinitions[currentChallenge].requiredWater;
+    }
+
+    if (targetKey === 'finish') {
+        return state.atFinish;
     }
 
     return targetKey === 'transfer'
@@ -145,11 +155,15 @@ function configureChallenge({ updateScene = true } = {}) {
 }
 
 function advanceChallenge(successMessage) {
+    completedChallenges.add(currentChallenge);
+
     if (currentChallenge === 3) {
-        showFeedback(
-            `${successMessage} Level 1 selesai! Kamu sudah membuat, mengubah, dan menggunakan nilai variabel.`,
-            'success',
-        );
+        levelCompleted = true;
+        hideFeedback();
+        resultStars.textContent = `${completedChallenges.size} / 3 bintang`;
+        levelResult.hidden = false;
+        prototypePage.inert = true;
+        resultReplay.focus();
         return;
     }
 
@@ -185,6 +199,8 @@ const autocomplete = new CodeAutocomplete(
 
 // 4. Validasi dahulu, jalankan aksi, lalu tampilkan hasilnya.
 async function runCode() {
+    if (levelCompleted) return;
+
     const definition = challengeDefinitions[currentChallenge];
     const result = validator.validateVariable(
         editor.value,
@@ -209,7 +225,7 @@ async function runCode() {
             showFeedback(outcome.message);
         }
     } finally {
-        setControlsDisabled(false);
+        setControlsDisabled(levelCompleted);
     }
 }
 
@@ -229,6 +245,8 @@ function toggleHint() {
 }
 
 async function resetChallenge() {
+    if (levelCompleted) return;
+
     setControlsDisabled(true);
     configureChallenge({ updateScene: false });
 
@@ -248,6 +266,7 @@ runButton.addEventListener('click', runCode);
 resetButton.addEventListener('click', resetChallenge);
 hintButton.addEventListener('click', toggleHint);
 feedbackOkButton.addEventListener('click', hideFeedback);
+resultReplay.addEventListener('click', () => window.location.reload());
 updateLineNumbers();
 
 const config = {

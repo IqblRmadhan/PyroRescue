@@ -63,7 +63,7 @@ export function createLevel1Atmosphere(scene) {
     // Dua sumber di lahan terbakar; satu kepulan kecil dari kendaraan pemadam.
     const sources = [
         { x: 1250, y: 292, rise: 125, drift: 38, scale: 1.3, alpha: 0.21 },
-        { x: 1380, y: 345, rise: 145, drift: 44, scale: 1.5, alpha: 0.18 },
+        { x: 1310, y: 345, rise: 145, drift: 24, scale: 1.3, alpha: 0.18 },
         { x: 83, y: 1045, rise: 70, drift: -25, scale: 0.65, alpha: 0.26 },
     ];
     const smoke = sources.flatMap((source) => (

@@ -45,7 +45,7 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
             kind: 'Assignment variabel',
             description: challengeNumber === 1
                 ? 'isi_air adalah nama variabel; tanda = menyimpan nilai angka di sebelah kanan. Di penanda pompa, kode ini mengisi tangki.'
-                : 'Mengganti nilai isi_air dengan jumlah akhir. isi_air = 5 mengganti nilai 3 menjadi 5, bukan menambahkan 5. Jalankan di penanda Pos 1.',
+                : 'Kamu membawa 3 unit dan Pos 1 memberi 2 unit: 3 + 2 = 5. isi_air = 5 menyimpan jumlah akhir dengan mengganti nilai lama 3, bukan menambah 5 lagi. Jalankan di penanda Pos 1.',
             example: `isi_air = ${requiredWater}`,
             parameter: 'angka',
             parameterDescription: 'Jumlah air yang diminta pada challenge saat ini.',

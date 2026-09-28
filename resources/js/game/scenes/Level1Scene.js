@@ -26,6 +26,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.challengeNumber = 1;
         this.requiredWater = 3;
         this.postWater = 0;
+        this.hasDeliveredWater = false;
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
@@ -90,7 +91,7 @@ export default class Level1Scene extends Phaser.Scene {
     drawTerrain() {
         this.add.image(0, 0, 'levelMapShadow')
             .setOrigin(0)
-            .setDisplaySize(level1Map.width, level1Map.height)
+            .setCrop(0, 0, level1Map.width, level1Map.height)
             .setDepth(0);
 
         this.waterLayer = this.add.tileSprite(
@@ -121,7 +122,9 @@ export default class Level1Scene extends Phaser.Scene {
         const sourceImage = this.textures.get('levelMap').getSourceImage();
         const canvasTexture = this.textures.createCanvas(textureKey, level1Map.width, level1Map.height);
         const context = canvasTexture.getContext();
-        context.drawImage(sourceImage, 0, 0, level1Map.width, level1Map.height);
+        // Potong gambar pada petak akhir, tanpa mengubah skala jalan dan objek.
+        context.drawImage(sourceImage, 0, 0, level1Map.width, level1Map.height,
+            0, 0, level1Map.width, level1Map.height);
 
         const imageData = context.getImageData(0, 0, level1Map.width, level1Map.height);
         const pixels = imageData.data;
@@ -300,6 +303,24 @@ export default class Level1Scene extends Phaser.Scene {
         ).setDepth(9);
         this.player = this.add.sprite(playerPosition.x, playerPosition.y, 'firefighterIdle', 'idle-north-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(10);
+
+        this.drawFinishSign();
+    }
+
+    drawFinishSign() {
+        const position = tileToWorld(level1Map.finish.column, level1Map.finish.row);
+        const sign = this.add.graphics();
+        sign.fillStyle(0x071e29, 0.42).fillEllipse(0, 4, 48, 16);
+        sign.fillStyle(0xf6ca69).fillCircle(0, 0, 15);
+        sign.fillStyle(0x153943).fillCircle(0, 0, 10);
+        sign.lineStyle(4, 0xf8e2a9).lineBetween(0, -8, 0, -66);
+        sign.fillStyle(0x1b503e).fillRoundedRect(-88, -78, 91, 32, 5);
+        sign.lineStyle(2, 0xffd277).strokeRoundedRect(-88, -78, 91, 32, 5);
+        const label = this.add.text(-81, -71, 'FINISH', {
+            fontFamily: 'monospace', fontSize: '16px', fontStyle: 'bold', color: '#fff8df',
+        });
+        this.finishSign = this.add.container(position.x, position.y, [sign, label])
+            .setDepth(11).setVisible(false);
     }
 
     configureCamera() {
@@ -329,6 +350,8 @@ export default class Level1Scene extends Phaser.Scene {
         const markerPosition = tileToWorld(target.column, target.row);
 
         this.actionMarker.setPosition(markerPosition.x, markerPosition.y);
+        this.finishSign.setVisible(challengeNumber === 3)
+            .setAlpha(this.hasDeliveredWater ? 1 : 0.72);
         this.publishState();
     }
 
@@ -379,10 +402,11 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
-        if (this.challengeNumber === 3 && this.postWater === this.requiredWater) {
+        if (this.challengeNumber === 3 && this.postWater === this.requiredWater
+            && isOnTile(this.playerColumn, this.playerRow, level1Map.finish)) {
             return {
                 missionSuccess: true,
-                message: `Berhasil! Penjaga Pos 2 menerima ${this.postWater} unit air.`,
+                message: `Berhasil! Pos 2 menerima ${this.postWater} unit air dan kamu mencapai FINISH.`,
             };
         }
 
@@ -403,6 +427,10 @@ export default class Level1Scene extends Phaser.Scene {
             }
 
             return `Bawa ${this.water} unit air ke Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.`;
+        }
+
+        if (this.postWater === this.requiredWater) {
+            return 'Air sudah diterima Pos 2. Ikuti jalan ke kanan sampai petak FINISH untuk menuntaskan Level 1.';
         }
 
         return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos_2 = isi_air.';
@@ -490,6 +518,8 @@ export default class Level1Scene extends Phaser.Scene {
         );
         this.postWater = this.water;
         this.water = 0;
+        this.hasDeliveredWater = true;
+        this.finishSign.setAlpha(1);
         this.publishState();
         this.setPlayerIdle(previousDirection);
 
@@ -572,6 +602,8 @@ export default class Level1Scene extends Phaser.Scene {
             atPump: isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction),
             atPost1: isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action),
             atPost2: isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action),
+            atFinish: isOnTile(this.playerColumn, this.playerRow, level1Map.finish)
+                && this.postWater === this.requiredWater,
         });
     }
 
@@ -643,6 +675,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.syncPlayerShadow();
         this.water = checkpoint.water;
         this.postWater = 0;
+        this.hasDeliveredWater = false;
         this.setChallenge(challengeNumber);
         this.pump.stop().setFrame('idle');
         this.npcPost1.play('npc-post1-idle', true);

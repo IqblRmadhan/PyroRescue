@@ -1,8 +1,9 @@
-const columns = 40;
+// Peta Level 1 berhenti setelah jalur dari Pos 2 menuju petak FINISH.
+const columns = 34;
 const rows = 30;
 
 // Collision tetap berupa grid sederhana, walaupun visual map memakai satu PNG.
-// Setiap garis di bawah mengikuti pusat petak jalan coklat pada map 40 x 30.
+// Setiap garis di bawah mengikuti pusat petak jalan coklat pada map 34 x 30.
 const walkableTiles = new Set();
 
 function addHorizontalRoad(row, startColumn, endColumn) {
@@ -26,13 +27,8 @@ addVerticalRoad(14, 18, 20);
 addHorizontalRoad(20, 14, 20);
 addVerticalRoad(20, 11, 20);
 
-// Jalan lurus di bagian atas yang menghubungkan kedua jembatan.
-addHorizontalRoad(11, 20, 34);
-
-// Jembatan kanan dan jalan menuju bagian bawah map.
-addVerticalRoad(34, 11, 24);
-addHorizontalRoad(24, 34, 37);
-addVerticalRoad(37, 24, 29);
+// Jalan setelah Pos 2 berakhir di petak FINISH.
+addHorizontalRoad(11, 20, 33);
 
 // Cabang kiri bawah sampai ujung jalan dekat kendaraan pemadam.
 addVerticalRoad(6, 18, 24);
@@ -49,7 +45,7 @@ const terrain = Array.from({ length: rows }, (_, row) => (
 ));
 
 export const level1Map = {
-    width: 1600,
+    width: columns * 40,
     height: 1200,
     columns,
     rows,
@@ -62,6 +58,7 @@ export const level1Map = {
     post1Npc: { column: 16, row: 19 },
     post2Action: { column: 24, row: 11 },
     post2Npc: { column: 26, row: 10 },
+    finish: { column: 33, row: 11 },
 };
 
 export function getTerrain(column, row) {

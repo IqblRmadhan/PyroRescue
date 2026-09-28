@@ -241,5 +241,22 @@
 
         <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
     </div>
+
+    <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
+        <div class="level-result__card">
+            <span class="level-result__eyebrow">MISI SELESAI</span>
+            <h2 id="result-title">Level 1 Berhasil!</h2>
+            <p class="level-result__subtitle">Air sampai di Pos 2 dan kamu mencapai petak FINISH.</p>
+            <div class="level-result__stars" aria-hidden="true">
+                <span></span><span></span><span></span>
+            </div>
+            <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
+            <p class="level-result__recap">Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2.</p>
+            <div class="level-result__actions">
+                <button id="result-replay" type="button">Main Lagi</button>
+                <a href="{{ route('main-menu') }}">Menu Utama</a>
+            </div>
+        </div>
+    </section>
 </body>
 </html>

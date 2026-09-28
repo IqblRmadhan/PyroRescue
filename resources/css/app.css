@@ -2227,6 +2227,69 @@
     .game-prototype.game-workspace .game-study .learning-card { padding: 18px; }
 }
 
+/* Hasil tiga challenge setelah pemain mencapai petak akhir Level 1. */
+.level-result[hidden] { display: none; }
+.level-result {
+    position: fixed;
+    z-index: 100;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    background: radial-gradient(circle at 50% 30%, #235063a8, #061923ed 70%);
+    backdrop-filter: blur(7px);
+}
+.level-result__card {
+    width: min(100%, 530px);
+    padding: clamp(25px, 5vw, 42px);
+    border: 3px solid #f3c978;
+    border-radius: 20px;
+    background: linear-gradient(160deg, #fff9e9, #f5e6c3);
+    box-shadow: 0 18px 0 #082b35, 0 34px 70px #001720bd, inset 0 0 0 5px #fff7df;
+    color: #17364a;
+    text-align: center;
+    animation: level-result-enter .45s ease-out both;
+}
+.level-result__eyebrow { color: #176c5b; font-size: 12px; font-weight: 900; letter-spacing: .18em; }
+.level-result__card h2 { margin: 10px 0 8px; font-size: clamp(27px, 5vw, 40px); line-height: 1.15; }
+.level-result__subtitle { margin: 0 auto; max-width: 400px; font-size: 16px; line-height: 1.55; }
+.level-result__stars { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 24px 0 6px; }
+.level-result__stars span {
+    width: clamp(56px, 15vw, 84px);
+    aspect-ratio: 1;
+    background: url('/assets/ui/star-filled.png') center / contain no-repeat;
+    filter: drop-shadow(0 5px 1px #965b22);
+    animation: level-result-star .55s backwards;
+}
+.level-result__stars span:nth-child(2) { width: clamp(68px, 18vw, 100px); animation-delay: .18s; }
+.level-result__stars span:nth-child(3) { animation-delay: .36s; }
+.level-result__score { display: block; color: #8a4c1a; font-size: 19px; }
+.level-result__recap { margin: 22px 0; padding: 16px; border-radius: 10px; background: #e8f1dc; font-size: 15px; line-height: 1.65; text-align: left; }
+.level-result__recap code { color: #145976; font-weight: 700; }
+.level-result__actions { display: flex; justify-content: center; gap: 12px; }
+.level-result__actions button, .level-result__actions a {
+    min-width: 140px;
+    padding: 12px 17px;
+    border: 2px solid #1b453d;
+    border-radius: 8px;
+    background: #188561;
+    box-shadow: 0 4px #0a3b34;
+    color: #fffdf3;
+    font: inherit;
+    font-weight: 800;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+.level-result__actions a { border-color: #75613e; background: #9a7142; box-shadow: 0 4px #594025; }
+.level-result__actions button:hover, .level-result__actions a:hover { filter: brightness(1.12); }
+.level-result__actions button:focus-visible, .level-result__actions a:focus-visible { outline: 3px solid #196cb4; outline-offset: 3px; }
+@keyframes level-result-enter { from { opacity: 0; transform: translateY(30px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes level-result-star { from { opacity: 0; transform: translateY(20px) scale(.4) rotate(-15deg); } to { opacity: 1; transform: translateY(0) scale(1) rotate(0); } }
+@media (max-width: 460px) { .level-result__actions { flex-direction: column; } .level-result__actions button, .level-result__actions a { width: 100%; } }
+@media (prefers-reduced-motion: reduce) { .level-result__card, .level-result__stars span { animation: none; } }
+
 /* Peta petualangan pada menu utama. */
 .main-menu-page {
     min-width: 320px;

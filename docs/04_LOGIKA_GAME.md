@@ -154,3 +154,7 @@ AND challenge 2 selesai
 AND challenge 3 selesai
 AND evaluasi selesai
 ```
+
+Pada Level 1 saat ini, evaluasi berupa pemeriksaan target ketiga challenge.
+Setelah air sampai di Pos 2, pemain mencapai petak FINISH dan menerima hasil
+tiga bintang. Belum ada soal evaluasi terpisah.
