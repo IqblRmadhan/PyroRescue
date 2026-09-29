@@ -6,6 +6,8 @@ import { enableMapCameraControls } from '../MapCameraControls.js';
 import challenges from '../Level2Challenges.js';
 
 const playerScale = 0.245;
+// Air sedikit tembus pandang agar bayangan tepi sungai di bawahnya tetap terlihat.
+const waterLayerAlpha = 0.72;
 
 export default class Level2Scene extends Phaser.Scene {
     constructor({ assetBaseUrl, onReady, onLoadError, onStateChange = () => {} }) {
@@ -78,9 +80,10 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawMap() {
+        // Susunan dari bawah ke atas: bayangan, air bergerak, lalu peta transparan.
         this.add.image(0, 0, 'level2Shadow').setOrigin(0).setDepth(0);
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
-            .setOrigin(0).setTileScale(0.45).setAlpha(0.84).setDepth(1);
+            .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
         const grid = this.add.graphics().setDepth(3).lineStyle(1, 0x17382d, 0.22);
         for (let x = 0; x <= 1600; x += 40) grid.lineBetween(x, 0, x, 1200);
