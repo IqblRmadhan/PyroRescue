@@ -80,8 +80,8 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawMap() {
-        // Susunan dari bawah ke atas: bayangan, air bergerak, lalu peta transparan.
-        this.add.image(0, 0, 'level2Shadow').setOrigin(0).setDepth(0);
+        // Geser bayangan sedikit agar tepiannya muncul di air, di bawah peta.
+        this.add.image(24, 24, 'level2Shadow').setOrigin(0).setDepth(0);
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
             .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
