@@ -1,4 +1,94 @@
+const reservedLoopNames = new Set((
+    'False None True and as assert async await break class continue def del elif else except finally '
+    + 'for from global if import in is lambda nonlocal not or pass raise return try while with yield '
+    + 'range semprot jumlah_semprot'
+).split(' '));
+
 export default class CodeValidator {
+    // Parser terbatas: hanya gerakan, jumlah_semprot, semprot(), dan satu tingkat for.
+    // Kode pemain diterjemahkan menjadi data aksi, tidak pernah dieksekusi sebagai Python.
+    validateLoop(code, requiredCount, challengeNumber = 1) {
+        const result = { syntaxValid: false, conceptValid: false, missionSuccess: false, message: '', actions: null };
+        const fail = (message) => ({ ...result, message });
+        const lines = code.replace(/\r\n?/g, '\n').split('\n')
+            .map((line) => line.split('#')[0].trimEnd())
+            .filter((line) => line.trim() !== '');
+        const commands = [];
+        const directions = { atas: 'north', bawah: 'south', kanan: 'east', kiri: 'west' };
+        let jumlahSemprot;
+        let loopSprays = 0;
+        let variableLoopSprays = 0;
+        let sprayCount = 0;
+
+        if (!lines.length) return fail('Tulis perintah gerak atau semprot() terlebih dahulu.');
+        if (lines.length > 120) return fail('Gunakan maksimal 120 baris perintah dalam satu Run.');
+
+        for (let index = 0; index < lines.length; index += 1) {
+            const line = lines[index];
+            if (/^\s/.test(line)) return fail('Indentasi hanya digunakan untuk semprot() di dalam for.');
+            const movement = line.match(/^(atas|bawah|kanan|kiri)\s*\(\s*(0|[1-9]\d*)\s*\)$/);
+            const assignment = line.match(/^jumlah_semprot\s*=\s*(0|[1-9]\d*)$/);
+            const loop = line.match(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\(\s*(jumlah_semprot|0|[1-9]\d*)\s*\)\s*:$/);
+
+            if (movement) {
+                const count = Number(movement[2]);
+                if (!Number.isSafeInteger(count) || count < 1 || commands.length + count > 120) {
+                    return fail('Jumlah langkah minimal 1, dengan maksimal 120 aksi dalam satu Run.');
+                }
+                commands.push(...Array.from({ length: count }, () => ({ type: 'move', direction: directions[movement[1]] })));
+            } else if (assignment) {
+                jumlahSemprot = Number(assignment[1]);
+                if (!Number.isSafeInteger(jumlahSemprot) || jumlahSemprot > 120) {
+                    return fail('jumlah_semprot harus berupa bilangan bulat dari 0 sampai 120.');
+                }
+            } else if (loop) {
+                if (reservedLoopNames.has(loop[1])) {
+                    return fail('Gunakan nama penghitung sederhana seperti i atau j.');
+                }
+                const usesVariable = loop[2] === 'jumlah_semprot';
+                const count = usesVariable ? jumlahSemprot : Number(loop[2]);
+                if (count === undefined) return fail('Isi jumlah_semprot sebelum menggunakannya di range().');
+                if (!Number.isSafeInteger(count) || count > 120) return fail('Gunakan maksimal 120 aksi dalam satu Run.');
+                let bodyCount = 0;
+                let indentation;
+                while (index + 1 < lines.length && /^\s/.test(lines[index + 1])) {
+                    const body = lines[++index];
+                    const spaces = body.match(/^[ \t]+/)[0];
+                    indentation ??= spaces;
+                    if (spaces !== indentation || !/^[ \t]+semprot\s*\(\s*\)$/.test(body)) {
+                        return fail('Blok for hanya berisi semprot() dengan indentasi yang sama.');
+                    }
+                    bodyCount += 1;
+                }
+                if (!bodyCount) return fail('Letakkan semprot() menjorok ke kanan di bawah for.');
+                const total = count * bodyCount;
+                if (commands.length + total > 120) return fail('Gunakan maksimal 120 aksi dalam satu Run.');
+                commands.push(...Array.from({ length: total }, () => ({ type: 'spray' })));
+                sprayCount += total;
+                loopSprays += total;
+                if (usesVariable) variableLoopSprays += total;
+            } else if (/^semprot\s*\(\s*\)$/.test(line)) {
+                commands.push({ type: 'spray' });
+                sprayCount += 1;
+            } else {
+                return fail('Gunakan perintah gerak, semprot(), jumlah_semprot = angka, atau for i in range(...): dengan titik dua.');
+            }
+            if (commands.length > 120) return fail('Gunakan maksimal 120 aksi dalam satu Run.');
+        }
+
+        result.syntaxValid = true;
+        result.conceptValid = sprayCount === 0 || challengeNumber === 1
+            || (challengeNumber === 2 ? loopSprays === sprayCount : variableLoopSprays === sprayCount);
+        result.missionSuccess = result.conceptValid && sprayCount === requiredCount;
+        result.actions = { commands, sprayCount };
+        result.message = !result.conceptValid
+            ? challengeNumber === 2
+                ? 'Gunakan for dan range() untuk mengulang semprot(), bukan menulisnya satu per satu.'
+                : 'Simpan jumlah_semprot, lalu gunakan for i in range(jumlah_semprot):.'
+            : 'Kode valid. Pemadam akan menjalankan gerakan dan semprotan sesuai urutan.';
+        return result;
+    }
+
     validateVariable(code, requiredWater, challengeNumber = 1) {
         const result = {
             syntaxValid: false,

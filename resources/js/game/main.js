@@ -1,14 +1,21 @@
 import Phaser from 'phaser';
-import CodeAutocomplete, { createLevel1Suggestions } from './CodeAutocomplete.js';
+import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import Level1Learning from './Level1Learning.js';
-import challengeDefinitions from './Level1Challenges.js';
+import level1Challenges from './Level1Challenges.js';
+import level2Challenges from './Level2Challenges.js';
+import Level2Scene from './scenes/Level2Scene.js';
+import Level2Learning from './Level2Learning.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
+const isLevel2 = document.getElementById('game-container').dataset.level === '2';
+const challengeDefinitions = isLevel2 ? level2Challenges : level1Challenges;
+const createSuggestions = isLevel2 ? createLevel2Suggestions : createLevel1Suggestions;
 const editor = document.getElementById('code-editor');
-const learning = new Level1Learning(editor, document.getElementById('learning-panel'));
+const Learning = isLevel2 ? Level2Learning : Level1Learning;
+const learning = new Learning(editor, document.getElementById('learning-panel'));
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
@@ -72,6 +79,10 @@ function hideHint() {
 
 // 2. Cocokkan keadaan game dengan target, lalu perbarui panel misi.
 function isTargetComplete(targetKey, state) {
+    if (isLevel2) {
+        return targetKey === 'location' ? state.atFire
+            : targetKey === 'fire' ? state.fireOut : targetKey === 'finish' && state.atFinish;
+    }
     if (targetKey === 'location') {
         if (currentChallenge === 1) {
             return state.atPump;
@@ -96,8 +107,9 @@ function renderMissionState(state = {}) {
     latestState = { ...latestState, ...state };
     learning.renderState(latestState);
 
-    if (Number.isFinite(latestState.water)) {
-        waterCount.textContent = latestState.water;
+    const counter = isLevel2 ? latestState.sprays : latestState.water;
+    if (Number.isFinite(counter)) {
+        waterCount.textContent = counter;
     }
 
     for (const target of challengeDefinitions[currentChallenge].targets) {
@@ -144,7 +156,7 @@ function configureChallenge({ updateScene = true } = {}) {
     renderTargets();
     learning.setChallenge(currentChallenge);
     missionStars.textContent = '0';
-    autocomplete.setSuggestions(createLevel1Suggestions(
+    autocomplete.setSuggestions(createSuggestions(
         definition.requiredWater,
         currentChallenge,
     ));
@@ -177,12 +189,15 @@ function advanceChallenge(successMessage) {
 }
 
 // 3. Hubungkan panel HTML dengan scene Phaser dan bantuan penulisan kode.
-const scene = new Level1Scene({
+const Scene = isLevel2 ? Level2Scene : Level1Scene;
+const scene = new Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
     onReady() {
         configureChallenge();
         setControlsDisabled(false);
-        showFeedback('Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
+        showFeedback(isLevel2
+            ? 'Ikuti jalan ke penanda C1. Satu semprot() berarti satu aksi penyemprotan.'
+            : 'Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
     },
     onLoadError() {
         showFeedback('Aset game gagal dimuat. Muat ulang halaman untuk mencoba lagi.', 'error');
@@ -192,7 +207,7 @@ const scene = new Level1Scene({
 const autocomplete = new CodeAutocomplete(
     editor,
     document.getElementById('code-suggestions'),
-    createLevel1Suggestions(3, 1),
+    createSuggestions(challengeDefinitions[1].requiredWater, 1),
     document.getElementById('code-suggestion-help'),
     document.getElementById('command-reference-list'),
 );
@@ -202,7 +217,7 @@ async function runCode() {
     if (levelCompleted) return;
 
     const definition = challengeDefinitions[currentChallenge];
-    const result = validator.validateVariable(
+    const result = validator[isLevel2 ? 'validateLoop' : 'validateVariable'](
         editor.value,
         definition.requiredWater,
         currentChallenge,

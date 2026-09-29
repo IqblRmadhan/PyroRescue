@@ -27,4 +27,5 @@ Route::middleware('player')->group(function () {
         );
     })->name('module.download');
     Route::view('/game/1', 'game.prototype')->name('game.level1');
+    Route::view('/game/2', 'game.prototype', ['levelNumber' => 2])->name('game.level2');
 });

@@ -86,24 +86,28 @@ Pemain mampu menggunakan `for` dan `range()` untuk menjalankan aksi berulang ses
 ## Misi
 Memadamkan beberapa titik api dengan jumlah penyemprotan sesuai kebutuhan.
 
-### Challenge 1 — Kenali Perulangan
+### Challenge 1 — Mengenal Semprotan (area tengah)
+
+```python
+semprot()
+semprot()
+```
+
+Api membutuhkan **2 semprotan**. Gunakan sprite `LEVEL2-C1.png`.
+
+### Challenge 2 — Mengulang Semprotan (kanan atas)
 
 ```python
 for i in range(3):
     semprot()
 ```
 
-### Challenge 2 — Menentukan Jumlah Iterasi
+Api membutuhkan **3 semprotan**, dengan `for/range`. Gunakan sprite `LEVEL2-C2.png`.
+
+### Challenge 3 — Variabel + Perulangan (kanan bawah)
 
 ```python
-for i in range(2):
-    semprot()
-```
-
-### Challenge 3 — Variabel + Perulangan
-
-```python
-jumlah_semprot = 3
+jumlah_semprot = 1
 
 for i in range(jumlah_semprot):
     semprot()
@@ -111,7 +115,20 @@ for i in range(jumlah_semprot):
 
 ### Evaluasi
 
-Pemain menghadapi titik api baru dan menentukan jumlah iterasi sendiri.
+Api ketiga membutuhkan **1 semprotan** dan memakai sprite `LEVEL2-C3.png`.
+Setelah ketiga api padam, pemain mengikuti jalan bawah sampai petak FINISH
+untuk menerima hasil tiga bintang. Belum ada titik api evaluasi keempat.
+
+Nomor file sprite mengikuti urutan challenge: C1 di tengah = 2 semprotan,
+C2 di kanan atas = 3 semprotan, dan C3 di kanan bawah = 1 semprotan.
+
+Gerakan memakai `atas(n)`, `bawah(n)`, `kanan(n)`, dan `kiri(n)` seperti Level 1.
+Semprotan hanya bekerja pada penanda api aktif. Semprotan yang kurang tetap
+mengurangi kebutuhan api; Run berikutnya melanjutkan dari keadaan itu. Jumlah
+semprotan yang melebihi sisa kebutuhan ditolak sebelum aksi berjalan. Reset
+mengembalikan posisi dan api challenge aktif ke checkpoint, sementara api
+challenge sebelumnya tetap padam. C2 harus memakai loop, sedangkan C3 harus
+memakai `jumlah_semprot` dalam `range()` pada setiap Run yang menyemprot.
 
 ---
 

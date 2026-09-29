@@ -53,6 +53,37 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
     ];
 }
 
+export function createLevel2Suggestions(requiredCount, challengeNumber) {
+    const movements = createLevel1Suggestions().slice(0, 4);
+    return [
+        ...movements,
+        {
+            label: 'semprot()', value: 'semprot()', selectionStart: 9, selectionLength: 0,
+            kind: 'Perintah game', description: 'Menyemprot api satu kali dari penanda merah.',
+            example: 'semprot()', parameter: 'tanpa argumen',
+            parameterDescription: 'Untuk mengulang semprotan, gunakan for dan range().',
+        },
+        {
+            label: 'jumlah_semprot = angka', value: `jumlah_semprot = ${requiredCount}`,
+            selectionStart: 16, selectionLength: String(requiredCount).length,
+            kind: 'Assignment variabel', description: 'Menyimpan banyaknya iterasi sebelum menjalankan perulangan.',
+            example: `jumlah_semprot = ${requiredCount}`, parameter: 'angka',
+            parameterDescription: 'Jumlah semprotan yang masih dibutuhkan api.',
+        },
+        {
+            label: 'for i in range(...):',
+            value: `for i in range(${challengeNumber === 3 ? 'jumlah_semprot' : requiredCount}):\n    semprot()`,
+            selectionStart: 15, selectionLength: challengeNumber === 3 ? 13 : String(requiredCount).length,
+            kind: 'Perulangan Python', description: 'Mengulang semprot() di dalam blok. Empat spasi menandai indentasi.',
+            example: challengeNumber === 3
+                ? `jumlah_semprot = ${requiredCount}\nfor i in range(jumlah_semprot):\n    semprot()`
+                : `for i in range(${requiredCount}):\n    semprot()`,
+            parameter: 'range(n)',
+            parameterDescription: 'n menentukan banyaknya iterasi; dapat berupa angka atau jumlah_semprot.',
+        },
+    ];
+}
+
 // Ambil baris tempat kursor berada, tanpa menghapus spasi di awal baris.
 export function getCompletionContext(value, caretPosition) {
     const lineStart = value.lastIndexOf('\n', caretPosition - 1) + 1;

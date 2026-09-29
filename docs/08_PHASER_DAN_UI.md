@@ -29,6 +29,25 @@ mengembalikan fokus ke PyroPad.
 - Map Level 1 berakhir pada petak FINISH setelah Pos 2. Setelah air diserahkan,
   pemain berjalan ke petak itu untuk membuka layar hasil tiga bintang.
 
+## Implementasi Level 2
+
+- `/game/2` memakai layout PyroPad yang sama, dengan materi `semprot()` dan
+  `for/range`. Level tersedia dari menu utama dan hasil Level 1.
+- `Level2Map.js` mengikuti jalan pada `level2-map.png` berukuran 1600 × 1200.
+  Tiga titik kebakaran berada di tengah, kanan atas, dan kanan bawah.
+- `Level2Assets.js` membaca setiap sprite api sebagai lima frame 150 × 150:
+  empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
+- `Level2Challenges.js` menyimpan jumlah semprotan, sprite, materi, dan hint.
+  Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (3 semprotan),
+  dan C3 kanan bawah (1 semprotan).
+- `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. HUD
+  menampilkan jumlah semprotan pada api aktif; FINISH menyelesaikan level
+  hanya setelah api ketiga padam.
+- Validator mendukung satu tingkat loop berisi `semprot()`, dengan maksimal
+  120 aksi per Run. Python pemain tidak dieksekusi oleh server atau shell.
+- Progress masih mengikuti prototype Level 1: state berada dalam halaman,
+  belum disimpan ke database; memuat ulang halaman mengulang level.
+
 Contoh prototype awal di bawah tetap menjadi referensi dasar integrasi Phaser.
 
 ## Instalasi Phaser

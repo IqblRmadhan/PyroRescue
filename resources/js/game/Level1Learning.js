@@ -61,16 +61,18 @@ export function explainLevel1Code(code, challengeNumber = 1) {
 }
 
 export default class Level1Learning {
-    constructor(editor, root) {
+    constructor(editor, root, { lessons = variableLessons, explainCode = explainLevel1Code } = {}) {
         this.editor = editor;
         this.root = root;
         this.challengeNumber = 1;
+        this.lessons = lessons;
+        this.explainCode = explainCode;
         editor.addEventListener('input', () => this.renderCode());
     }
 
     setChallenge(challengeNumber) {
         this.challengeNumber = challengeNumber;
-        const lesson = variableLessons[challengeNumber];
+        const lesson = this.lessons[challengeNumber];
         this.root.querySelector('#lesson-title').textContent = lesson.title;
         this.root.querySelector('#lesson-code').textContent = lesson.code;
         this.root.querySelector('#lesson-explanation').textContent = lesson.explanation;
@@ -95,7 +97,7 @@ export default class Level1Learning {
     }
 
     renderCode() {
-        const lines = explainLevel1Code(this.editor.value, this.challengeNumber);
+        const lines = this.explainCode(this.editor.value, this.challengeNumber);
         const items = lines.map((line) => {
             const item = document.createElement('li');
             item.value = line.number;

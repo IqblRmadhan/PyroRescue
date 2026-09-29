@@ -1,12 +1,18 @@
+@php
+    $levelNumber = $levelNumber ?? 1;
+    $isLevel2 = $levelNumber === 2;
+    $levelTitle = $isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar';
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>PyroRescue - Level 1: Tepi Sungai Terbakar</title>
+    <title>PyroRescue - Level {{ $levelNumber }}: {{ $levelTitle }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="game-prototype game-workspace" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
+    @unless($isLevel2)
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" data-game-page="prototype-page">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level 1</h1>
 
@@ -58,25 +64,27 @@
         </div>
     </section>
 
-    <div id="prototype-page" class="prototype-page" inert>
+    @endunless
+
+    <div id="prototype-page" class="prototype-page" @if(!$isLevel2) inert @endif>
         <header class="game-header">
             <a href="{{ route('main-menu') }}" class="game-brand-logo" aria-label="Kembali ke menu utama PyroRescue"></a>
 
             <div class="level-title wood-sign">
-                <span class="level-title__eyebrow">MISI PENYELAMATAN · LEVEL 01</span>
-                <h1>Tepi Sungai Terbakar</h1>
+                <span class="level-title__eyebrow">MISI PENYELAMATAN · LEVEL 0{{ $levelNumber }}</span>
+                <h1>{{ $levelTitle }}</h1>
             </div>
 
             <div class="forest-message wood-sign">
                 <span class="forest-message__label">MODUL BELAJAR</span>
-                <strong>Python · Variabel</strong>
+                <strong>Python · {{ $isLevel2 ? 'Perulangan' : 'Variabel' }}</strong>
             </div>
         </header>
 
         <main class="game-layout">
-            <section class="game-area wood-frame" aria-label="Area game Level 1">
+            <section class="game-area wood-frame" aria-label="Area game Level {{ $levelNumber }}">
                 <div class="game-hud" aria-label="Status permainan">
-                    <div class="hud-counter">
+                    <div class="hud-counter" aria-label="{{ $isLevel2 ? 'Semprotan dilakukan dan target' : 'Isi air dan target' }}" title="{{ $isLevel2 ? 'Semprotan dilakukan / dibutuhkan' : 'Isi air / target' }}">
                         <span class="asset-icon asset-icon--water" aria-hidden="true"></span>
                         <strong><span id="water-count">0</span>/<span id="required-water">3</span></strong>
                     </div>
@@ -88,7 +96,7 @@
 
                 <div id="game-container" role="img"
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
-                     data-asset-base-url="{{ asset('assets') }}"></div>
+                     data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"></div>
 
                 <div id="game-hint" class="game-hint">
                     <p id="hint-text" aria-live="polite" hidden>Susun instruksi dari atas ke bawah.</p>
@@ -112,8 +120,8 @@
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
-                        <h2 id="mission-title">Challenge 1 - Mengambil Air</h2>
-                        <p id="mission-description">Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel <code>isi_air</code>.</p>
+                        <h2 id="mission-title">{{ $isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air' }}</h2>
+                        <p id="mission-description">{{ $isLevel2 ? 'Ikuti jalan ke penanda C1, lalu gunakan semprot() untuk memadamkan api.' : 'Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel isi_air.' }}</p>
                     </div>
                 </section>
 
@@ -122,8 +130,8 @@
                     <div>
                         <h2 id="target-title">Target</h2>
                         <ul id="target-list" class="target-list">
-                            <li id="target-pump"><span class="target-check" aria-hidden="true"></span>Pergi ke pompa air</li>
-                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>Ambil 3 air</li>
+                            <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel2 ? 'Pergi ke penanda C1' : 'Pergi ke pompa air' }}</li>
+                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>{{ $isLevel2 ? 'Padamkan api' : 'Ambil 3 air' }}</li>
                         </ul>
                     </div>
                 </section>
@@ -144,7 +152,9 @@
                         </div>
                     </div>
                     <p id="editor-help" class="sr-only">
-                        Mulai ketik <code>atas(angka)</code>, <code>bawah(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>, <code>isi_air</code>, atau <code>air_pos_2</code>.
+                        Mulai ketik <code>atas(angka)</code>, <code>bawah(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>,
+                        @if($isLevel2) <code>semprot()</code>, <code>for</code>, atau <code>jumlah_semprot</code>.
+                        @else <code>isi_air</code>, atau <code>air_pos_2</code>. @endif
                         Pilih dengan tombol panah dan Enter. Tekan Ctrl dan Space untuk melihat semua pilihan.
                     </p>
 
@@ -175,23 +185,28 @@
                 </header>
                 <ol class="game-study__flow" aria-label="Cara memainkan misi">
                     <li><span>01</span><div><strong>Amati map dan target</strong><p>Temukan penanda merah dan hitung petak jalan menuju tujuan.</p></div></li>
-                    <li><span>02</span><div><strong>Susun kode di PyroPad</strong><p>Tulis perintah gerak berurutan, lalu kode variabel sesuai misi.</p></div></li>
-                    <li><span>03</span><div><strong>Jalankan dan periksa</strong><p>Tekan Run Code, amati gerakan, isi tangki, dan target yang tercentang.</p></div></li>
+                    <li><span>02</span><div><strong>Susun kode di PyroPad</strong><p>{{ $isLevel2 ? 'Tulis perintah gerak, lalu semprot() atau for/range sesuai misi.' : 'Tulis perintah gerak berurutan, lalu kode variabel sesuai misi.' }}</p></div></li>
+                    <li><span>03</span><div><strong>Jalankan dan periksa</strong><p>{{ $isLevel2 ? 'Tekan Run Code, amati setiap semprotan dan api yang padam.' : 'Tekan Run Code, amati gerakan, isi tangki, dan target yang tercentang.' }}</p></div></li>
                 </ol>
                 <section class="learning-card">
                     <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
+                    @if($isLevel2)
+                    <h2>Semprotan &amp; perulangan</h2>
+                    <p>Satu <code>semprot()</code> menjalankan satu aksi. Gunakan <code>for</code> dan <code>range()</code> untuk mengulang aksi sesuai kebutuhan api.</p>
+                    @else
                     <h2>Variabel &amp; persediaan air</h2>
                     <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
+                    @endif
                     <ol class="learning-steps" aria-label="Tahapan materi">
-                        <li data-lesson-step="1">1. Simpan</li>
-                        <li data-lesson-step="2">2. Ubah</li>
-                        <li data-lesson-step="3">3. Gunakan</li>
+                        <li data-lesson-step="1">1. {{ $isLevel2 ? 'Semprot' : 'Simpan' }}</li>
+                        <li data-lesson-step="2">2. {{ $isLevel2 ? 'Ulangi' : 'Ubah' }}</li>
+                        <li data-lesson-step="3">3. {{ $isLevel2 ? 'Variabel + for' : 'Gunakan' }}</li>
                     </ol>
                     <h3 id="lesson-title"></h3>
                     <code id="lesson-code" class="lesson-code"></code>
                     <p id="lesson-explanation"></p>
                     <p id="lesson-effect" class="lesson-effect"></p>
-                    <p class="learning-note">Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan.</p>
+                    <p class="learning-note">@if($isLevel2) Akhiri header <code>for</code> dengan <code>:</code>, lalu beri empat spasi sebelum <code>semprot()</code>. Perintah semprot tidak menerima argumen. @else Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan. @endif</p>
                 </section>
 
                 <section class="command-reference learning-card" aria-labelledby="command-reference-title">
@@ -217,14 +232,14 @@
                 </section>
 
                 <section class="learning-card variable-watch" aria-labelledby="variable-watch-title">
-                    <h3 id="variable-watch-title">Isi tangki sekarang</h3>
-                    <div class="variable-readout"><code>isi_air</code><span>=</span><output id="learning-water">0</output><small>unit air</small></div>
+                    <h3 id="variable-watch-title">{{ $isLevel2 ? 'Semprotan pada api aktif' : 'Isi tangki sekarang' }}</h3>
+                    <div class="variable-readout"><code>{{ $isLevel2 ? 'semprot()' : 'isi_air' }}</code><span>{{ $isLevel2 ? '×' : '=' }}</span><output id="learning-water">0</output><small>{{ $isLevel2 ? 'kali' : 'unit air' }}</small></div>
                     <p id="learning-water-note">Amati nilainya setelah menjalankan kode.</p>
                 </section>
 
                 <section class="learning-card" aria-labelledby="code-explanation-title">
                     <h3 id="code-explanation-title">Arti kode kamu</h3>
-                    <p>Penjelasan mengikuti kode yang kamu ketik. Gerakan dan perubahan air terjadi setelah Run Code.</p>
+                    <p>Penjelasan mengikuti kode yang kamu ketik. Aksi game terjadi setelah Run Code.</p>
                     <ol id="code-explanations" class="code-explanations"></ol>
                     <p id="code-explanations-empty">Mulai dengan perintah gerak, misalnya <code>atas(1)</code>. Angka dalam kurung menentukan jumlah petak.</p>
                 </section>
@@ -232,7 +247,7 @@
                     <h3 id="study-tips-title">Tips agar misi lebih mudah</h3>
                     <ul>
                         <li><strong>Gerak lewat jalan tanah.</strong> Angka pada <code>atas(2)</code> berarti bergerak dua petak ke atas.</li>
-                        <li><strong>Datangi penanda dahulu.</strong> Jalankan kode variabel setelah pemadam sampai di lokasi yang diminta.</li>
+                        <li><strong>Datangi penanda dahulu.</strong> {{ $isLevel2 ? 'Jalankan semprot() setelah sampai di penanda api yang aktif.' : 'Jalankan kode variabel setelah pemadam sampai di lokasi yang diminta.' }}</li>
                         <li><strong>Baca hasil setiap percobaan.</strong> Perhatikan pesan di map. Gunakan Hint saat membutuhkan petunjuk berikutnya.</li>
                     </ul>
                 </section>
@@ -245,15 +260,16 @@
     <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div class="level-result__card">
             <span class="level-result__eyebrow">MISI SELESAI</span>
-            <h2 id="result-title">Level 1 Berhasil!</h2>
-            <p class="level-result__subtitle">Air sampai di Pos 2 dan kamu mencapai petak FINISH.</p>
+            <h2 id="result-title">Level {{ $levelNumber }} Berhasil!</h2>
+            <p class="level-result__subtitle">{{ $isLevel2 ? 'Ketiga api padam dan kamu mencapai petak FINISH.' : 'Air sampai di Pos 2 dan kamu mencapai petak FINISH.' }}</p>
             <div class="level-result__stars" aria-hidden="true">
                 <span></span><span></span><span></span>
             </div>
             <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
-            <p class="level-result__recap">Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2.</p>
+            <p class="level-result__recap">@if($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
             <div class="level-result__actions">
                 <button id="result-replay" type="button">Main Lagi</button>
+                @unless($isLevel2)<a href="{{ route('game.level2') }}">Lanjut Level 2</a>@endunless
                 <a href="{{ route('main-menu') }}">Menu Utama</a>
             </div>
         </div>

@@ -1440,6 +1440,8 @@
 
 .code-suggestion-help__example code {
     display: block;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
     padding: 8px 10px;
     color: #dff5ff;
     border: 2px solid #24394d;
@@ -1958,7 +1960,7 @@
 .learning-steps { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; margin: 15px 0; list-style: none; }
 .learning-steps li { padding: 5px 7px; border: 1px solid #c0b091; border-radius: 4px; font-size: 12px; }
 .learning-steps [aria-current='step'] { color: #fff; background: #285e46; border-color: #285e46; }
-.learning-card .lesson-code { display: block; padding: 10px; border-radius: 5px; color: #a6e0fc; background: #132433; font-size: 17px; }
+.learning-card .lesson-code { display: block; padding: 10px; border-radius: 5px; color: #a6e0fc; background: #132433; font-size: 17px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .lesson-effect { border-left: 3px solid #488559; padding: 8px 10px; background: #e7efda; }
 .learning-card .learning-note { border-top: 1px solid #dac8a8; padding: 10px 0 0; background: transparent; font-size: 13px; color: #534b3d; }
 .variable-readout { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
@@ -2150,25 +2152,34 @@
     gap: 18px;
 }
 .game-prototype.game-workspace .game-area {
-    height: clamp(620px, 72dvh, 760px);
-    min-height: 0;
+    height: auto;
+    min-height: clamp(620px, 72dvh, 760px);
     aspect-ratio: auto;
 }
+.game-prototype.game-workspace #game-container { position: absolute; inset: 0; }
 .game-prototype.game-workspace .game-panel {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    height: clamp(620px, 72dvh, 760px);
+    height: auto;
+    min-height: clamp(620px, 72dvh, 760px);
     overflow: visible;
 }
 .game-prototype.game-workspace .mission-card { flex: 0 0 auto; margin: 0; }
 .game-prototype.game-workspace .panel-content {
     flex: 1;
-    grid-template-rows: minmax(260px, 1fr) auto auto;
+    grid-template-rows: auto auto auto;
+    align-content: start;
     min-height: 0;
     overflow: visible;
 }
-.game-prototype.game-workspace .code-editor-wrapper { min-height: 260px; }
+/* Rasio mengikuti PNG 1536 × 1024; tinggi panel tidak meregangkan bingkai. */
+.game-prototype.game-workspace .code-editor-wrapper {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 3 / 2;
+    align-self: start;
+}
 .game-guide-link { justify-self: center; padding: 6px; color: #ffda87; font-size: 14px; font-weight: 700; text-decoration: none; }
 .game-guide-link:hover { color: #fff5d7; text-decoration: underline; }
 .game-prototype.game-workspace .game-study {
@@ -2219,8 +2230,8 @@
 @media (max-width: 900px) {
     .game-prototype.game-workspace .game-layout { grid-template-columns: minmax(0, 1fr); }
     .game-prototype.game-workspace .game-area { height: 52dvh; min-height: 360px; }
-    .game-prototype.game-workspace .game-panel { height: auto; }
-    .game-prototype.game-workspace .panel-content { min-height: 0; grid-template-rows: clamp(300px, 55vw, 420px) auto auto; }
+    .game-prototype.game-workspace .game-panel { height: auto; min-height: 0; }
+    .game-prototype.game-workspace .panel-content { min-height: 0; }
     .game-prototype.game-workspace .game-study { grid-template-columns: minmax(0, 1fr); }
     .game-study__heading { align-items: flex-start; flex-direction: column; gap: 12px; }
     .game-study__flow, .game-study__tips ul { grid-template-columns: minmax(0, 1fr); gap: 12px; }

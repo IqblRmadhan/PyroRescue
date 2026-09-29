@@ -44,14 +44,14 @@
                 </div>
 
                 <div class="adventure-islands">
-                    <article class="adventure-level adventure-level--locked adventure-level--two" aria-labelledby="level-two-title">
+                    <article class="adventure-level adventure-level--two" aria-labelledby="level-two-title">
                         <div class="adventure-level__image-wrap">
                             <img src="{{ asset('assets/menu/level-2-island.webp') }}" alt="Pulau hutan gambut berkabut" loading="lazy">
                         </div>
                         <div class="adventure-level__copy">
                             <span class="adventure-level__number">LEVEL 02</span>
                             <h2 id="level-two-title">Hutan Gambut Berasap</h2>
-                            <span class="adventure-level__lock">🔒 Terkunci</span>
+                            <a class="adventure-play" href="{{ route('game.level2') }}">Main Level 2</a>
                             <p>Pelajari perulangan untuk menghadapi titik api.</p>
                         </div>
                     </article>
@@ -99,7 +99,7 @@
                         <dl class="adventure-stats">
                             <div><dt>Level Diselesaikan</dt><dd>0 / 3</dd></div>
                             <div><dt>Total Bintang</dt><dd>0 / 15</dd></div>
-                            <div><dt>Misi Tersedia</dt><dd>1 / 3</dd></div>
+                            <div><dt>Misi Tersedia</dt><dd>2 / 3</dd></div>
                         </dl>
                     </div>
                     <div class="adventure-detail-panel adventure-module">

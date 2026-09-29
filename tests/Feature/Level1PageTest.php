@@ -16,12 +16,12 @@ class Level1PageTest extends TestCase
 
         $this->get('/main-menu')
             ->assertOk()
-            ->assertSee('Pilih Petualanganmu')
+            ->assertSee('id="adventure-heading"', false)
             ->assertSee(route('game.level1'), false);
 
         $this->get('/login')
             ->assertOk()
-            ->assertSee('Selamat Datang di PyroRescue!');
+            ->assertSee('id="login-title"', false);
 
         $this->get('/game/1')
             ->assertOk()
@@ -39,7 +39,7 @@ class Level1PageTest extends TestCase
             ->assertSee('kanan(angka)')
             ->assertSee('Run Code')
             ->assertSee('Hint')
-            ->assertSee('Reset');
+            ->assertSee('id="reset"', false);
 
         $this->get('/game-test')->assertOk();
     }
