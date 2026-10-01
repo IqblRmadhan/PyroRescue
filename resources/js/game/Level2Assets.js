@@ -1,10 +1,10 @@
 import { level1Assets } from './Level1Assets.js';
 
-// Setiap PNG berisi empat frame api dan satu frame padam, masing-masing 150 x 150.
+// Setiap PNG berisi empat frame api dan satu frame padam, masing-masing 200 x 200.
 const fireFrames = {
-    fire1: [0, 0, 150, 150], fire2: [150, 0, 150, 150],
-    fire3: [300, 0, 150, 150], fire4: [450, 0, 150, 150],
-    extinguished: [600, 0, 150, 150],
+    fire1: [0, 0, 200, 200], fire2: [200, 0, 200, 200],
+    fire3: [400, 0, 200, 200], fire4: [600, 0, 200, 200],
+    extinguished: [800, 0, 200, 200],
 };
 
 export const level2Assets = {

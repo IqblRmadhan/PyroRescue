@@ -27,3 +27,14 @@ test('the three fire markers and finish are reachable in order without crossing 
         assert.equal(isLevel2Walkable(x, y), false);
     }
 });
+
+test('C2 is the upper-right fire and C3 is the lower-right fire', () => {
+    assert.deepEqual(level2Map.fires[2].action, { column: 34, row: 6 });
+    assert.deepEqual(level2Map.fires[3].action, { column: 38, row: 18 });
+    assert.equal(level2Map.fires[2].y < level2Map.fires[3].y, true);
+});
+
+test('C1 is moved down and C3 is moved right by one grid tile', () => {
+    assert.equal(level2Map.fires[1].y, 475);
+    assert.equal(level2Map.fires[3].x, 1450);
+});

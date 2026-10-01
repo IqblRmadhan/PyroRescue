@@ -3,7 +3,7 @@ import { firefighterAnimations } from '../Level1Assets.js';
 import { level2Assets } from '../Level2Assets.js';
 import { isLevel2Walkable, level2Map, level2TileToWorld } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import challenges from '../Level2Challenges.js';
+import challenges, { getFirePresentation } from '../Level2Challenges.js';
 
 const playerScale = 0.245;
 // Air sedikit tembus pandang agar bayangan tepi sungai di bawahnya tetap terlihat.
@@ -93,22 +93,30 @@ export default class Level2Scene extends Phaser.Scene {
     drawMissionObjects() {
         this.fires = {};
         this.fireLabels = {};
+        this.fireMarkers = {};
         for (const [number, fire] of Object.entries(level2Map.fires)) {
             const texture = challenges[number].texture;
             this.fires[number] = this.add.sprite(fire.x, fire.y, texture, 'fire1')
                 .setOrigin(0.5, 1).setDisplaySize(fire.size, fire.size).setDepth(5)
                 .play(`${texture}-burn`);
-            this.fireLabels[number] = this.add.text(fire.x, fire.y + 6, '', {
-                fontFamily: 'monospace', fontSize: '14px', color: '#ffffff',
-                backgroundColor: '#17382d', padding: { x: 7, y: 5 },
-            }).setOrigin(0.5, 0).setDepth(6);
+            const labelY = Math.max(42, fire.y - fire.size - 10);
+            this.fireLabels[number] = this.add.text(fire.x, labelY, '', {
+                fontFamily: 'PixelFont, monospace', fontSize: '16px', color: '#ffffff',
+                backgroundColor: '#102923', padding: { x: 9, y: 5 },
+                stroke: '#061512', strokeThickness: 2,
+                shadow: { offsetX: 2, offsetY: 3, color: '#000000', blur: 2, fill: true },
+            }).setOrigin(0.5, 1).setDepth(7);
+
+            const marker = level2TileToWorld(fire.action.column, fire.action.row);
+            this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
+                .setDisplaySize(20, 20).setDepth(7).play('level2-marker');
         }
-        this.actionMarker = this.add.sprite(0, 0, 'actionMarker', 'pulse1')
-            .setDisplaySize(24, 24).setDepth(6).play('level2-marker');
+        const finish = level2TileToWorld(level2Map.finish.column, level2Map.finish.row);
+        this.finishMarker = this.add.sprite(finish.x, finish.y, 'actionMarker', 'pulse1')
+            .setDisplaySize(20, 20).setDepth(7).setVisible(false).play('level2-marker');
         this.playerShadow = this.add.ellipse(0, 0, 24, 6, 0x172b1b, 0.24).setDepth(8);
         this.player = this.add.sprite(0, 0, 'firefighterIdle', 'idle-east-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(9);
-        const finish = level2TileToWorld(level2Map.finish.column, level2Map.finish.row);
         this.finishSign = this.add.text(finish.x, finish.y - 35, 'FINISH', {
             fontFamily: 'monospace', fontSize: '16px', color: '#fff8df',
             backgroundColor: '#1b503e', padding: { x: 8, y: 6 },
@@ -132,18 +140,25 @@ export default class Level2Scene extends Phaser.Scene {
 
     updateFires() {
         for (const [number, sprite] of Object.entries(this.fires)) {
-            const completed = Number(number) < this.challengeNumber
-                || (Number(number) === this.challengeNumber && this.sprays === this.requiredWater);
-            if (completed) sprite.stop().setFrame('extinguished');
+            const presentation = getFirePresentation(number, this.challengeNumber, this.sprays);
+            if (presentation.completed) sprite.stop().setFrame('extinguished');
             else sprite.play(`${challenges[number].texture}-burn`, true);
-            const remaining = Number(number) === this.challengeNumber
-                ? this.requiredWater - this.sprays : challenges[number].requiredWater;
-            this.fireLabels[number].setText(`C${number} · ${completed ? 'PADAM' : `${remaining}× semprot`}`);
+
+            const label = this.fireLabels[number].setText(presentation.label);
+            const marker = this.fireMarkers[number];
+            if (presentation.completed) {
+                label.setColor('#d5ffda').setBackgroundColor('#174c35').setStroke('#071e16', 2);
+                marker.setVisible(false);
+            } else {
+                const isActive = Number(number) === this.challengeNumber;
+                label.setColor('#ffffff')
+                    .setBackgroundColor(isActive ? '#713019' : '#102923')
+                    .setStroke('#061512', 2);
+                marker.setVisible(true).setAlpha(1).setDisplaySize(20, 20);
+            }
         }
         const finishedFire = this.challengeNumber === 3 && this.sprays === this.requiredWater;
-        const target = finishedFire ? level2Map.finish : level2Map.fires[this.challengeNumber].action;
-        const marker = level2TileToWorld(target.column, target.row);
-        this.actionMarker.setPosition(marker.x, marker.y);
+        this.finishMarker.setVisible(finishedFire);
         this.finishSign.setVisible(this.challengeNumber === 3).setAlpha(finishedFire ? 1 : 0.6);
     }
 

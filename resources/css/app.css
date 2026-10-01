@@ -2173,12 +2173,16 @@
     min-height: 0;
     overflow: visible;
 }
-/* Rasio mengikuti PNG 1536 × 1024; tinggi panel tidak meregangkan bingkai. */
 .game-prototype.game-workspace .code-editor-wrapper {
-    width: 100%;
+    width: 80%;
     min-height: 0;
     aspect-ratio: 3 / 2;
     align-self: start;
+    justify-self: center;
+}
+.game-prototype.game-workspace #code-editor,
+.game-prototype.game-workspace .code-line-numbers {
+    font-size: 14px;
 }
 .game-guide-link { justify-self: center; padding: 6px; color: #ffda87; font-size: 14px; font-weight: 700; text-decoration: none; }
 .game-guide-link:hover { color: #fff5d7; text-decoration: underline; }

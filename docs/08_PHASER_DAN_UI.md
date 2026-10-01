@@ -40,6 +40,11 @@ mengembalikan fokus ke PyroPad.
 - `Level2Challenges.js` menyimpan jumlah semprotan, sprite, materi, dan hint.
   Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (3 semprotan),
   dan C3 kanan bawah (1 semprotan).
+- Setiap api memiliki penanda titik semprot berukuran 20 × 20 piksel seperti
+  Level 1. Semua penanda yang belum selesai tampil sama; penanda challenge
+  yang selesai disembunyikan.
+  Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,
+  atau status padam.
 - `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. HUD
   menampilkan jumlah semprotan pada api aktif; FINISH menyelesaikan level
   hanya setelah api ketiga padam.

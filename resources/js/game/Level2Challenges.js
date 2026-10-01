@@ -1,6 +1,6 @@
 // Nomor challenge mengikuti area: tengah, kanan atas, lalu kanan bawah.
 // Kekuatan aset: LEVEL2-C1 = 2 semprotan, LEVEL2-C2 = 3, LEVEL2-C3 = 1.
-export default {
+const challenges = {
     1: {
         title: 'Challenge 1 - Mengenal Semprotan',
         description: 'Pergi ke penanda di area tengah. Api membutuhkan 2 kali semprot().',
@@ -53,3 +53,23 @@ export default {
         ],
     },
 };
+
+export function getFirePresentation(number, challengeNumber, sprays, definitions = challenges) {
+    const fireNumber = Number(number);
+    const requiredSprays = definitions[fireNumber].requiredWater;
+    const isActive = fireNumber === challengeNumber;
+    const completed = fireNumber < challengeNumber || (isActive && sprays >= requiredSprays);
+
+    if (completed) {
+        return { completed: true, label: `C${fireNumber} • PADAM`, markerState: 'completed' };
+    }
+
+    const remaining = isActive ? requiredSprays - sprays : requiredSprays;
+    const label = isActive && sprays > 0
+        ? `C${fireNumber} • SISA ${remaining} SEMPROT`
+        : `C${fireNumber} • ${remaining}× SEMPROT`;
+
+    return { completed: false, label, markerState: 'visible' };
+}
+
+export default challenges;
