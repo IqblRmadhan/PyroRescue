@@ -1,11 +1,11 @@
 const reservedLoopNames = new Set((
     'False None True and as assert async await break class continue def del elif else except finally '
     + 'for from global if import in is lambda nonlocal not or pass raise return try while with yield '
-    + 'range semprot jumlah_semprot'
+    + 'range semprot jumlah_semprot isi_air'
 ).split(' '));
 
 export default class CodeValidator {
-    // Parser terbatas: hanya gerakan, jumlah_semprot, semprot(), dan satu tingkat for.
+    // Parser terbatas: gerakan, isi_air, jumlah_semprot, semprot(), dan satu tingkat for.
     // Kode pemain diterjemahkan menjadi data aksi, tidak pernah dieksekusi sebagai Python.
     validateLoop(code, requiredCount, challengeNumber = 1) {
         const result = { syntaxValid: false, conceptValid: false, missionSuccess: false, message: '', actions: null };
@@ -28,6 +28,7 @@ export default class CodeValidator {
             if (/^\s/.test(line)) return fail('Indentasi hanya digunakan untuk semprot() di dalam for.');
             const movement = line.match(/^(atas|bawah|kanan|kiri)\s*\(\s*(0|[1-9]\d*)\s*\)$/);
             const assignment = line.match(/^jumlah_semprot\s*=\s*(0|[1-9]\d*)$/);
+            const waterAssignment = line.match(/^isi_air\s*=\s*(0|[1-9]\d*)$/);
             const loop = line.match(/^for\s+([a-zA-Z_]\w*)\s+in\s+range\s*\(\s*(jumlah_semprot|0|[1-9]\d*)\s*\)\s*:$/);
 
             if (movement) {
@@ -41,6 +42,11 @@ export default class CodeValidator {
                 if (!Number.isSafeInteger(jumlahSemprot) || jumlahSemprot > 120) {
                     return fail('jumlah_semprot harus berupa bilangan bulat dari 0 sampai 120.');
                 }
+            } else if (waterAssignment) {
+                if (Number(waterAssignment[1]) !== 6) {
+                    return fail('Pompa Level 2 menyiapkan 6 unit: 2 untuk C1, 3 untuk C2, dan 1 untuk C3. Tulis isi_air = 6.');
+                }
+                commands.push({ type: 'setWater', amount: 6 });
             } else if (loop) {
                 if (reservedLoopNames.has(loop[1])) {
                     return fail('Gunakan nama penghitung sederhana seperti i atau j.');
@@ -71,7 +77,7 @@ export default class CodeValidator {
                 commands.push({ type: 'spray' });
                 sprayCount += 1;
             } else {
-                return fail('Gunakan perintah gerak, semprot(), jumlah_semprot = angka, atau for i in range(...): dengan titik dua.');
+                return fail('Gunakan perintah gerak, isi_air = 6, semprot(), jumlah_semprot = angka, atau for i in range(...): dengan titik dua.');
             }
             if (commands.length > 120) return fail('Gunakan maksimal 120 aksi dalam satu Run.');
         }

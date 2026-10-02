@@ -81,7 +81,8 @@ function hideHint() {
 function isTargetComplete(targetKey, state) {
     if (isLevel2) {
         return targetKey === 'location' ? state.atFire
-            : targetKey === 'fire' ? state.fireOut : targetKey === 'finish' && state.atFinish;
+            : targetKey === 'water' ? state.water === 6
+                : targetKey === 'fire' ? state.fireOut : targetKey === 'finish' && state.atFinish;
     }
     if (targetKey === 'location') {
         if (currentChallenge === 1) {
@@ -107,7 +108,7 @@ function renderMissionState(state = {}) {
     latestState = { ...latestState, ...state };
     learning.renderState(latestState);
 
-    const counter = isLevel2 ? latestState.sprays : latestState.water;
+    const counter = latestState.water;
     if (Number.isFinite(counter)) {
         waterCount.textContent = counter;
     }
@@ -148,7 +149,7 @@ function configureChallenge({ updateScene = true } = {}) {
     hintIndex = 0;
     missionTitle.textContent = definition.title;
     missionDescription.textContent = definition.description;
-    requiredWater.textContent = definition.requiredWater;
+    requiredWater.textContent = isLevel2 ? '6' : definition.requiredWater;
     hintText.textContent = defaultHint;
     hideHint();
     editor.value = '';
@@ -196,7 +197,7 @@ const scene = new Scene({
         configureChallenge();
         setControlsDisabled(false);
         showFeedback(isLevel2
-            ? 'Ikuti jalan ke penanda C1. Satu semprot() berarti satu aksi penyemprotan.'
+            ? 'Datangi pompa di atas jalan dekat jembatan, tulis isi_air = 6, lalu menuju api C1. Setiap semprot() memakai 1 unit air.'
             : 'Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
     },
     onLoadError() {

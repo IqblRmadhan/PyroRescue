@@ -21,6 +21,7 @@ road(21, 23, 21, 29);
 export const level2Map = {
     width: 1600, height: 1200, tileSize: 40, columns: 40, rows: 30,
     start: { column: 0, row: 5, direction: 'east' },
+    pump: { x: 630, y: 187, action: { column: 15, row: 5 }, capacity: 6 },
     finish: { column: 21, row: 29 },
     fires: {
         1: { x: 900, y: 475, size: 180, action: { column: 19, row: 8 }, direction: 'east' },

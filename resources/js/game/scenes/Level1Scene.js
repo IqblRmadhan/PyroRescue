@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
+import { addPumpLabel } from '../PumpLabel.js';
 import {
     firefighterAnimations,
     level1Assets,
@@ -275,6 +276,7 @@ export default class Level1Scene extends Phaser.Scene {
             .setOrigin(0.5, 0.9)
             .setDisplaySize(pumpDisplaySize, pumpDisplaySize)
             .setDepth(7);
+        addPumpLabel(this, pumpPosition.x, pumpPosition.y);
         this.add.ellipse(post1NpcPosition.x, post1NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
             .setDepth(8);
         this.npcPost1 = this.add.sprite(
@@ -304,7 +306,23 @@ export default class Level1Scene extends Phaser.Scene {
         this.player = this.add.sprite(playerPosition.x, playerPosition.y, 'firefighterIdle', 'idle-north-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(10);
 
+        this.post1Sign = this.drawPostSign(level1Map.post1Sign, 'POS 1');
+        this.post2Sign = this.drawPostSign(level1Map.post2Sign, 'POS 2');
         this.drawFinishSign();
+    }
+
+    drawPostSign(position, label) {
+        const sign = this.add.graphics();
+        sign.fillStyle(0x071e29, 0.45).fillRoundedRect(-48, -15, 100, 40, 6);
+        sign.fillStyle(0x153d48).fillRoundedRect(-50, -19, 100, 36, 6);
+        sign.lineStyle(2, 0xffd277).strokeRoundedRect(-50, -19, 100, 36, 6);
+        sign.fillStyle(0xffd277).fillTriangle(-7, 17, 7, 17, 0, 28);
+        const title = this.add.text(0, -1, label, {
+            fontFamily: 'monospace', fontSize: '18px', fontStyle: 'bold', color: '#fff8df',
+            stroke: '#0b2531', strokeThickness: 2,
+        }).setOrigin(0.5);
+
+        return this.add.container(position.x, position.y, [sign, title]).setDepth(13);
     }
 
     drawFinishSign() {
@@ -350,6 +368,10 @@ export default class Level1Scene extends Phaser.Scene {
         const markerPosition = tileToWorld(target.column, target.row);
 
         this.actionMarker.setPosition(markerPosition.x, markerPosition.y);
+        this.post1Sign.setAlpha(challengeNumber === 2 ? 1 : 0.78)
+            .setScale(challengeNumber === 2 ? 1.08 : 1);
+        this.post2Sign.setAlpha(challengeNumber === 3 ? 1 : 0.78)
+            .setScale(challengeNumber === 3 ? 1.08 : 1);
         this.finishSign.setVisible(challengeNumber === 3)
             .setAlpha(this.hasDeliveredWater ? 1 : 0.72);
         this.publishState();

@@ -16,6 +16,7 @@ class Level2PageTest extends TestCase
             ->assertSee('data-level="2"', false)
             ->assertSee('id="code-editor"', false)
             ->assertSee('semprot()')
+            ->assertSee('isi_air = 6')
             ->assertSee('for')
             ->assertDontSee('id="level-story"', false)
             ->assertDontSee('Air sampai di Pos 2');

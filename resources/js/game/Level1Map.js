@@ -56,8 +56,10 @@ export const level1Map = {
     waterAction: { column: 4, row: 24 },
     post1Action: { column: 14, row: 19 },
     post1Npc: { column: 16, row: 19 },
+    post1Sign: { x: 700, y: 635 },
     post2Action: { column: 24, row: 11 },
     post2Npc: { column: 26, row: 10 },
+    post2Sign: { x: 980, y: 280 },
     finish: { column: 33, row: 11 },
 };
 

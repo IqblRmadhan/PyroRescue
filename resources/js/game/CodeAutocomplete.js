@@ -58,6 +58,14 @@ export function createLevel2Suggestions(requiredCount, challengeNumber) {
     return [
         ...movements,
         {
+            label: 'isi_air = 6', value: 'isi_air = 6',
+            selectionStart: 10, selectionLength: 1,
+            kind: 'Assignment variabel',
+            description: 'Di penanda pompa, isi_air = 6 menyimpan pasokan untuk 2 semprotan C1, 3 semprotan C2, dan 1 semprotan C3. Tiap semprot() memakai 1 unit.',
+            example: 'isi_air = 6', parameter: '6 unit air',
+            parameterDescription: 'Jumlah seluruh semprotan yang dibutuhkan Level 2.',
+        },
+        {
             label: 'semprot()', value: 'semprot()', selectionStart: 9, selectionLength: 0,
             kind: 'Perintah game', description: 'Menyemprot api satu kali dari penanda merah.',
             example: 'semprot()', parameter: 'tanpa argumen',

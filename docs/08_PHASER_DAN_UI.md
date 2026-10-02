@@ -28,6 +28,8 @@ mengembalikan fokus ke PyroPad.
   karakter serta penanda misi agar tidak menutupinya.
 - Map Level 1 berakhir pada petak FINISH setelah Pos 2. Setelah air diserahkan,
   pemain berjalan ke petak itu untuk membuka layar hasil tiga bintang.
+- Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
+  yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
 
 ## Implementasi Level 2
 
@@ -35,6 +37,10 @@ mengembalikan fokus ke PyroPad.
   `for/range`. Level tersedia dari menu utama dan hasil Level 1.
 - `Level2Map.js` mengikuti jalan pada `level2-map.png` berukuran 1600 × 1200.
   Tiga titik kebakaran berada di tengah, kanan atas, dan kanan bawah.
+- Dua pohon di atas jalan dekat jembatan ditutup rumput dan diganti pompa Phaser;
+  dua pohon di bawah jalan tetap tampak. Sprite pompa Level 1 digunakan ulang;
+  pemain mengambil enam unit dengan `isi_air = 6` di penanda bawah pompa.
+  HUD menampilkan sisa isi tangki, dan setiap `semprot()` memakai satu unit.
 - `Level2Assets.js` membaca setiap sprite api sebagai lima frame 150 × 150:
   empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
 - `Level2Challenges.js` menyimpan jumlah semprotan, sprite, materi, dan hint.

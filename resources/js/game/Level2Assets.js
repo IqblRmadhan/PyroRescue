@@ -14,6 +14,7 @@ export const level2Assets = {
     firefighterSpray: level1Assets.firefighterSpray,
     firefighterRespawn: level1Assets.firefighterRespawn,
     actionMarker: level1Assets.actionMarker,
+    waterPump: level1Assets.waterPump,
     fireC1: { file: 'objects/LEVEL2-C1.png', frames: fireFrames },
     fireC2: { file: 'objects/LEVEL2-C2.png', frames: fireFrames },
     fireC3: { file: 'objects/LEVEL2-C3.png', frames: fireFrames },

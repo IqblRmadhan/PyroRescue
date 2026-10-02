@@ -85,6 +85,11 @@ Pemain mampu menggunakan `for` dan `range()` untuk menjalankan aksi berulang ses
 
 ## Misi
 Memadamkan beberapa titik api dengan jumlah penyemprotan sesuai kebutuhan.
+Dua pohon di atas jalan dekat jembatan digantikan pompa air, sedangkan dua
+pohon di bawah jalan tetap terlihat. Di penanda bawah pompa, pemain mengulang
+materi Level 1 dengan menulis `isi_air = 6`.
+Enam unit dipakai untuk dua semprotan di C1, tiga di C2, dan satu di C3.
+Setiap `semprot()` mengurangi `isi_air` satu unit menurut aturan game.
 
 ### Challenge 1 — Mengenal Semprotan (area tengah)
 
@@ -94,6 +99,7 @@ semprot()
 ```
 
 Api membutuhkan **2 semprotan**. Gunakan sprite `LEVEL2-C1.png`.
+Sebelum menuju C1, pemain harus mengisi tangki di pompa.
 
 ### Challenge 2 — Mengulang Semprotan (kanan atas)
 
@@ -129,6 +135,7 @@ semprotan yang melebihi sisa kebutuhan ditolak sebelum aksi berjalan. Reset
 mengembalikan posisi dan api challenge aktif ke checkpoint, sementara api
 challenge sebelumnya tetap padam. C2 harus memakai loop, sedangkan C3 harus
 memakai `jumlah_semprot` dalam `range()` pada setiap Run yang menyemprot.
+Checkpoint C2 mengembalikan empat unit air, dan checkpoint C3 satu unit air.
 
 ---
 

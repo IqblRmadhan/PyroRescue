@@ -4,6 +4,18 @@ import CodeValidator from '../../resources/js/game/CodeValidator.js';
 
 const validator = new CodeValidator();
 
+test('Level 2 fills six units at the pump before spraying C1', () => {
+    const result = validator.validateLoop(
+        'kanan(17)\nbawah(2)\nisi_air = 6\nbawah(1)\nkanan(2)\nsemprot()\nsemprot()', 2, 1,
+    );
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.conceptValid, true);
+    assert.equal(result.actions.commands[19].type, 'setWater');
+    assert.equal(result.actions.commands[19].amount, 6);
+    assert.deepEqual(result.actions.commands.slice(-2), [{ type: 'spray' }, { type: 'spray' }]);
+    assert.match(validator.validateLoop('isi_air = 5', 2, 1).message, /2 untuk C1, 3 untuk C2, dan 1 untuk C3/);
+});
+
 test('Level 2 preserves movement order and expands a loop into individual sprays', () => {
     const result = validator.validateLoop('kanan(2)\nfor i in range(3):\n    semprot()', 3, 2);
     assert.equal(result.syntaxValid, true);

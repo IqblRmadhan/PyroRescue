@@ -34,6 +34,13 @@ test('C2 is the upper-right fire and C3 is the lower-right fire', () => {
     assert.equal(level2Map.fires[2].y < level2Map.fires[3].y, true);
 });
 
+test('the pump can be reached from the starting road before C1', () => {
+    assert.deepEqual(level2Map.pump.action, { column: 15, row: 5 });
+    assert.equal(isLevel2Walkable(15, 5), true);
+    assert.equal(isLevel2Walkable(17, 8), true);
+    assert.equal(level2Map.pump.capacity, 6);
+});
+
 test('C1 is moved down and C3 is moved right by one grid tile', () => {
     assert.equal(level2Map.fires[1].y, 475);
     assert.equal(level2Map.fires[3].x, 1450);
