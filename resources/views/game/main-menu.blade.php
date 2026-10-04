@@ -43,45 +43,70 @@
                     <small>Level selesai</small>
                 </div>
 
-                <div class="adventure-islands">
-                    <article class="adventure-level adventure-level--two" aria-labelledby="level-two-title">
-                        <div class="adventure-level__image-wrap">
-                            <img src="{{ asset('assets/menu/level-2-island.webp') }}" alt="Pulau hutan gambut berkabut" loading="lazy">
-                        </div>
-                        <div class="adventure-level__copy">
-                            <span class="adventure-level__number">LEVEL 02</span>
-                            <h2 id="level-two-title">Hutan Gambut Berasap</h2>
-                            <a class="adventure-play" href="{{ route('game.level2') }}">Main Level 2</a>
-                            <p>Pelajari perulangan untuk menghadapi titik api.</p>
-                        </div>
-                    </article>
+                <div class="adventure-carousel" data-level-carousel aria-label="Pilih level petualangan">
+                    <button class="adventure-carousel__arrow adventure-carousel__arrow--previous" type="button"
+                        data-carousel-previous aria-label="Lihat level sebelumnya">
+                        <span aria-hidden="true">‹</span><small>Sebelumnya</small>
+                    </button>
 
-                    <article class="adventure-level adventure-level--active" aria-labelledby="level-one-title">
-                        <div class="adventure-level__image-wrap">
-                            <img src="{{ asset('assets/menu/level-1-island.webp') }}" alt="Pulau hutan dengan sungai, pos pemadam, dan titik api">
-                        </div>
-                        <div class="adventure-level__copy">
-                            <span class="adventure-level__number">LEVEL 01 · MISI TERSEDIA</span>
-                            <h2 id="level-one-title">Tepi Sungai Terbakar</h2>
-                            <p>Siapkan persediaan air dengan variabel Python.</p>
-                            <a class="adventure-play" href="{{ route('game.level1') }}">
-                                <span aria-hidden="true">▶</span> Mainkan
-                            </a>
-                            <span class="adventure-level__progress">Misi pertama menantimu</span>
-                        </div>
-                    </article>
+                    <div class="adventure-carousel__viewport">
+                        <div class="adventure-islands" data-carousel-track>
+                            <article class="adventure-level is-current" data-level="1" aria-labelledby="level-one-title">
+                                <div class="adventure-level__image-wrap">
+                                    <img src="{{ asset('assets/menu/level-1-island.webp') }}" alt="Pulau hutan dengan sungai, pos pemadam, dan titik api">
+                                </div>
+                                <div class="adventure-level__copy">
+                                    <span class="adventure-level__number">LEVEL 01 · MISI TERSEDIA</span>
+                                    <h2 id="level-one-title">Tepi Sungai Terbakar</h2>
+                                    <p>Siapkan persediaan air dengan variabel Python.</p>
+                                    <a class="adventure-play" href="{{ route('game.level1') }}">
+                                        <span aria-hidden="true">▶</span> Mainkan Level 1
+                                    </a>
+                                    <span class="adventure-level__progress">Misi pertama menantimu</span>
+                                </div>
+                            </article>
 
-                    <article class="adventure-level adventure-level--locked adventure-level--three" aria-labelledby="level-three-title">
-                        <div class="adventure-level__image-wrap">
-                            <img src="{{ asset('assets/menu/level-3-island.webp') }}" alt="Pulau suaka bekantan dengan menara pengawas" loading="lazy">
+                            <article class="adventure-level adventure-level--two is-next" data-level="2" aria-labelledby="level-two-title" aria-hidden="true" inert>
+                                <div class="adventure-level__image-wrap">
+                                    <img src="{{ asset('assets/menu/level-2-island.webp') }}" alt="Pulau hutan gambut berkabut">
+                                </div>
+                                <div class="adventure-level__copy">
+                                    <span class="adventure-level__number">LEVEL 02 · MISI TERSEDIA</span>
+                                    <h2 id="level-two-title">Hutan Gambut Berasap</h2>
+                                    <p>Pelajari perulangan untuk menghadapi titik api.</p>
+                                    <a class="adventure-play" href="{{ route('game.level2') }}">
+                                        <span aria-hidden="true">▶</span> Mainkan Level 2
+                                    </a>
+                                </div>
+                            </article>
+
+                            <article class="adventure-level adventure-level--locked adventure-level--three is-previous" data-level="3" aria-labelledby="level-three-title" aria-hidden="true" inert>
+                                <div class="adventure-level__image-wrap">
+                                    <img src="{{ asset('assets/menu/level-3-island.webp') }}" alt="Pulau suaka bekantan dengan menara pengawas">
+                                </div>
+                                <div class="adventure-level__copy">
+                                    <span class="adventure-level__number">LEVEL 03</span>
+                                    <h2 id="level-three-title">Suaka Bekantan</h2>
+                                    <p>Gunakan percabangan untuk membuka jalur penyelamatan.</p>
+                                    <span class="adventure-level__lock">🔒 Belum tersedia</span>
+                                </div>
+                            </article>
                         </div>
-                        <div class="adventure-level__copy">
-                            <span class="adventure-level__number">LEVEL 03</span>
-                            <h2 id="level-three-title">Suaka Bekantan</h2>
-                            <span class="adventure-level__lock">🔒 Terkunci</span>
-                            <p>Gunakan percabangan untuk membuka jalur penyelamatan.</p>
+                    </div>
+
+                    <button class="adventure-carousel__arrow adventure-carousel__arrow--next" type="button"
+                        data-carousel-next aria-label="Lihat level berikutnya">
+                        <span aria-hidden="true">›</span><small>Berikutnya</small>
+                    </button>
+
+                    <div class="adventure-carousel__navigation" aria-label="Navigasi level">
+                        <div class="adventure-carousel__steps">
+                            <button class="is-current" type="button" data-carousel-step="0" aria-label="Tampilkan Level 1" aria-current="step">01</button>
+                            <button type="button" data-carousel-step="1" aria-label="Tampilkan Level 2">02</button>
+                            <button type="button" data-carousel-step="2" aria-label="Tampilkan Level 3">03</button>
                         </div>
-                    </article>
+                        <span class="adventure-carousel__status" data-carousel-status aria-live="polite">Level 1 dari 3 · Tepi Sungai Terbakar</span>
+                    </div>
                 </div>
 
                 <a class="adventure-scroll" href="#progress">Lihat perjalananmu <span aria-hidden="true">↓</span></a>

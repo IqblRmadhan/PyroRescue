@@ -1,5 +1,10 @@
 import './bootstrap';
 
+const levelCarousel = document.querySelector('[data-level-carousel]');
+if (levelCarousel) {
+    import('./game/LevelCarousel.js').then(({ initLevelCarousel }) => initLevelCarousel(levelCarousel));
+}
+
 const gamePrototype = document.querySelector('.game-prototype');
 
 if (gamePrototype) {

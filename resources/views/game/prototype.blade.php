@@ -98,12 +98,18 @@
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
                      data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"></div>
 
-                <div id="game-hint" class="game-hint">
-                    <p id="hint-text" aria-live="polite" hidden>Susun instruksi dari atas ke bawah.</p>
-                    <button id="hint" class="hint-button" type="button" aria-expanded="false" aria-controls="hint-text">
-                        <span class="hint-button__icon" aria-hidden="true">&#128161;</span>
-                        <span class="hint-button__label">Hint</span>
+                <div class="game-map-controls" aria-label="Bantuan dan pengulangan misi">
+                    <button id="reset" class="hint-button map-reset-button" type="button" aria-label="Ulangi challenge saat ini" disabled>
+                        <span class="hint-button__icon" aria-hidden="true">&#8635;</span>
+                        <span class="hint-button__label">Ulangi</span>
                     </button>
+                    <div id="game-hint" class="game-hint">
+                        <button id="hint" class="hint-button" type="button" aria-label="Buka hint" aria-expanded="false" aria-controls="hint-text">
+                            <span class="hint-button__icon" aria-hidden="true">&#128161;</span>
+                            <span class="hint-button__label">Hint</span>
+                        </button>
+                        <p id="hint-text" aria-live="polite" hidden>Susun instruksi dari atas ke bawah.</p>
+                    </div>
                 </div>
 
                 <div id="feedback" class="game-dialog" role="status" aria-live="polite">
@@ -166,11 +172,12 @@
                             <span aria-hidden="true">&#9654;</span>
                             Run Code
                         </button>
-                        <button id="reset" class="game-action-button game-action-button--reset" type="button" disabled>
-                            <span aria-hidden="true">&#8635;</span>
-                            Ulangi
+                        <button id="clear-code" class="game-action-button game-action-button--clear" type="button" aria-label="Hapus semua kode di PyroPad" disabled>
+                            <span aria-hidden="true">&#128465;</span>
+                            Hapus
                         </button>
                     </div>
+                    <p id="editor-action-status" class="sr-only" role="status"></p>
 
                     <a class="game-guide-link" href="#learning-panel">Baca materi &amp; tips bermain <span aria-hidden="true">↓</span></a>
 
@@ -214,7 +221,7 @@
 
                 <section class="command-reference learning-card" aria-labelledby="command-reference-title">
                     <h3 id="command-reference-title">Kamus perintah</h3>
-                    <p>Arahkan kursor atau pilih perintah untuk membaca penjelasannya.</p>
+                    <p>Klik tombol perintah untuk membaca penjelasannya.</p>
                     <div id="command-reference-list" class="command-reference-list"></div>
                 <aside id="code-suggestion-help" class="code-suggestion-help" aria-label="Penjelasan perintah" aria-live="polite" hidden>
                     <div class="code-suggestion-help__heading">

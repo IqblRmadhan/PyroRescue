@@ -225,12 +225,7 @@ export default class CodeAutocomplete {
             button.type = 'button';
             button.textContent = suggestion.label;
             button.setAttribute('aria-controls', this.helpPanel.id);
-            const show = () => this.renderDocumentation(suggestion);
-            button.addEventListener('pointerenter', (event) => {
-                if (event.pointerType === 'mouse') show();
-            });
-            button.addEventListener('focus', show);
-            button.addEventListener('click', show);
+            button.addEventListener('click', () => this.renderDocumentation(suggestion));
             return button;
         }));
         this.renderDocumentation(this.suggestions.at(-1));

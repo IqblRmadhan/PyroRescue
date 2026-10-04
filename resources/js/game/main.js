@@ -19,6 +19,7 @@ const learning = new Learning(editor, document.getElementById('learning-panel'))
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
+const clearButton = document.getElementById('clear-code');
 const hintButton = document.getElementById('hint');
 const hintButtonLabel = hintButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
@@ -64,10 +65,11 @@ function hideFeedback() {
     delete feedback.dataset.state;
 }
 
-// Run dan Reset dikunci bersama selama animasi berjalan.
+// Tombol aksi dikunci bersama selama animasi berjalan.
 function setControlsDisabled(disabled) {
     runButton.disabled = disabled;
     resetButton.disabled = disabled;
+    clearButton.disabled = disabled;
 }
 
 function hideHint() {
@@ -275,11 +277,22 @@ async function resetChallenge() {
     }
 }
 
+function clearCode() {
+    editor.value = '';
+    editor.scrollTop = 0;
+    editor.scrollLeft = 0;
+    editor.dispatchEvent(new Event('input', { bubbles: true }));
+    autocomplete.hide();
+    editor.focus({ preventScroll: true });
+    document.getElementById('editor-action-status').textContent = 'Semua kode di PyroPad sudah dihapus.';
+}
+
 // 5. Pasang semua tombol, lalu mulai game.
 editor.addEventListener('input', updateLineNumbers);
 editor.addEventListener('scroll', updateLineNumbers);
 runButton.addEventListener('click', runCode);
 resetButton.addEventListener('click', resetChallenge);
+clearButton.addEventListener('click', clearCode);
 hintButton.addEventListener('click', toggleHint);
 feedbackOkButton.addEventListener('click', hideFeedback);
 resultReplay.addEventListener('click', () => window.location.reload());

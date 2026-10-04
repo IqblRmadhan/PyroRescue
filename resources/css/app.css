@@ -2728,6 +2728,209 @@
     .adventure-level--active .adventure-level__image-wrap img { animation: none; }
 }
 
+/* Pulau aktif di depan, dua pilihan lain terlihat di belakangnya. */
+.adventure-carousel {
+    position: relative;
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) 76px;
+    align-items: center;
+    column-gap: clamp(6px, 2vw, 30px);
+    width: min(1050px, 100%);
+    margin: 18px auto 0;
+}
+
+.adventure-carousel__viewport {
+    grid-column: 2;
+    min-width: 0;
+    overflow: visible;
+}
+
+.adventure-carousel .adventure-islands {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 640px;
+    min-height: 0;
+    margin: 0;
+}
+
+.adventure-carousel .adventure-level {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    min-height: 0;
+    padding: 0 8px 16px;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(.65);
+    transition: transform 620ms cubic-bezier(.22, 1, .36, 1), opacity 420ms ease;
+}
+
+.adventure-carousel .adventure-level.is-current {
+    z-index: 3;
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0) scale(1);
+}
+
+.adventure-carousel .adventure-level.is-previous,
+.adventure-carousel .adventure-level.is-next {
+    z-index: 1;
+    opacity: .62;
+}
+
+.adventure-carousel .adventure-level.is-previous {
+    transform: translateX(-63%) translateY(28px) scale(.72);
+}
+
+.adventure-carousel .adventure-level.is-next {
+    transform: translateX(63%) translateY(28px) scale(.72);
+}
+
+.adventure-carousel .adventure-level:not(.is-current) .adventure-level__copy {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.adventure-carousel .adventure-level:not(.is-current) .adventure-level__image-wrap img {
+    filter: saturate(.72) brightness(.76) drop-shadow(0 20px 18px #061c28a6);
+}
+
+.adventure-carousel .adventure-level__image-wrap {
+    width: 100%;
+    height: clamp(300px, 31vw, 410px);
+}
+
+.adventure-carousel .adventure-level__image-wrap img {
+    width: min(100%, 630px);
+    max-height: 100%;
+}
+
+.adventure-carousel .adventure-level.is-current .adventure-level__image-wrap img {
+    animation: adventure-float 5s ease-in-out infinite;
+}
+
+.adventure-carousel .adventure-level__copy {
+    margin-top: -22px;
+}
+
+.adventure-carousel .adventure-level h2 {
+    font-size: clamp(29px, 3vw, 43px);
+}
+
+.adventure-carousel .adventure-level__copy p {
+    max-width: 440px;
+    margin-top: 10px;
+    padding: 9px 17px;
+    color: #352716;
+    border: 2px solid #342b21;
+    border-radius: 4px;
+    background: #f7e9c9;
+    box-shadow: inset 0 0 0 2px #fff7df, 0 4px 0 #132632;
+    font-size: 14px;
+    text-shadow: none;
+}
+
+.adventure-carousel .adventure-level--locked .adventure-level__copy p {
+    color: #e3e7d7;
+    border: 0;
+    background: none;
+    box-shadow: none;
+    text-shadow: 1px 2px #061c26;
+}
+
+.adventure-carousel__arrow {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 76px;
+    min-height: 76px;
+    margin-top: -90px;
+    padding: 4px;
+    color: #ffdb82;
+    border: 2px solid #cfab68;
+    border-radius: 12px;
+    background: linear-gradient(#204d5c, #0f2c3a);
+    box-shadow: inset 0 0 0 2px #ffffff17, 0 7px 0 #061c28;
+    cursor: pointer;
+    transition: transform .18s ease, background .18s ease;
+}
+
+.adventure-carousel__arrow--previous { grid-column: 1; grid-row: 1; }
+.adventure-carousel__arrow--next { grid-column: 3; grid-row: 1; }
+.adventure-carousel__viewport { grid-row: 1; }
+.adventure-carousel__arrow span { font-family: Georgia, serif; font-size: 58px; line-height: .7; }
+.adventure-carousel__arrow small { margin-top: 9px; color: #e4e3d6; font-size: 10px; font-weight: 800; }
+.adventure-carousel__arrow:hover { transform: translateY(-3px); background: linear-gradient(#2a6875, #174453); }
+.adventure-carousel__arrow:active { transform: translateY(3px); box-shadow: inset 0 0 0 2px #ffffff17, 0 3px 0 #061c28; }
+
+.adventure-carousel__navigation {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 2px;
+}
+
+.adventure-carousel__steps { display: flex; gap: 8px; }
+.adventure-carousel__steps button {
+    min-width: 42px;
+    padding: 6px 9px;
+    color: #bdd7d4;
+    border: 1px solid #5b8690;
+    border-radius: 5px;
+    background: #102d3c;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+.adventure-carousel__steps button.is-current {
+    color: #192e32;
+    border-color: #ffdb86;
+    background: #ffdb86;
+}
+.adventure-carousel__status { color: #d3e1dc; font-size: 12px; }
+.adventure-carousel__arrow:focus-visible,
+.adventure-carousel__steps button:focus-visible { outline: 3px solid #ffdf80; outline-offset: 4px; }
+
+@media (max-width: 720px) {
+    .adventure-carousel { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; margin-top: 24px; }
+    .adventure-carousel .adventure-islands { height: 505px; margin: 0; }
+    .adventure-carousel .adventure-level { min-height: 0; padding: 0 2px 10px; }
+    .adventure-carousel .adventure-level.is-previous { transform: translateX(-62%) translateY(14px) scale(.75); }
+    .adventure-carousel .adventure-level.is-next { transform: translateX(62%) translateY(14px) scale(.75); }
+    .adventure-carousel .adventure-level__image-wrap,
+    .adventure-carousel .adventure-level--locked .adventure-level__image-wrap { height: clamp(200px, 49vw, 320px); }
+    .adventure-carousel .adventure-level__copy { margin-top: -8px; }
+    .adventure-carousel .adventure-level h2 { font-size: clamp(24px, 5vw, 34px); }
+    .adventure-carousel .adventure-level__copy p { display: block; max-width: 330px; margin-top: 7px; padding: 7px 10px; font-size: 12px; }
+    .adventure-carousel__arrow { width: 46px; min-height: 54px; margin-top: -100px; border-radius: 8px; }
+    .adventure-carousel__arrow span { font-size: 45px; }
+    .adventure-carousel__arrow small { display: none; }
+    .adventure-carousel__navigation { flex-direction: column; gap: 7px; }
+}
+
+@media (max-width: 440px) {
+    .adventure-carousel .adventure-islands { height: 490px; }
+    .adventure-carousel .adventure-level__image-wrap { height: 54vw; }
+    .adventure-carousel .adventure-level__copy { margin-top: 0; }
+    .adventure-carousel .adventure-level h2 { font-size: 23px; }
+    .adventure-carousel .adventure-play { min-width: 0; padding: 8px 14px; font-size: 19px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .adventure-carousel .adventure-level { transition: none; }
+    .adventure-carousel .adventure-level.is-current .adventure-level__image-wrap img { animation: none; }
+}
+
 /* Landing page memakai dunia visual yang sama dengan menu petualangan. */
 .landing-page {
     min-width: 320px;
