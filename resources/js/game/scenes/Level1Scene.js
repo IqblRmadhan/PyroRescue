@@ -83,6 +83,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     update(time, delta) {
         this.atmosphere?.update(delta);
+        this.pumpLabel?.setZoom(this.cameras.main.zoom);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
             this.waterLayer.tilePositionX += 0.02;
@@ -276,7 +277,7 @@ export default class Level1Scene extends Phaser.Scene {
             .setOrigin(0.5, 0.9)
             .setDisplaySize(pumpDisplaySize, pumpDisplaySize)
             .setDepth(7);
-        addPumpLabel(this, pumpPosition.x, pumpPosition.y);
+        this.pumpLabel = addPumpLabel(this, pumpPosition.x, pumpPosition.y);
         this.add.ellipse(post1NpcPosition.x, post1NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
             .setDepth(8);
         this.npcPost1 = this.add.sprite(

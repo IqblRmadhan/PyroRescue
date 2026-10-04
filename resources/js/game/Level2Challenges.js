@@ -32,7 +32,7 @@ const challenges = {
         lesson: 'Dari isi_air = 6, dua unit dipakai di C1 sehingga tersisa empat. range(3) mengulang semprot() tiga kali di C2; satu unit air akan tersisa untuk C3.',
         hints: [
             'Kembali ke jalan utama, lalu ikuti jalan atas ke kanan. Gunakan for/range agar semprot() diulang tiga kali.',
-            'Dari awal challenge: kiri(2), atas(6), kanan(13), bawah(2), kanan(4), bawah(2). Lalu tulis for i in range(3): dan semprot() dengan empat spasi di baris berikutnya.',
+            'Dari awal challenge: kiri(2), atas(6), kanan(13), bawah(2), kanan(4). Lalu tulis for i in range(3): dan semprot() dengan empat spasi di baris berikutnya.',
         ],
         nextMessage: 'Satu unit air tersisa untuk api terakhir. Simpan jumlah iterasinya dalam jumlah_semprot.',
     },
@@ -50,7 +50,7 @@ const challenges = {
         lesson: 'isi_air menyimpan satu unit air yang tersisa. Variabel jumlah_semprot menyimpan banyaknya iterasi. range(jumlah_semprot) membaca nilai 1, jadi semprot() memakai unit terakhir sekali.',
         hints: [
             'Ikuti jalan ke kanan lalu turun. Setelah api padam, teruskan jalan ke bawah, lewati jembatan ke kiri, lalu turun ke FINISH.',
-            'Dari awal challenge: kanan(4), bawah(12). Tulis jumlah_semprot = 1, lalu for i in range(jumlah_semprot): dengan semprot() berindentasi. Setelah padam: bawah(5), kiri(17), bawah(6).',
+            'Dari awal challenge: bawah(2), kanan(4), bawah(11). Tulis jumlah_semprot = 1, lalu for i in range(jumlah_semprot): dengan semprot() berindentasi. Setelah padam: bawah(6), kiri(17), bawah(6).',
         ],
     },
 };

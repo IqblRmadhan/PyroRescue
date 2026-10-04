@@ -26,3 +26,10 @@ test('active fire label shows the remaining sprays', () => {
     assert.equal(typeof level2Config.getFirePresentation, 'function');
     assert.equal(level2Config.getFirePresentation(2, 2, 1, challenges).label, 'C2 • SISA 2 SEMPROT');
 });
+
+test('route hints follow the relocated C2 marker', () => {
+    assert.match(challenges[2].hints[1], /bawah\(2\), kanan\(4\)\./);
+    assert.doesNotMatch(challenges[2].hints[1], /kanan\(4\), bawah\(2\)/);
+    assert.match(challenges[3].hints[1], /bawah\(2\), kanan\(4\), bawah\(11\)/);
+    assert.match(challenges[3].hints[1], /Setelah padam: bawah\(6\), kiri\(17\), bawah\(6\)/);
+});

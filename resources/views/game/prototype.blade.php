@@ -99,12 +99,12 @@
                      data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"></div>
 
                 <div class="game-map-controls" aria-label="Bantuan dan pengulangan misi">
-                    <button id="reset" class="hint-button map-reset-button" type="button" aria-label="Ulangi challenge saat ini" disabled>
+                    <button id="reset" class="hint-button hint-button--reset" type="button" aria-label="Ulangi challenge saat ini" disabled>
                         <span class="hint-button__icon" aria-hidden="true">&#8635;</span>
                         <span class="hint-button__label">Ulangi</span>
                     </button>
                     <div id="game-hint" class="game-hint">
-                        <button id="hint" class="hint-button" type="button" aria-label="Buka hint" aria-expanded="false" aria-controls="hint-text">
+                        <button id="hint" class="hint-button hint-button--help" type="button" aria-label="Buka hint" aria-expanded="false" aria-controls="hint-text">
                             <span class="hint-button__icon" aria-hidden="true">&#128161;</span>
                             <span class="hint-button__label">Hint</span>
                         </button>

@@ -598,10 +598,6 @@
     cursor: pointer;
 }
 
-.hint-button:hover {
-    background: #e8dfbc;
-}
-
 .game-panel button:focus-visible,
 #code-editor:focus-visible,
 .brand-title:focus-visible {
@@ -1520,6 +1516,11 @@
     background: linear-gradient(#d05c42, #a52e2e);
 }
 
+.game-action-button--clear {
+    background: linear-gradient(#536d73, #304b54);
+    box-shadow: inset 0 0 0 2px #9fc2c5, 0 4px 0 #1d3036;
+}
+
 .game-action-button:hover:not(:disabled),
 .game-action-button:focus-visible {
     filter: brightness(1.12);
@@ -1536,15 +1537,21 @@
     opacity: .58;
 }
 
-.game-hint {
+.game-map-controls {
     position: absolute;
-    z-index: 35;
-    top: 50%;
+    z-index: 36;
+    top: 12px;
     right: 12px;
     display: flex;
-    align-items: center;
-    gap: 10px;
-    transform: translateY(-50%);
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.game-hint {
+    position: relative;
+    flex: 0 0 62px;
+    width: 62px;
+    height: 62px;
 }
 
 .hint-button {
@@ -1564,13 +1571,31 @@
     transition: filter 120ms ease, transform 120ms ease;
 }
 
-.hint-button:hover,
-.hint-button:focus-visible {
+.hint-button--help {
+    color: #eaffff;
+    background: radial-gradient(circle at 38% 30%, #72e6e3, #278fa4 58%, #16516c);
+    box-shadow: inset 0 0 0 3px #b8ffff, 0 5px 0 #173b50, 0 8px 18px #08171980;
+}
+
+.hint-button--reset {
+    color: #fff4ea;
+    background: radial-gradient(circle at 38% 30%, #ff9b7e, #d64f42 58%, #84282d);
+    box-shadow: inset 0 0 0 3px #ffd0b9, 0 5px 0 #572328, 0 8px 18px #08171980;
+}
+
+.hint-button:disabled {
+    cursor: wait;
+    filter: grayscale(.3);
+    opacity: .58;
+}
+
+.hint-button:hover:not(:disabled),
+.hint-button:focus-visible:not(:disabled) {
     filter: brightness(1.12);
     transform: scale(1.06);
 }
 
-.hint-button:active {
+.hint-button:active:not(:disabled) {
     transform: translateY(3px);
 }
 
@@ -1586,8 +1611,19 @@
     text-shadow: 1px 1px #6f3818;
 }
 
+.hint-button--help .hint-button__label {
+    text-shadow: 1px 1px #16465b;
+}
+
+.hint-button--reset .hint-button__label {
+    text-shadow: 1px 1px #65232a;
+}
+
 #hint-text {
-    position: relative;
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 10px);
+    right: 0;
     width: min(330px, 45vw);
     margin: 0;
     padding: 11px 14px;
@@ -1606,15 +1642,15 @@
 
 #hint-text::after {
     position: absolute;
-    top: 50%;
-    right: -13px;
+    top: -13px;
+    right: 18px;
     width: 18px;
     height: 18px;
     content: '';
     border-top: 4px solid #3a291d;
-    border-right: 4px solid #3a291d;
+    border-left: 4px solid #3a291d;
     background: #f3dfba;
-    transform: translateY(-50%) rotate(45deg);
+    transform: rotate(45deg);
 }
 
 #hint-text[hidden] {
@@ -1857,7 +1893,13 @@
     .game-prototype.game-mobile .game-hud { grid-template-columns: repeat(2, 1fr); width: calc(100% - 20px); }
     .game-prototype.game-mobile .hud-counter { min-height: 48px; padding-inline: 4px; }
     .game-prototype.game-mobile .hud-counter .asset-icon { transform: scale(.7); }
-    .game-prototype.game-mobile .game-hint { right: 8px; }
+    .game-prototype.game-mobile .game-map-controls { top: 68px; right: 8px; }
+    .game-prototype.game-mobile .game-map-controls .game-hint {
+        right: auto;
+        flex-basis: 52px;
+        width: 52px;
+        height: 52px;
+    }
     .game-prototype.game-mobile .hint-button { flex-basis: 52px; width: 52px; height: 52px; }
     .game-prototype.game-mobile #hint-text { width: min(240px, 62vw); font-size: 13px; }
     .game-prototype.game-mobile #game-container {

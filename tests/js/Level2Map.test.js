@@ -8,9 +8,9 @@ test('the three fire markers and finish are reachable in order without crossing 
     let row = 5;
     const routes = [
         { steps: [[17, 0], [0, 3], [2, 0]], end: [19, 8] },
-        { steps: [[-2, 0], [0, -6], [13, 0], [0, 2], [4, 0], [0, 2]], end: [34, 6] },
-        { steps: [[4, 0], [0, 12]], end: [38, 18] },
-        { steps: [[0, 5], [-17, 0], [0, 6]], end: [21, 29] },
+        { steps: [[-2, 0], [0, -6], [13, 0], [0, 2], [4, 0]], end: [34, 4] },
+        { steps: [[0, 2], [4, 0], [0, 11]], end: [38, 17] },
+        { steps: [[0, 6], [-17, 0], [0, 6]], end: [21, 29] },
     ];
     for (const route of routes) {
         for (const [dx, dy] of route.steps) {
@@ -29,13 +29,24 @@ test('the three fire markers and finish are reachable in order without crossing 
 });
 
 test('C2 is the upper-right fire and C3 is the lower-right fire', () => {
-    assert.deepEqual(level2Map.fires[2].action, { column: 34, row: 6 });
-    assert.deepEqual(level2Map.fires[3].action, { column: 38, row: 18 });
+    assert.deepEqual(level2Map.fires[2].action, { column: 34, row: 4 });
+    assert.deepEqual(level2Map.fires[2].label, {
+        x: 1370,
+        y: 50,
+        placement: 'above',
+    });
+    assert.deepEqual(level2Map.fires[3].action, { column: 38, row: 17 });
     assert.equal(level2Map.fires[2].y < level2Map.fires[3].y, true);
 });
 
 test('the pump can be reached from the starting road before C1', () => {
     assert.deepEqual(level2Map.pump.action, { column: 15, row: 5 });
+    assert.deepEqual(
+        { x: level2Map.pump.x, y: level2Map.pump.y },
+        { x: 620, y: 180 },
+    );
+    assert.equal(level2Map.pump.spriteOffsetX, -4);
+    assert.equal(level2Map.pump.x + level2Map.pump.spriteOffsetX, 616);
     assert.equal(isLevel2Walkable(15, 5), true);
     assert.equal(isLevel2Walkable(17, 8), true);
     assert.equal(level2Map.pump.capacity, 6);

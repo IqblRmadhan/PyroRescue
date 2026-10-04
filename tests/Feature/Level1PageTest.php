@@ -39,7 +39,13 @@ class Level1PageTest extends TestCase
             ->assertSee('kanan(angka)')
             ->assertSee('Run Code')
             ->assertSee('Hint')
-            ->assertSee('id="reset"', false);
+            ->assertSee('id="reset"', false)
+            ->assertSee('id="clear-code"', false)
+            ->assertSeeInOrder([
+                'class="game-map-controls"',
+                'id="reset" class="hint-button hint-button--reset"',
+                'id="hint" class="hint-button hint-button--help"',
+            ], false);
 
         $this->get('/game-test')->assertOk();
     }

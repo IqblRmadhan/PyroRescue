@@ -3,7 +3,7 @@ import { firefighterAnimations } from '../Level1Assets.js';
 import { level2Assets } from '../Level2Assets.js';
 import { isLevel2Walkable, level2Map, level2TileToWorld } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import { addPumpLabel } from '../PumpLabel.js';
+import { addFireLabel, addPumpLabel } from '../PumpLabel.js';
 import challenges, { getFirePresentation } from '../Level2Challenges.js';
 
 const playerScale = 0.245;
@@ -108,13 +108,18 @@ export default class Level2Scene extends Phaser.Scene {
             this.fires[number] = this.add.sprite(fire.x, fire.y, texture, 'fire1')
                 .setOrigin(0.5, 1).setDisplaySize(fire.size, fire.size).setDepth(5)
                 .play(`${texture}-burn`);
-            const labelY = Math.max(42, fire.y - fire.size - 10);
-            this.fireLabels[number] = this.add.text(fire.x, labelY, '', {
-                fontFamily: 'PixelFont, monospace', fontSize: '16px', color: '#ffffff',
-                backgroundColor: '#102923', padding: { x: 9, y: 5 },
-                stroke: '#061512', strokeThickness: 2,
-                shadow: { offsetX: 2, offsetY: 3, color: '#000000', blur: 2, fill: true },
-            }).setOrigin(0.5, 1).setDepth(7);
+            const label = fire.label ?? {
+                x: fire.x,
+                y: fire.y - fire.size - 4,
+                placement: 'above',
+            };
+            this.fireLabels[number] = addFireLabel(
+                this,
+                label.x,
+                label.y,
+                '',
+                label.placement,
+            );
 
             const marker = level2TileToWorld(fire.action.column, fire.action.row);
             this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
@@ -133,7 +138,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawPumpStation() {
-        const { x, y, action } = level2Map.pump;
+        const { x, y, spriteOffsetX = 0, action } = level2Map.pump;
         // Dua pohon di bawah jalan sudah ada pada PNG. Tutup hanya dua pohon
         // di atas jalan, lalu letakkan pompa di area rumput bekas pohon itu.
         const mapImage = this.textures.get('level2Map').getSourceImage();
@@ -169,15 +174,18 @@ export default class Level2Scene extends Phaser.Scene {
         roadSide.refresh();
         this.add.image(684, 86, 'level2PumpRoadSide').setOrigin(0).setDepth(2.6);
 
-        this.pump = this.add.sprite(x, y, 'waterPump', 'idle')
+        this.pump = this.add.sprite(x + spriteOffsetX, y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
-        addPumpLabel(this, x, y);
+        this.pumpLabel = addPumpLabel(this, x, y);
         const marker = level2TileToWorld(action.column, action.row);
         this.pumpMarker = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
             .setDisplaySize(20, 20).setDepth(7).play('level2-marker');
     }
 
     update() {
+        const zoom = this.cameras.main.zoom;
+        this.pumpLabel?.setZoom(zoom);
+        for (const label of Object.values(this.fireLabels ?? {})) label.setZoom(zoom);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
             this.waterLayer.tilePositionX += 0.02;
@@ -202,13 +210,11 @@ export default class Level2Scene extends Phaser.Scene {
             const label = this.fireLabels[number].setText(presentation.label);
             const marker = this.fireMarkers[number];
             if (presentation.completed) {
-                label.setColor('#d5ffda').setBackgroundColor('#174c35').setStroke('#071e16', 2);
+                label.setTheme('completed');
                 marker.setVisible(false);
             } else {
                 const isActive = Number(number) === this.challengeNumber;
-                label.setColor('#ffffff')
-                    .setBackgroundColor(isActive ? '#713019' : '#102923')
-                    .setStroke('#061512', 2);
+                label.setTheme(isActive ? 'fire' : 'fireInactive');
                 marker.setVisible(true).setAlpha(1).setDisplaySize(20, 20);
             }
         }
