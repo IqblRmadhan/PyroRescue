@@ -3,6 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
+        "audio:generate": "node scripts/generate-game-audio.mjs",
         "build": "vite build",
         "dev": "vite",
         "test": "node --test tests/js/*.test.js"

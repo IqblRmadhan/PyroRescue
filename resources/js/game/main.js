@@ -7,6 +7,8 @@ import level1Challenges from './Level1Challenges.js';
 import level2Challenges from './Level2Challenges.js';
 import Level2Scene from './scenes/Level2Scene.js';
 import Level2Learning from './Level2Learning.js';
+import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
+import { getOutcomeFeedback, shouldPlayTargetCue } from './GameFeedback.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -22,6 +24,9 @@ const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear-code');
 const hintButton = document.getElementById('hint');
 const hintButtonLabel = hintButton.querySelector('.hint-button__label');
+const audioButton = document.getElementById('audio-toggle');
+const audioButtonIcon = audioButton.querySelector('.hint-button__icon');
+const audioButtonLabel = audioButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
@@ -44,6 +49,30 @@ let latestState = {};
 let completedTargets = new Set();
 const completedChallenges = new Set();
 let levelCompleted = false;
+
+if (!gameAudio.isMuted()) void gameAudio.preload();
+
+function renderAudioButton() {
+    const presentation = getAudioButtonPresentation(gameAudio.isMuted());
+    audioButtonIcon.textContent = presentation.icon;
+    audioButtonLabel.textContent = presentation.label;
+    audioButton.setAttribute('aria-label', presentation.ariaLabel);
+    audioButton.setAttribute('aria-pressed', String(presentation.pressed));
+}
+
+function toggleAudio() {
+    const wasMuted = gameAudio.isMuted();
+    if (!wasMuted) gameAudio.play('uiClick');
+    const isMuted = gameAudio.toggleMuted();
+    renderAudioButton();
+
+    if (!isMuted) {
+        void gameAudio.preload();
+        void gameAudio.unlock().then((ready) => {
+            if (ready) gameAudio.play('uiClick');
+        });
+    }
+}
 
 function updateLineNumbers() {
     const lineCount = editor.value.split('\n').length;
@@ -107,7 +136,11 @@ function isTargetComplete(targetKey, state) {
 }
 
 function renderMissionState(state = {}) {
-    latestState = { ...latestState, ...state };
+    const { suppressTargetAudio = false, ...persistentState } = state;
+    if (typeof persistentState.fireNearby === 'boolean') {
+        gameAudio.setFireNearby(persistentState.fireNearby);
+    }
+    latestState = { ...latestState, ...persistentState };
     learning.renderState(latestState);
 
     const counter = latestState.water;
@@ -117,6 +150,14 @@ function renderMissionState(state = {}) {
 
     for (const target of challengeDefinitions[currentChallenge].targets) {
         if (isTargetComplete(target.key, latestState)) {
+            const canPlayTargetCue = shouldPlayTargetCue({
+                isLevel2,
+                targetKey: target.key,
+                suppressTargetAudio,
+            });
+            if (!completedTargets.has(target.key) && canPlayTargetCue) {
+                gameAudio.play('target');
+            }
             completedTargets.add(target.key);
         }
     }
@@ -173,6 +214,7 @@ function advanceChallenge(successMessage) {
     completedChallenges.add(currentChallenge);
 
     if (currentChallenge === 3) {
+        gameAudio.play('levelComplete');
         levelCompleted = true;
         hideFeedback();
         resultStars.textContent = `${completedChallenges.size} / 3 bintang`;
@@ -183,6 +225,7 @@ function advanceChallenge(successMessage) {
     }
 
     const completedChallenge = currentChallenge;
+    if (!isLevel2) gameAudio.play('challengeComplete');
     currentChallenge += 1;
     configureChallenge();
     showFeedback(
@@ -203,9 +246,11 @@ const scene = new Scene({
             : 'Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
     },
     onLoadError() {
+        gameAudio.play('commandError');
         showFeedback('Aset game gagal dimuat. Muat ulang halaman untuk mencoba lagi.', 'error');
     },
     onStateChange: renderMissionState,
+    onAudio: (cue) => gameAudio.play(cue),
 });
 const autocomplete = new CodeAutocomplete(
     editor,
@@ -227,9 +272,12 @@ async function runCode() {
     );
 
     if (!result.syntaxValid || !result.conceptValid) {
+        gameAudio.play('commandError');
         showFeedback(result.message, 'error');
         return;
     }
+
+    gameAudio.play('run');
 
     hideFeedback();
     setControlsDisabled(true);
@@ -240,7 +288,9 @@ async function runCode() {
         if (outcome.missionSuccess) {
             advanceChallenge(outcome.message);
         } else {
-            showFeedback(outcome.message);
+            const outcomeFeedback = getOutcomeFeedback(outcome);
+            if (outcomeFeedback.playErrorCue) gameAudio.play('commandError');
+            showFeedback(outcome.message, outcomeFeedback.state);
         }
     } finally {
         setControlsDisabled(levelCompleted);
@@ -249,9 +299,12 @@ async function runCode() {
 
 function toggleHint() {
     if (!hintText.hidden) {
+        gameAudio.play('uiClick');
         hideHint();
         return;
     }
+
+    gameAudio.play('hint');
 
     const hints = challengeDefinitions[currentChallenge].hints;
     hintText.textContent = hints[hintIndex];
@@ -264,6 +317,8 @@ function toggleHint() {
 
 async function resetChallenge() {
     if (levelCompleted) return;
+
+    gameAudio.play('reset');
 
     setControlsDisabled(true);
     configureChallenge({ updateScene: false });
@@ -278,6 +333,7 @@ async function resetChallenge() {
 }
 
 function clearCode() {
+    gameAudio.play('clear');
     editor.value = '';
     editor.scrollTop = 0;
     editor.scrollLeft = 0;
@@ -294,8 +350,21 @@ runButton.addEventListener('click', runCode);
 resetButton.addEventListener('click', resetChallenge);
 clearButton.addEventListener('click', clearCode);
 hintButton.addEventListener('click', toggleHint);
-feedbackOkButton.addEventListener('click', hideFeedback);
-resultReplay.addEventListener('click', () => window.location.reload());
+audioButton.addEventListener('click', toggleAudio);
+feedbackOkButton.addEventListener('click', () => {
+    gameAudio.play('uiClick');
+    hideFeedback();
+});
+resultReplay.addEventListener('click', () => {
+    gameAudio.play('uiClick');
+    window.location.reload();
+});
+const resumeAudio = () => {
+    if (!gameAudio.isMuted()) void gameAudio.unlock();
+};
+window.addEventListener('pointerdown', resumeAudio);
+window.addEventListener('keydown', resumeAudio);
+renderAudioButton();
 updateLineNumbers();
 
 const config = {

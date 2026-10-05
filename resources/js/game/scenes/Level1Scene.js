@@ -22,7 +22,13 @@ const actionMarkerDisplaySize = 20;
 const pumpCyclePause = 100;
 
 export default class Level1Scene extends Phaser.Scene {
-    constructor({ assetBaseUrl, onReady, onLoadError, onStateChange = () => {} }) {
+    constructor({
+        assetBaseUrl,
+        onReady,
+        onLoadError,
+        onStateChange = () => {},
+        onAudio = () => {},
+    }) {
         super('Level1Scene');
         this.challengeNumber = 1;
         this.requiredWater = 3;
@@ -32,6 +38,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.onReady = onReady;
         this.onLoadError = onLoadError;
         this.onStateChange = onStateChange;
+        this.onAudio = onAudio;
     }
 
     preload() {
@@ -352,9 +359,9 @@ export default class Level1Scene extends Phaser.Scene {
         enableMapCameraControls(this, level1Map);
     }
 
-    setWater(amount) {
+    setWater(amount, { suppressTargetAudio = false } = {}) {
         this.water = amount;
-        this.publishState();
+        this.publishState({ suppressTargetAudio });
     }
 
     setChallenge(challengeNumber) {
@@ -386,7 +393,7 @@ export default class Level1Scene extends Phaser.Scene {
             if (command.type === 'move') {
                 const moved = await this.move(command.direction);
                 if (!moved) {
-                    return { missionSuccess: false, message: 'Petak di depan bukan jalan tanah. Periksa sequence gerakanmu.' };
+                    return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan tanah. Periksa sequence gerakanmu.' };
                 }
                 continue;
             }
@@ -398,7 +405,7 @@ export default class Level1Scene extends Phaser.Scene {
                         ? await this.updateWaterAtPost(command.amount)
                         : { success: false, message: 'Challenge 3 hanya menggunakan air_pos_2 = isi_air.' };
                 if (!result.success) {
-                    return { missionSuccess: false, message: result.message };
+                    return { status: 'error', missionSuccess: false, message: result.message };
                 }
                 continue;
             }
@@ -406,13 +413,14 @@ export default class Level1Scene extends Phaser.Scene {
             if (command.type === 'transferWater') {
                 const result = await this.transferWaterToPost();
                 if (!result.success) {
-                    return { missionSuccess: false, message: result.message };
+                    return { status: 'error', missionSuccess: false, message: result.message };
                 }
             }
         }
 
         if (this.challengeNumber === 1 && this.water === this.requiredWater) {
             return {
+                status: 'success',
                 missionSuccess: true,
                 message: `Berhasil! Variabel isi_air sekarang menyimpan nilai ${this.water}.`,
             };
@@ -420,6 +428,7 @@ export default class Level1Scene extends Phaser.Scene {
 
         if (this.challengeNumber === 2 && this.water === this.requiredWater) {
             return {
+                status: 'success',
                 missionSuccess: true,
                 message: `Berhasil! 3 unit bawaan ditambah 2 unit bantuan menjadi ${this.water} unit di isi_air.`,
             };
@@ -428,12 +437,14 @@ export default class Level1Scene extends Phaser.Scene {
         if (this.challengeNumber === 3 && this.postWater === this.requiredWater
             && isOnTile(this.playerColumn, this.playerRow, level1Map.finish)) {
             return {
+                status: 'success',
                 missionSuccess: true,
                 message: `Berhasil! Pos 2 menerima ${this.postWater} unit air dan kamu mencapai FINISH.`,
             };
         }
 
         return {
+            status: 'progress',
             missionSuccess: false,
             message: this.getIncompleteChallengeMessage(),
         };
@@ -473,8 +484,11 @@ export default class Level1Scene extends Phaser.Scene {
         this.setWater(0);
 
         for (let cycle = 1; cycle <= amount; cycle += 1) {
+            this.onAudio('pump');
             await this.playPumpCycle();
-            this.setWater(cycle);
+            const isLastCycle = cycle === amount;
+            this.setWater(cycle, { suppressTargetAudio: isLastCycle });
+            if (!isLastCycle) this.onAudio('water');
 
             if (cycle < amount) {
                 await this.wait(pumpCyclePause);
@@ -505,11 +519,13 @@ export default class Level1Scene extends Phaser.Scene {
         if (this.water < amount) {
             for (let total = this.water + 1; total <= amount; total += 1) {
                 await this.wait(250);
-                this.setWater(total);
+                const isLastUpdate = total === amount;
+                this.setWater(total, { suppressTargetAudio: isLastUpdate });
+                if (!isLastUpdate) this.onAudio('water');
             }
         } else {
             await this.wait(250);
-            this.setWater(amount);
+            this.setWater(amount, { suppressTargetAudio: true });
         }
 
         this.setPlayerIdle(previousDirection);
@@ -541,6 +557,7 @@ export default class Level1Scene extends Phaser.Scene {
         );
         this.postWater = this.water;
         this.water = 0;
+        this.onAudio('water');
         this.hasDeliveredWater = true;
         this.finishSign.setAlpha(1);
         this.publishState();
@@ -590,6 +607,7 @@ export default class Level1Scene extends Phaser.Scene {
             .setScale(playerScale);
 
         if (!isWalkable(targetColumn, targetRow)) {
+            this.onAudio('blocked');
             this.setPlayerIdle(direction);
             return false;
         }
@@ -597,6 +615,7 @@ export default class Level1Scene extends Phaser.Scene {
         const targetPosition = tileToWorld(targetColumn, targetRow);
         this.playerColumn = targetColumn;
         this.playerRow = targetRow;
+        this.onAudio('step');
 
         await new Promise((resolve) => {
             this.tweens.add({
@@ -616,7 +635,7 @@ export default class Level1Scene extends Phaser.Scene {
         return true;
     }
 
-    publishState() {
+    publishState(extraState = {}) {
         this.onStateChange({
             water: this.water ?? 0,
             postWater: this.postWater ?? 0,
@@ -627,6 +646,7 @@ export default class Level1Scene extends Phaser.Scene {
             atPost2: isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action),
             atFinish: isOnTile(this.playerColumn, this.playerRow, level1Map.finish)
                 && this.postWater === this.requiredWater,
+            ...extraState,
         });
     }
 

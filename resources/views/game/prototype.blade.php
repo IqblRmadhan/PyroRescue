@@ -2,6 +2,53 @@
     $levelNumber = $levelNumber ?? 1;
     $isLevel2 = $levelNumber === 2;
     $levelTitle = $isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar';
+    $storyScenes = $isLevel2
+        ? [
+            [
+                'image' => 'assets/story/level2/1.png',
+                'alt' => 'Anggota PyroRescue tiba di jembatan menuju hutan gambut yang terbakar',
+                'text' => 'Setelah menuntaskan misi pertama, anggota PyroRescue tiba di jembatan menuju hutan gambut. Di seberang sungai, tanah mulai hangus dan asap muncul dari beberapa arah.',
+            ],
+            [
+                'image' => 'assets/story/level2/2.png',
+                'alt' => 'Kebakaran menyebar di antara pepohonan setelah jembatan',
+                'text' => 'Kebakaran kali ini lebih parah. Api telah menyebar ke beberapa titik, menghitamkan pepohonan, dan memenuhi udara dengan asap yang lebih tebal daripada sebelumnya.',
+            ],
+            [
+                'image' => 'assets/story/level2/3.png',
+                'alt' => 'Komandan PyroRescue memberi briefing melalui radio dari pos',
+                'speaker' => 'KOMANDAN',
+                'text' => 'Api sudah menyebar ke beberapa titik. Satu kali semprotan tidak cukup. Gunakan perulangan untuk memadamkan api secara efektif.',
+            ],
+            [
+                'image' => 'assets/story/level2/4.png',
+                'alt' => 'Anggota PyroRescue memegang PyroPad sebelum memasuki area operasi',
+                'text' => 'Dengan PyroPad di tangan, anggota PyroRescue bersiap menyeberangi jembatan, mengisi tangki di pompa, lalu memadamkan tiga titik api satu per satu.',
+            ],
+        ]
+        : [
+            [
+                'image' => 'assets/story/level1/scene-1.png',
+                'alt' => 'Mobil pemadam PyroRescue tiba di pos kecil dekat hutan yang terbakar',
+                'text' => 'Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.',
+            ],
+            [
+                'image' => 'assets/story/level1/scene-2.png',
+                'alt' => 'Asap tebal, api hutan, dan burung-burung yang terbang menjauh',
+                'text' => 'Langit mulai tertutup asap, suara radio terdengar putus-putus, dan beberapa burung beterbangan keluar dari arah hutan.',
+            ],
+            [
+                'image' => 'assets/story/level1/scene-3.png',
+                'alt' => 'Komandan PyroRescue menyampaikan laporan melalui radio',
+                'speaker' => 'KOMANDAN',
+                'text' => 'Asap semakin tebal. Tim pemantau menemukan jalur masuk menuju titik api pertama, tapi akses ke sana mulai tertutup.',
+            ],
+            [
+                'image' => 'assets/story/level1/scene-4.png',
+                'alt' => 'Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad',
+                'text' => 'Pemain turun dari mobil dan sudah memegang PyroPad. Ia bersiap untuk masuk ke jalur hutan.',
+            ],
+        ];
 @endphp
 <!DOCTYPE html>
 <html lang="id">
@@ -11,13 +58,17 @@
     <title>PyroRescue - Level {{ $levelNumber }}: {{ $levelTitle }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="game-prototype game-workspace" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
-    @unless($isLevel2)
-    <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" data-game-page="prototype-page">
-        <h1 id="story-title" class="sr-only">Cerita pembuka Level 1</h1>
+<body class="game-prototype game-workspace" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
+    <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title"
+             data-game-page="prototype-page" data-level-number="{{ $levelNumber }}">
+        <h1 id="story-title" class="sr-only">Cerita pembuka Level {{ $levelNumber }}</h1>
 
         <div class="story-stage">
-            <button id="story-skip" class="story-skip" type="button">SKIP</button>
+            <button id="story-audio-toggle" class="story-audio-toggle" type="button" aria-label="Suara game" aria-pressed="true">
+                <span class="story-audio-toggle__icon" aria-hidden="true">&#128266;</span>
+                <span class="story-audio-toggle__label">Suara</span>
+            </button>
+            <button id="story-skip" class="story-skip" type="button">LEWATI CERITA</button>
 
             <div class="story-progress" aria-hidden="true">
                 <span class="is-active"></span>
@@ -26,34 +77,18 @@
                 <span></span>
             </div>
 
-            <article class="story-slide is-active" data-story-slide>
-                <img src="{{ asset('assets/story/level1/scene-1.png') }}" alt="Mobil pemadam PyroRescue tiba di pos kecil dekat hutan yang terbakar">
-                <div class="story-dialogue">
-                    <p>Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.</p>
+            @foreach($storyScenes as $scene)
+            <article class="story-slide{{ $loop->first ? ' is-active' : '' }}{{ isset($scene['speaker']) ? ' story-slide--commander' : '' }}"
+                     data-story-slide @unless($loop->first) hidden @endunless>
+                <img src="{{ asset($scene['image']) }}" alt="{{ $scene['alt'] }}">
+                <div class="story-dialogue{{ isset($scene['speaker']) ? ' story-dialogue--commander' : '' }}">
+                    @isset($scene['speaker'])
+                    <strong class="story-speaker">{{ $scene['speaker'] }}</strong>
+                    @endisset
+                    <p>{{ $scene['text'] }}</p>
                 </div>
             </article>
-
-            <article class="story-slide" data-story-slide hidden>
-                <img src="{{ asset('assets/story/level1/scene-2.png') }}" alt="Asap tebal, api hutan, dan burung-burung yang terbang menjauh">
-                <div class="story-dialogue">
-                    <p>Langit mulai tertutup asap, suara radio terdengar putus-putus, dan beberapa burung beterbangan keluar dari arah hutan.</p>
-                </div>
-            </article>
-
-            <article class="story-slide story-slide--commander" data-story-slide hidden>
-                <img src="{{ asset('assets/story/level1/scene-3.png') }}" alt="Komandan PyroRescue menyampaikan laporan melalui radio">
-                <div class="story-dialogue story-dialogue--commander">
-                    <strong class="story-speaker">KOMANDAN</strong>
-                    <p>Asap semakin tebal. Tim pemantau menemukan jalur masuk menuju titik api pertama, tapi akses ke sana mulai tertutup.</p>
-                </div>
-            </article>
-
-            <article class="story-slide" data-story-slide hidden>
-                <img src="{{ asset('assets/story/level1/scene-4.png') }}" alt="Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad">
-                <div class="story-dialogue">
-                    <p>Pemain turun dari mobil dan sudah memegang PyroPad. Ia bersiap untuk masuk ke jalur hutan.</p>
-                </div>
-            </article>
+            @endforeach
 
             <button id="story-next" class="story-next" type="button" aria-label="Lanjut ke adegan berikutnya">
                 <span class="story-next__label">LANJUT</span>
@@ -64,9 +99,7 @@
         </div>
     </section>
 
-    @endunless
-
-    <div id="prototype-page" class="prototype-page" @if(!$isLevel2) inert @endif>
+    <div id="prototype-page" class="prototype-page" inert>
         <header class="game-header">
             <a href="{{ route('main-menu') }}" class="game-brand-logo" aria-label="Kembali ke menu utama PyroRescue"></a>
 
@@ -98,7 +131,11 @@
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
                      data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"></div>
 
-                <div class="game-map-controls" aria-label="Bantuan dan pengulangan misi">
+                <div class="game-map-controls" aria-label="Kontrol suara, bantuan, dan pengulangan misi">
+                    <button id="audio-toggle" class="hint-button hint-button--audio" type="button" aria-label="Suara game" aria-pressed="true">
+                        <span class="hint-button__icon" aria-hidden="true">&#128266;</span>
+                        <span class="hint-button__label">Suara</span>
+                    </button>
                     <button id="reset" class="hint-button hint-button--reset" type="button" aria-label="Ulangi challenge saat ini" disabled>
                         <span class="hint-button__icon" aria-hidden="true">&#8635;</span>
                         <span class="hint-button__label">Ulangi</span>

@@ -1,3 +1,5 @@
+import { level2Map } from './Level2Map.js';
+
 // Nomor challenge mengikuti area: tengah, kanan atas, lalu kanan bawah.
 // Kekuatan aset: LEVEL2-C1 = 2 semprotan, LEVEL2-C2 = 3, LEVEL2-C3 = 1.
 const challenges = {
@@ -71,6 +73,22 @@ export function getFirePresentation(number, challengeNumber, sprays, definitions
         : `C${fireNumber} • ${remaining}× SEMPROT`;
 
     return { completed: false, label, markerState: 'visible' };
+}
+
+export function isPlayerNearBurningFire(
+    { column, row, challengeNumber, sprays },
+    definitions = challenges,
+    map = level2Map,
+) {
+    const radius = 2;
+
+    return Object.entries(map.fires).some(([number, fire]) => {
+        const presentation = getFirePresentation(number, challengeNumber, sprays, definitions);
+        if (presentation.completed) return false;
+
+        return Math.abs(column - fire.action.column) <= radius
+            && Math.abs(row - fire.action.row) <= radius;
+    });
 }
 
 export default challenges;

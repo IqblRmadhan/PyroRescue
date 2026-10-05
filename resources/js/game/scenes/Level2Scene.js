@@ -4,19 +4,29 @@ import { level2Assets } from '../Level2Assets.js';
 import { isLevel2Walkable, level2Map, level2TileToWorld } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
 import { addFireLabel, addPumpLabel } from '../PumpLabel.js';
-import challenges, { getFirePresentation } from '../Level2Challenges.js';
+import challenges, {
+    getFirePresentation,
+    isPlayerNearBurningFire,
+} from '../Level2Challenges.js';
 
 const playerScale = 0.245;
 // Air sedikit tembus pandang agar bayangan tepi sungai di bawahnya tetap terlihat.
 const waterLayerAlpha = 0.72;
 
 export default class Level2Scene extends Phaser.Scene {
-    constructor({ assetBaseUrl, onReady, onLoadError, onStateChange = () => {} }) {
+    constructor({
+        assetBaseUrl,
+        onReady,
+        onLoadError,
+        onStateChange = () => {},
+        onAudio = () => {},
+    }) {
         super('Level2Scene');
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
         this.onStateChange = onStateChange;
+        this.onAudio = onAudio;
         this.challengeNumber = 1;
         this.sprays = 0;
         this.water = 0;
@@ -236,6 +246,12 @@ export default class Level2Scene extends Phaser.Scene {
             atFire: this.isAt(level2Map.fires[this.challengeNumber].action),
             fireOut: this.sprays === this.requiredWater,
             atFinish: this.isAt(level2Map.finish) && this.sprays === this.requiredWater,
+            fireNearby: isPlayerNearBurningFire({
+                column: this.playerColumn,
+                row: this.playerRow,
+                challengeNumber: this.challengeNumber,
+                sprays: this.sprays,
+            }),
         });
     }
 
@@ -243,25 +259,25 @@ export default class Level2Scene extends Phaser.Scene {
         const requested = commands.filter((command) => command.type === 'spray').length;
         const remaining = this.requiredWater - this.sprays;
         if (requested > remaining) {
-            return { missionSuccess: false, message: `Api ini membutuhkan ${remaining} semprotan lagi. Sesuaikan jumlah semprotan sebelum Run.` };
+            return { status: 'error', missionSuccess: false, message: `Api ini membutuhkan ${remaining} semprotan lagi. Sesuaikan jumlah semprotan sebelum Run.` };
         }
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         for (const command of commands) {
             if (command.type === 'move') {
                 if (!await this.move(command.direction)) {
-                    return { missionSuccess: false, message: 'Petak di depan bukan jalan. Periksa urutan gerakanmu.' };
+                    return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan. Periksa urutan gerakanmu.' };
                 }
             } else if (command.type === 'setWater') {
                 if (!this.isAt(level2Map.pump.action)) {
-                    return { missionSuccess: false, message: 'Berdirilah di penanda merah sebelah pompa sebelum menulis isi_air = 6.' };
+                    return { status: 'error', missionSuccess: false, message: 'Berdirilah di penanda merah sebelah pompa sebelum menulis isi_air = 6.' };
                 }
                 await this.fillWater(command.amount);
             } else if (command.type === 'spray') {
                 if (!this.isAt(level2Map.fires[this.challengeNumber].action)) {
-                    return { missionSuccess: false, message: 'Berdirilah di penanda merah dekat api sebelum menjalankan semprot().' };
+                    return { status: 'error', missionSuccess: false, message: 'Berdirilah di penanda merah dekat api sebelum menjalankan semprot().' };
                 }
                 if (this.water === 0) {
-                    return { missionSuccess: false, message: 'Tangki kosong. Kembali ke pompa, lalu tulis isi_air = 6 untuk mengambil pasokan air.' };
+                    return { status: 'error', missionSuccess: false, message: 'Tangki kosong. Kembali ke pompa, lalu tulis isi_air = 6 untuk mengambil pasokan air.' };
                 }
                 await this.spray();
             }
@@ -269,6 +285,7 @@ export default class Level2Scene extends Phaser.Scene {
         const fireOut = this.sprays === this.requiredWater;
         const missionSuccess = fireOut && (this.challengeNumber < 3 || this.isAt(level2Map.finish));
         return {
+            status: missionSuccess ? 'success' : 'progress',
             missionSuccess,
             message: missionSuccess ? 'Berhasil! Api sudah padam dan target challenge terpenuhi.'
                 : fireOut ? 'Semua api padam. Ikuti jalan ke petak FINISH untuk menyelesaikan Level 2.'
@@ -277,12 +294,14 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     async fillWater(amount) {
+        this.onAudio('pump');
         await new Promise((resolve) => {
             this.pump.once(Phaser.Animations.Events.ANIMATION_COMPLETE, resolve);
             this.pump.play('level2-pump-flow', true);
         });
         this.pump.stop().setFrame('idle');
         this.water = amount;
+        this.onAudio('water');
         this.publishState();
     }
 
@@ -291,10 +310,12 @@ export default class Level2Scene extends Phaser.Scene {
         const stream = this.add.graphics().setDepth(8);
         stream.lineStyle(5, 0x86deff, 0.85);
         stream.lineBetween(this.player.x, this.player.y - 22, fire.x, fire.y - fire.size * 0.4);
+        this.onAudio('spray');
         await this.playPlayerAnimation(`spray-${fire.direction}`);
         stream.destroy();
         this.water -= 1;
         this.sprays += 1;
+        if (this.sprays === this.requiredWater) this.onAudio('fireOut');
         this.updateFires();
         this.publishState();
         this.setPlayerIdle(fire.direction);
@@ -305,8 +326,13 @@ export default class Level2Scene extends Phaser.Scene {
         const column = this.playerColumn + dx;
         const row = this.playerRow + dy;
         this.direction = direction;
-        if (!isLevel2Walkable(column, row)) { this.setPlayerIdle(direction); return false; }
+        if (!isLevel2Walkable(column, row)) {
+            this.onAudio('blocked');
+            this.setPlayerIdle(direction);
+            return false;
+        }
         const target = level2TileToWorld(column, row);
+        this.onAudio('step');
         this.player.play(`level2-player-walk-${direction}`, true).setOrigin(0.5, 0.9).setScale(playerScale);
         await new Promise((resolve) => this.tweens.add({
             targets: this.player, x: target.x, y: target.y, duration: 230, ease: 'Linear',

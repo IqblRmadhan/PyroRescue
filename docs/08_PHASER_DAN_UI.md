@@ -59,6 +59,26 @@ mengembalikan fokus ke PyroPad.
 - Progress masih mengikuti prototype Level 1: state berada dalam halaman,
   belum disimpan ke database; memuat ulang halaman mengulang level.
 
+## Audio game
+
+- `GameAudio.js` memuat musik latar, ambience api berbasis jarak, dan efek
+  suara WAV dari `public/assets/audio` melalui Web Audio API. Musik dan efek
+  sintetis dapat dibuat ulang dengan `npm run audio:generate`, sedangkan
+  `fire.wav` merupakan hasil konversi `fire.mp3`.
+- Pada Level 2, `fire.wav` berulang hanya ketika pemain berada dalam area
+  5 × 5 petak yang berpusat pada penanda interaksi api yang belum padam.
+  Suara berhenti ketika pemain keluar dari area atau api tersebut padam.
+- Audio baru aktif setelah klik atau tombol keyboard pertama agar mematuhi
+  kebijakan autoplay browser.
+- Cue tersedia untuk cerita pembuka, tombol UI, gerakan, jalan buntu, pompa,
+  pengisian air, semprotan, api padam, kesalahan kode, target, challenge,
+  dan penyelesaian level.
+- Tombol **Suara/Bisu** tersedia di cerita pembuka dan di dalam game bersama
+  Hint serta Ulangi. Pilihan mute disimpan di `localStorage` dengan kunci
+  `pyrorescue.audioMuted` agar tetap berlaku saat halaman dimuat ulang.
+- Scene hanya mengirim nama cue melalui callback `onAudio`; pembuatan dan
+  pengaturan suara tetap menjadi tanggung jawab `GameAudio.js`.
+
 Contoh prototype awal di bawah tetap menjadi referensi dasar integrasi Phaser.
 
 ## Instalasi Phaser

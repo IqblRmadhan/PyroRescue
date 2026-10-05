@@ -91,7 +91,7 @@
     bottom: 5%;
     left: 4%;
     min-height: 16%;
-    padding: clamp(13px, 2.1vw, 25px) clamp(48px, 6vw, 78px) clamp(13px, 2vw, 23px) clamp(16px, 2.6vw, 32px);
+    padding: clamp(13px, 2.1vw, 25px) clamp(170px, 21vw, 270px) clamp(13px, 2vw, 23px) clamp(16px, 2.6vw, 32px);
     color: #f8fbf7;
     border: clamp(2px, .25vw, 4px) solid #f3f5ef;
     border-radius: 7px;
@@ -106,6 +106,18 @@
     font-weight: 600;
     line-height: 1.18;
     letter-spacing: .02em;
+}
+
+.story-is-typing .story-slide.is-active .story-dialogue p::after {
+    display: inline-block;
+    margin-left: .12em;
+    color: #ffd45f;
+    content: '▌';
+    animation: story-caret 520ms steps(1, end) infinite;
+}
+
+.story-is-typing .story-slide--commander.is-active .story-dialogue p::after {
+    color: #b92718;
 }
 
 .story-dialogue--commander {
@@ -132,48 +144,97 @@
     text-shadow: 2px 2px #5b1f17;
 }
 
+.story-audio-toggle,
 .story-skip,
 .story-next {
     position: absolute;
     z-index: 5;
     color: #fff;
-    border: 2px solid #eff5ef;
-    background: #0b1b26d9;
-    font-family: inherit;
+    min-height: 42px;
+    border: 3px solid #fff0b0;
+    border-radius: 8px;
+    background: #0b1b26ed;
+    font-family: 'PixelFont', 'Trebuchet MS', Arial, sans-serif;
     font-weight: 700;
-    letter-spacing: .08em;
+    line-height: 1;
+    letter-spacing: .06em;
+    text-transform: uppercase;
     cursor: pointer;
     text-shadow: 2px 2px #061017;
+    transition: color 120ms ease, filter 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+.story-audio-toggle {
+    top: clamp(11px, 2vw, 24px);
+    left: clamp(11px, 2vw, 24px);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-color: #caffe0;
+    background: linear-gradient(180deg, #2f9e62, #176044);
+    box-shadow: inset 0 0 0 2px #65d990, 0 5px 0 #0a3525, 0 8px 18px #0007;
+    font-size: clamp(13px, 1.35vw, 18px);
+}
+
+.story-audio-toggle__icon {
+    font-size: 1.15em;
+    line-height: 1;
 }
 
 .story-skip {
     top: clamp(11px, 2vw, 24px);
     right: clamp(11px, 2vw, 24px);
-    padding: 7px 14px;
-    border-radius: 4px;
-    font-size: clamp(14px, 1.5vw, 20px);
+    padding: 8px 15px;
+    border-color: #ffd2bf;
+    background: linear-gradient(180deg, #d9563e, #8c2925);
+    box-shadow: inset 0 0 0 2px #f17b5d, 0 5px 0 #57191c, 0 8px 18px #0007;
+    font-size: clamp(12px, 1.25vw, 17px);
 }
 
 .story-next {
-    right: 5.2%;
-    bottom: 7.3%;
+    right: 5.4%;
+    bottom: 7.1%;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
-    padding: 7px 10px;
-    border-color: transparent;
-    background: transparent;
-    font-size: clamp(11px, 1.2vw, 16px);
+    min-width: clamp(145px, 18vw, 230px);
+    padding: 9px 14px;
+    color: #fffbea;
+    border-color: #ffe9a0;
+    background: linear-gradient(180deg, #f3a52f, #b4531c);
+    box-shadow: inset 0 0 0 2px #ffc85a, 0 5px 0 #6e2d15, 0 9px 18px #0008;
+    font-size: clamp(10px, 1.05vw, 15px);
+}
+
+.story-next--typing {
+    border-color: #b9efff;
+    background: linear-gradient(180deg, #238ab2, #14506f);
+    box-shadow: inset 0 0 0 2px #55c6e8, 0 5px 0 #0b3047, 0 9px 18px #0008;
 }
 
 .story-next__arrow {
     width: 0;
     height: 0;
-    border-top: clamp(8px, 1vw, 13px) solid #fff;
-    border-right: clamp(7px, .8vw, 11px) solid transparent;
-    border-left: clamp(7px, .8vw, 11px) solid transparent;
+    border-top: clamp(7px, .8vw, 10px) solid transparent;
+    border-bottom: clamp(7px, .8vw, 10px) solid transparent;
+    border-left: clamp(10px, 1vw, 14px) solid currentColor;
     filter: drop-shadow(2px 2px #061017);
     animation: story-arrow 800ms ease-in-out infinite alternate;
+}
+
+.story-next--typing .story-next__arrow {
+    width: auto;
+    height: auto;
+    border: 0;
+    font-family: Arial, sans-serif;
+    font-size: clamp(20px, 2vw, 28px);
+    line-height: .7;
+}
+
+.story-next--typing .story-next__arrow::before {
+    content: '»';
 }
 
 .story-progress {
@@ -199,11 +260,23 @@
     background: #f7bd35;
 }
 
+.story-audio-toggle:hover,
 .story-skip:hover,
 .story-next:hover {
     color: #ffd36a;
+    filter: brightness(1.12);
+    transform: translateY(-2px);
 }
 
+.story-audio-toggle:active,
+.story-skip:active,
+.story-next:active {
+    filter: brightness(.96);
+    transform: translateY(3px);
+    box-shadow: inset 0 0 0 2px #ffffff55, 0 2px 0 #071018;
+}
+
+.story-audio-toggle:focus-visible,
 .story-skip:focus-visible,
 .story-next:focus-visible {
     outline: 3px solid #ffd36a;
@@ -216,7 +289,11 @@
 }
 
 @keyframes story-arrow {
-    to { transform: translateY(4px); }
+    to { transform: translateX(4px); }
+}
+
+@keyframes story-caret {
+    50% { opacity: 0; }
 }
 
 @media (max-width: 600px), (max-height: 520px) {
@@ -226,11 +303,36 @@
         border-width: 0;
         border-radius: 0;
     }
-    .story-dialogue { right: 2.5%; bottom: 3%; left: 2.5%; }
+    .story-dialogue {
+        right: 2.5%;
+        bottom: 3%;
+        left: 2.5%;
+        padding-right: clamp(118px, 35vw, 170px);
+    }
     .story-dialogue p { font-size: clamp(14px, 3.8vw, 21px); }
-    .story-next { right: 3.2%; bottom: 4.4%; }
-    .story-next__label { display: none; }
+    .story-next {
+        right: 3.2%;
+        bottom: 4.4%;
+        min-width: min(37vw, 165px);
+        min-height: 36px;
+        padding: 7px 9px;
+        font-size: clamp(8px, 2.1vw, 11px);
+    }
+    .story-skip {
+        min-height: 36px;
+        padding: 7px 10px;
+        font-size: clamp(9px, 2.2vw, 12px);
+    }
+    .story-audio-toggle__label { display: none; }
     .story-speaker { padding: 5px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .story-slide.is-active,
+    .story-next__arrow,
+    .story-is-typing .story-slide.is-active .story-dialogue p::after {
+        animation: none;
+    }
 }
 
 .game-prototype {
@@ -1577,6 +1679,12 @@
     box-shadow: inset 0 0 0 3px #b8ffff, 0 5px 0 #173b50, 0 8px 18px #08171980;
 }
 
+.hint-button--audio {
+    color: #effff0;
+    background: radial-gradient(circle at 38% 30%, #8be48d, #2e9b62 58%, #176044);
+    box-shadow: inset 0 0 0 3px #c9ffcb, 0 5px 0 #174832, 0 8px 18px #08171980;
+}
+
 .hint-button--reset {
     color: #fff4ea;
     background: radial-gradient(circle at 38% 30%, #ff9b7e, #d64f42 58%, #84282d);
@@ -1613,6 +1721,10 @@
 
 .hint-button--help .hint-button__label {
     text-shadow: 1px 1px #16465b;
+}
+
+.hint-button--audio .hint-button__label {
+    text-shadow: 1px 1px #174832;
 }
 
 .hint-button--reset .hint-button__label {

@@ -13,12 +13,25 @@ class Level2PageTest extends TestCase
         $this->get('/main-menu')->assertOk()->assertSee(url('/game/2'), false);
         $this->get('/game/2')->assertOk()
             ->assertSee('Hutan Gambut Berasap')
+            ->assertSee('id="level-story"', false)
+            ->assertSee('data-level-number="2"', false)
+            ->assertSee('Cerita pembuka Level 2')
+            ->assertSeeInOrder([
+                'assets/story/level2/1.png',
+                'assets/story/level2/2.png',
+                'assets/story/level2/3.png',
+                'assets/story/level2/4.png',
+            ])
+            ->assertSee('Setelah menuntaskan misi pertama, anggota PyroRescue tiba di jembatan menuju hutan gambut.')
+            ->assertSee('Api sudah menyebar ke beberapa titik. Satu kali semprotan tidak cukup. Gunakan perulangan untuk memadamkan api secara efektif.')
+            ->assertSee('id="story-audio-toggle"', false)
+            ->assertSee('LEWATI CERITA')
+            ->assertSee('id="prototype-page" class="prototype-page" inert', false)
             ->assertSee('data-level="2"', false)
             ->assertSee('id="code-editor"', false)
             ->assertSee('semprot()')
             ->assertSee('isi_air = 6')
             ->assertSee('for')
-            ->assertDontSee('id="level-story"', false)
             ->assertDontSee('Air sampai di Pos 2');
     }
 }
