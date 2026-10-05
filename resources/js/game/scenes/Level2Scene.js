@@ -4,6 +4,7 @@ import { level2Assets } from '../Level2Assets.js';
 import { isLevel2Walkable, level2Map, level2TileToWorld } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
 import { addFireLabel, addPumpLabel } from '../PumpLabel.js';
+import { addFinishGate } from '../FinishGate.js';
 import challenges, {
     getFirePresentation,
     isPlayerNearBurningFire,
@@ -43,6 +44,7 @@ export default class Level2Scene extends Phaser.Scene {
         }
         this.load.image('level2Map', `${this.assetBaseUrl}/maps/level2-map.png`);
         this.load.image('level2Shadow', `${this.assetBaseUrl}/maps/shadow_level2.png`);
+        this.load.image('finishGate', `${this.assetBaseUrl}/ui/finish-gate.png`);
     }
 
     create() {
@@ -141,10 +143,7 @@ export default class Level2Scene extends Phaser.Scene {
         this.playerShadow = this.add.ellipse(0, 0, 24, 6, 0x172b1b, 0.24).setDepth(8);
         this.player = this.add.sprite(0, 0, 'firefighterIdle', 'idle-east-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(9);
-        this.finishSign = this.add.text(finish.x, finish.y - 35, 'FINISH', {
-            fontFamily: 'monospace', fontSize: '16px', color: '#fff8df',
-            backgroundColor: '#1b503e', padding: { x: 8, y: 6 },
-        }).setOrigin(0.5, 1).setDepth(10).setVisible(false);
+        this.finishSign = addFinishGate(this, finish.x, finish.y + 10).setAlpha(0.7);
     }
 
     drawPumpStation() {
@@ -230,7 +229,7 @@ export default class Level2Scene extends Phaser.Scene {
         }
         const finishedFire = this.challengeNumber === 3 && this.sprays === this.requiredWater;
         this.finishMarker.setVisible(finishedFire);
-        this.finishSign.setVisible(this.challengeNumber === 3).setAlpha(finishedFire ? 1 : 0.6);
+        this.finishSign.setAlpha(finishedFire ? 1 : this.challengeNumber === 3 ? 0.9 : 0.7);
     }
 
     isAt(target) {

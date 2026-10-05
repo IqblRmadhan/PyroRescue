@@ -12,22 +12,26 @@ mengembalikan fokus ke PyroPad.
 - `Level1Learning.js` menjelaskan setiap baris di PyroPad tanpa menjalankan kode.
   Materi mengikuti challenge: membuat variabel, mengganti nilai, lalu memakai nilainya.
 - Nilai `isi_air` pada panel belajar mengikuti state Phaser setelah aksi berlangsung.
-- Kamus perintah tersedia di area panduan di bawah map dan PyroPad, dengan penjelasan
-  melalui hover, fokus keyboard, atau sentuhan.
+- Kamus perintah tersedia di area panduan di bawah map dan PyroPad. Klik tombol
+  perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
 - `air_pos_2 = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
   adalah aturan game, bukan perilaku assignment Python.
-- Tombol lampu di sisi kanan peta membuka dan menutup panduan challenge.
+- Tombol Hint biru, Ulangi merah, dan Suara hijau berada di kanan atas peta.
+  Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
 - Cubit touchpad (atau Ctrl + scroll) di peta untuk zoom. Geser dua jari atau
   klik dan seret untuk menggeser kamera tanpa tombol tambahan. Zoom keluar
-  dibatasi hingga seluruh map terlihat; zoom masuk maksimal 2,5 kali.
+  dibatasi agar map tetap memenuhi area game dan tidak terlalu kecil; zoom masuk
+  maksimal 2,5 kali.
 - Navigasi manual menghentikan kamera mengikuti pemain. Run atau Reset
   mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
-- Awan bergerak hanya di bagian atas dunia map dan digambar di belakang
-  karakter serta penanda misi agar tidak menutupinya.
-- Map Level 1 berakhir pada petak FINISH setelah Pos 2. Setelah air diserahkan,
-  pemain berjalan ke petak itu untuk membuka layar hasil tiga bintang.
+- Awan bergerak di atas map dengan bayangan yang tampak di tanah. Awan digambar
+  di belakang karakter serta penanda misi agar tidak menutupinya.
+- Map Level 1 berakhir pada petak FINISH setelah Pos 2. Gerbang berhias lentera
+  dipasang sebelum petak akhir, memakai gambar transparan dan label FINISH.
+  Gerbang tampak sejak awal dan menyala terang setelah air diserahkan. Pemain
+  berjalan melewatinya untuk membuka layar hasil tiga bintang dan tautan Level 2.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
   yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
 
@@ -52,8 +56,8 @@ mengembalikan fokus ke PyroPad.
   Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,
   atau status padam.
 - `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. HUD
-  menampilkan jumlah semprotan pada api aktif; FINISH menyelesaikan level
-  hanya setelah api ketiga padam.
+  menampilkan jumlah semprotan pada api aktif. Gerbang FINISH memakai gambar
+  yang sama dengan Level 1 dan menyelesaikan level hanya setelah api ketiga padam.
 - Validator mendukung satu tingkat loop berisi `semprot()`, dengan maksimal
   120 aksi per Run. Python pemain tidak dieksekusi oleh server atau shell.
 - Progress masih mengikuti prototype Level 1: state berada dalam halaman,

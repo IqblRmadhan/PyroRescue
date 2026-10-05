@@ -28,7 +28,7 @@ export default {
     },
     3: {
         title: 'Challenge 3 - Pasok Air ke Pos 2',
-        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos_2 = isi_air untuk menyerahkan nilainya, lalu ikuti jalan ke kanan sampai petak FINISH.',
+        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos_2 = isi_air untuk menyerahkan nilainya, lalu ikuti jalan ke kanan menuju petak FINISH.',
         requiredWater: 5,
         targets: [
             { key: 'location', label: 'Pergi ke Pos 2' },

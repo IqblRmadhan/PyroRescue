@@ -17,7 +17,7 @@ export const variableLessons = {
         title: '3. Menggunakan nilai variabel',
         code: 'air_pos_2 = isi_air',
         explanation: 'Nilai isi_air sekarang 5, hasil 3 unit dari pompa + 2 unit dari Pos 1. Baris ini membaca nilai 5 dari isi_air dan menyimpannya ke air_pos_2.',
-        effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air, lalu berjalan ke petak FINISH. Game mengosongkan isi_air setelah penyerahan; dalam Python biasa, assignment tidak mengosongkan variabel asal.',
+        effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air, lalu berjalan melewati gerbang menuju petak FINISH. Game mengosongkan isi_air setelah penyerahan; dalam Python biasa, assignment tidak mengosongkan variabel asal.',
     },
 };
 

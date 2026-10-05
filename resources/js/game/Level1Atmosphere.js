@@ -50,11 +50,12 @@ export function createLevel1Atmosphere(scene) {
     const clouds = [
         [120, 70, 1.05], [510, 155, 1.2],
         [940, 85, 0.95], [1350, 175, 1.1],
+        [320, 500, 0.9], [880, 680, 0.85],
     ].map(([x, y, scale], index) => ({
-        // Awan hanya melintas di bagian atas map, di belakang karakter dan penanda misi.
-        image: scene.add.image(x, y, 'level1-cloud').setScale(scale).setAlpha(0.38).setDepth(5.5),
-        shadow: scene.add.image(x + 38, y + 52, 'level1-cloud')
-            .setScale(scale).setTint(0x24444b).setAlpha(0.12).setDepth(4),
+        // Bayangan bergerak di atas tanah, sedangkan awan tetap tembus pandang.
+        image: scene.add.image(x, y, 'level1-cloud').setScale(scale).setAlpha(0.3).setDepth(5.5),
+        shadow: scene.add.image(x + 50, y + 64, 'level1-cloud')
+            .setScale(scale).setTint(0x12373a).setAlpha(0.25).setDepth(4),
         speed: 18 + index * 1.5,
         baseY: y,
         phase: index,
@@ -85,7 +86,7 @@ export function createLevel1Atmosphere(scene) {
             cloud.image.x += cloud.speed * seconds;
             if (cloud.image.x > level1Map.width + 150) cloud.image.x = -150;
             cloud.image.y = cloud.baseY + Math.sin(elapsed * 0.55 + cloud.phase) * 7;
-            cloud.shadow.setPosition(cloud.image.x + 38, cloud.image.y + 52);
+            cloud.shadow.setPosition(cloud.image.x + 50, cloud.image.y + 64);
         }
 
         for (const puff of smoke) {

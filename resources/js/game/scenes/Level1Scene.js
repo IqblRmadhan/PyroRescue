@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
 import { addPumpLabel } from '../PumpLabel.js';
+import { addFinishGate } from '../FinishGate.js';
 import {
     firefighterAnimations,
     level1Assets,
@@ -58,6 +59,7 @@ export default class Level1Scene extends Phaser.Scene {
 
         this.load.image('levelMap', `${this.assetBaseUrl}/${level1MapImage}`);
         this.load.image('levelMapShadow', `${this.assetBaseUrl}/${level1MapShadowImage}`);
+        this.load.image('finishGate', `${this.assetBaseUrl}/ui/finish-gate.png`);
     }
 
     create() {
@@ -335,18 +337,9 @@ export default class Level1Scene extends Phaser.Scene {
 
     drawFinishSign() {
         const position = tileToWorld(level1Map.finish.column, level1Map.finish.row);
-        const sign = this.add.graphics();
-        sign.fillStyle(0x071e29, 0.42).fillEllipse(0, 4, 48, 16);
-        sign.fillStyle(0xf6ca69).fillCircle(0, 0, 15);
-        sign.fillStyle(0x153943).fillCircle(0, 0, 10);
-        sign.lineStyle(4, 0xf8e2a9).lineBetween(0, -8, 0, -66);
-        sign.fillStyle(0x1b503e).fillRoundedRect(-88, -78, 91, 32, 5);
-        sign.lineStyle(2, 0xffd277).strokeRoundedRect(-88, -78, 91, 32, 5);
-        const label = this.add.text(-81, -71, 'FINISH', {
-            fontFamily: 'monospace', fontSize: '16px', fontStyle: 'bold', color: '#fff8df',
-        });
-        this.finishSign = this.add.container(position.x, position.y, [sign, label])
-            .setDepth(11).setVisible(false);
+        // Pemain melewati gerbang pada petak sebelumnya, lalu mencapai FINISH di petak terakhir.
+        this.finishSign = addFinishGate(this, position.x - level1Map.tileSize, position.y + 40)
+            .setAlpha(0.85);
     }
 
     configureCamera() {
@@ -380,8 +373,7 @@ export default class Level1Scene extends Phaser.Scene {
             .setScale(challengeNumber === 2 ? 1.08 : 1);
         this.post2Sign.setAlpha(challengeNumber === 3 ? 1 : 0.78)
             .setScale(challengeNumber === 3 ? 1.08 : 1);
-        this.finishSign.setVisible(challengeNumber === 3)
-            .setAlpha(this.hasDeliveredWater ? 1 : 0.72);
+        this.finishSign.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
         this.publishState();
     }
 

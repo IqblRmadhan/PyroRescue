@@ -1,3 +1,8 @@
+// Zoom terjauh masih menutup seluruh bidang canvas, dengan sedikit detail map tersisa.
+export function getMinimumMapZoom(viewWidth, viewHeight, mapWidth, mapHeight) {
+    return Math.max(0.82, viewWidth / mapWidth, viewHeight / mapHeight);
+}
+
 // Gesture hanya ditangani di canvas agar scroll pada editor tetap normal.
 export function enableMapCameraControls(scene, map) {
     const camera = scene.cameras.main;
@@ -5,15 +10,12 @@ export function enableMapCameraControls(scene, map) {
     let drag = null;
 
     function limitZoom(zoom) {
-        const minimum = Math.min(camera.width / map.width, camera.height / map.height, 1.15);
-        return Math.max(minimum, Math.min(2.5, zoom));
+        const minimum = getMinimumMapZoom(camera.width, camera.height, map.width, map.height);
+        return Math.max(minimum, Math.min(Math.max(2.5, minimum), zoom));
     }
 
     function updateBounds() {
-        // Saat seluruh map terlihat, ruang kosong di kedua sisi dibuat seimbang.
-        const width = Math.max(map.width, camera.width / camera.zoom);
-        const height = Math.max(map.height, camera.height / camera.zoom);
-        camera.setBounds((map.width - width) / 2, (map.height - height) / 2, width, height);
+        camera.setBounds(0, 0, map.width, map.height);
         camera.setScroll(camera.clampX(camera.scrollX), camera.clampY(camera.scrollY));
     }
 
