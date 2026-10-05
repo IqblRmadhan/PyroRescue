@@ -151,14 +151,14 @@ export default class CodeValidator {
                 continue;
             }
 
-            if (normalizedLine === 'air_pos_2=isi_air') {
+            if (normalizedLine === 'air_pos=isi_air') {
                 if (challengeNumber !== 3) {
-                    result.message = 'air_pos_2 = isi_air baru digunakan pada Challenge 3.';
+                    result.message = 'air_pos = isi_air baru digunakan pada Challenge 3.';
                     return result;
                 }
 
                 if (hasPostAssignment) {
-                    result.message = 'Cukup tulis air_pos_2 = isi_air satu kali.';
+                    result.message = 'Cukup tulis air_pos = isi_air satu kali.';
                     return result;
                 }
 
@@ -189,7 +189,7 @@ export default class CodeValidator {
             }
 
             result.message = challengeNumber === 3
-                ? 'Gunakan hanya perintah gerak dan air_pos_2 = isi_air.'
+                ? 'Gunakan hanya perintah gerak dan air_pos = isi_air.'
                 : 'Gunakan hanya perintah gerak dan isi_air = angka.';
             return result;
         }
@@ -204,7 +204,7 @@ export default class CodeValidator {
         if (challengeNumber === 3) {
             result.message = hasPostAssignment
                 ? 'Kode valid. Persediaan isi_air akan diberikan ke Pos 2.'
-                : 'Kode valid. Bergeraklah ke Pos 2, lalu tulis air_pos_2 = isi_air.';
+                : 'Kode valid. Bergeraklah ke Pos 2, lalu tulis air_pos = isi_air.';
         } else if (!hasWaterAssignment) {
             result.message = 'Kode valid. Pemadam menjalankan urutan gerakanmu.';
         } else if (result.missionSuccess) {

@@ -59,7 +59,7 @@ Penjelasan untuk pemain: `isi_air = 3` adalah muatan dari pompa. Pos 1 memberi
 Pemain pergi ke Pos 2 dan memberikan seluruh muatan kepada penjaga pos.
 
 ```python
-air_pos_2 = isi_air
+air_pos = isi_air
 ```
 
 Efek:

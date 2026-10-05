@@ -1,3 +1,18 @@
+const markerStarterCodes = {
+    1: 'isi_air = ...',
+    2: 'isi_air = ...',
+    3: 'air_pos = ...',
+};
+
+export function getLevel1MarkerStarterCode({
+    challengeNumber,
+    hasReachedMarker = false,
+    isAtMarker = false,
+}) {
+    if (hasReachedMarker || !isAtMarker) return null;
+    return markerStarterCodes[challengeNumber] ?? null;
+}
+
 // Isi misi dipisahkan dari tombol dan tampilan agar mudah ditemukan dan diedit.
 export default {
     1: {
@@ -28,15 +43,15 @@ export default {
     },
     3: {
         title: 'Challenge 3 - Pasok Air ke Pos 2',
-        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos_2 = isi_air untuk menyerahkan nilainya, lalu ikuti jalan ke kanan menuju petak FINISH.',
+        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos = isi_air untuk menyerahkan nilainya, lalu ikuti jalan ke kanan menuju petak FINISH.',
         requiredWater: 5,
         targets: [
             { key: 'location', label: 'Pergi ke Pos 2' },
-            { key: 'transfer', label: 'Berikan 5 unit ke air_pos_2' },
+            { key: 'transfer', label: 'Berikan 5 unit ke air_pos' },
             { key: 'finish', label: 'Capai petak FINISH di ujung jalan' },
         ],
         hints: [
-            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos_2 = isi_air untuk menyerahkan 5 unit air.\n3. Tulis kanan(9) untuk mencapai petak FINISH. Tekan Run Code. Kamu juga boleh menjalankan langkah terakhir secara terpisah.',
+            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos = isi_air untuk menyerahkan 5 unit air.\n3. Tulis kanan(9) untuk mencapai petak FINISH. Tekan Run Code. Kamu juga boleh menjalankan langkah terakhir secara terpisah.',
         ],
     },
 };

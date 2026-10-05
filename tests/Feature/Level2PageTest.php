@@ -24,7 +24,7 @@ class Level2PageTest extends TestCase
             ])
             ->assertSee('Setelah menuntaskan misi pertama, anggota PyroRescue tiba di jembatan menuju hutan gambut.')
             ->assertSee('Api sudah menyebar ke beberapa titik. Satu kali semprotan tidak cukup. Gunakan perulangan untuk memadamkan api secara efektif.')
-            ->assertSee('id="story-audio-toggle"', false)
+            ->assertDontSee('id="story-audio-toggle"', false)
             ->assertSee('LEWATI CERITA')
             ->assertSee('id="prototype-page" class="prototype-page" inert', false)
             ->assertSee('data-level="2"', false)

@@ -12,14 +12,18 @@ mengembalikan fokus ke PyroPad.
 - `Level1Learning.js` menjelaskan setiap baris di PyroPad tanpa menjalankan kode.
   Materi mengikuti challenge: membuat variabel, mengganti nilai, lalu memakai nilainya.
 - Nilai `isi_air` pada panel belajar mengikuti state Phaser setelah aksi berlangsung.
+- Saat pemain pertama kali mencapai penanda merah challenge Level 1, kode gerakan
+  diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
 - Kamus perintah tersedia di area panduan di bawah map dan PyroPad. Klik tombol
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
-- `air_pos_2 = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
+- `air_pos = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
   adalah aturan game, bukan perilaku assignment Python.
 - Tombol Hint biru, Ulangi merah, dan Suara hijau berada di kanan atas peta.
   Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
+- Dialog bawah tidak ditampilkan untuk petunjuk progres biasa. Dialog tetap muncul
+  untuk kesalahan kode dan keberhasilan challenge.
 - Cubit touchpad (atau Ctrl + scroll) di peta untuk zoom. Geser dua jari atau
   klik dan seret untuk menggeser kamera tanpa tombol tambahan. Zoom keluar
   dibatasi agar map tetap memenuhi area game dan tidak terlalu kecil; zoom masuk
@@ -77,8 +81,8 @@ mengembalikan fokus ke PyroPad.
 - Cue tersedia untuk cerita pembuka, tombol UI, gerakan, jalan buntu, pompa,
   pengisian air, semprotan, api padam, kesalahan kode, target, challenge,
   dan penyelesaian level.
-- Tombol **Suara/Bisu** tersedia di cerita pembuka dan di dalam game bersama
-  Hint serta Ulangi. Pilihan mute disimpan di `localStorage` dengan kunci
+- Tombol **Suara/Bisu** tersedia di dalam game bersama Hint serta Ulangi, tetapi
+  tidak ditampilkan di cerita pembuka. Pilihan mute disimpan di `localStorage` dengan kunci
   `pyrorescue.audioMuted` agar tetap berlaku saat halaman dimuat ulang.
 - Scene hanya mengirim nama cue melalui callback `onAudio`; pembuatan dan
   pengaturan suara tetap menjadi tanggung jawab `GameAudio.js`.

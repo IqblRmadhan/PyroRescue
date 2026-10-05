@@ -3,7 +3,7 @@ import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions } fr
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import Level1Learning from './Level1Learning.js';
-import level1Challenges from './Level1Challenges.js';
+import level1Challenges, { getLevel1MarkerStarterCode } from './Level1Challenges.js';
 import level2Challenges from './Level2Challenges.js';
 import Level2Scene from './scenes/Level2Scene.js';
 import Level2Learning from './Level2Learning.js';
@@ -143,6 +143,24 @@ function renderMissionState(state = {}) {
     latestState = { ...latestState, ...persistentState };
     learning.renderState(latestState);
 
+    const markerStarterCode = !isLevel2
+        ? getLevel1MarkerStarterCode({
+            challengeNumber: currentChallenge,
+            hasReachedMarker: completedTargets.has('location'),
+            isAtMarker: isTargetComplete('location', latestState),
+        })
+        : null;
+    if (markerStarterCode) {
+        editor.value = markerStarterCode;
+        editor.scrollTop = 0;
+        editor.scrollLeft = 0;
+        editor.dispatchEvent(new Event('input', { bubbles: true }));
+        const placeholderStart = markerStarterCode.indexOf('...');
+        editor.setSelectionRange(placeholderStart, placeholderStart + 3);
+        autocomplete.hide();
+        document.getElementById('editor-action-status').textContent = 'Kode gerakan diganti dengan isian challenge.';
+    }
+
     const counter = latestState.water;
     if (Number.isFinite(counter)) {
         waterCount.textContent = counter;
@@ -241,9 +259,7 @@ const scene = new Scene({
     onReady() {
         configureChallenge();
         setControlsDisabled(false);
-        showFeedback(isLevel2
-            ? 'Datangi pompa di atas jalan dekat jembatan, tulis isi_air = 6, lalu menuju api C1. Setiap semprot() memakai 1 unit air.'
-            : 'Bergerak ke penanda merah dekat pompa, lalu atur isi_air.');
+        hideFeedback();
     },
     onLoadError() {
         gameAudio.play('commandError');
@@ -290,7 +306,11 @@ async function runCode() {
         } else {
             const outcomeFeedback = getOutcomeFeedback(outcome);
             if (outcomeFeedback.playErrorCue) gameAudio.play('commandError');
-            showFeedback(outcome.message, outcomeFeedback.state);
+            if (outcomeFeedback.visible) {
+                showFeedback(outcome.message, outcomeFeedback.state);
+            } else {
+                hideFeedback();
+            }
         }
     } finally {
         setControlsDisabled(levelCompleted);

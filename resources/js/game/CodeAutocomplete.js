@@ -22,13 +22,13 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
         return [
             ...movementSuggestions,
             {
-                label: 'air_pos_2 = isi_air',
-                value: 'air_pos_2 = isi_air',
-                selectionStart: 19,
+                label: 'air_pos = isi_air',
+                value: 'air_pos = isi_air',
+                selectionStart: 17,
                 selectionLength: 0,
                 kind: 'Assignment variabel',
-                description: 'Menyimpan nilai isi_air ke air_pos_2. Di penanda Pos 2, game menyerahkan air lalu mengosongkan tangki. Dalam Python biasa, assignment ini tidak mengubah isi_air.',
-                example: 'air_pos_2 = isi_air',
+                description: 'Menyimpan nilai isi_air ke air_pos. Di penanda Pos 2, game menyerahkan air lalu mengosongkan tangki. Dalam Python biasa, assignment ini tidak mengubah isi_air.',
+                example: 'air_pos = isi_air',
                 parameter: 'isi_air',
                 parameterDescription: 'Variabel berisi jumlah air yang sedang dibawa pemain.',
             },

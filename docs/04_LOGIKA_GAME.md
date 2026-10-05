@@ -141,8 +141,11 @@ Jangan langsung memberikan jawaban lengkap pada hint pertama.
 Reset hanya:
 
 1. mengembalikan kondisi misi;
-2. mengembalikan starter code;
+2. mengosongkan editor kode;
 3. menghapus feedback aktif.
+
+Pada Level 1, editor otomatis mengganti kode gerakan dengan placeholder assignment
+satu kali saat pemain pertama kali mencapai penanda merah challenge aktif.
 
 Tidak perlu reload seluruh halaman.
 

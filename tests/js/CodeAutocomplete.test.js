@@ -48,9 +48,9 @@ test('Challenge 3 autocomplete offers variable transfer instead of a new water v
     const suggestions = createLevel1Suggestions(5, 3);
 
     assert.equal(suggestions.length, 5);
-    assert.equal(suggestions.at(-1).value, 'air_pos_2 = isi_air');
+    assert.equal(suggestions.at(-1).value, 'air_pos = isi_air');
     assert.equal(suggestions.at(-1).kind, 'Assignment variabel');
-    assert.equal(suggestions.at(-1).example, 'air_pos_2 = isi_air');
+    assert.equal(suggestions.at(-1).example, 'air_pos = isi_air');
     assert.equal(suggestions.some(({ value }) => value.startsWith('isi_air =')), false);
 });
 

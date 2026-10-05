@@ -64,10 +64,6 @@
         <h1 id="story-title" class="sr-only">Cerita pembuka Level {{ $levelNumber }}</h1>
 
         <div class="story-stage">
-            <button id="story-audio-toggle" class="story-audio-toggle" type="button" aria-label="Suara game" aria-pressed="true">
-                <span class="story-audio-toggle__icon" aria-hidden="true">&#128266;</span>
-                <span class="story-audio-toggle__label">Suara</span>
-            </button>
             <button id="story-skip" class="story-skip" type="button">LEWATI CERITA</button>
 
             <div class="story-progress" aria-hidden="true">
@@ -200,7 +196,7 @@
                     <p id="editor-help" class="sr-only">
                         Mulai ketik <code>atas(angka)</code>, <code>bawah(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>,
                         @if($isLevel2) <code>isi_air = 6</code>, <code>semprot()</code>, <code>for</code>, atau <code>jumlah_semprot</code>.
-                        @else <code>isi_air</code>, atau <code>air_pos_2</code>. @endif
+                        @else <code>isi_air</code>, atau <code>air_pos</code>. @endif
                         Pilih dengan tombol panah dan Enter. Tekan Ctrl dan Space untuk melihat semua pilihan.
                     </p>
 

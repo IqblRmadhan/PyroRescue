@@ -14,14 +14,14 @@ test('invalid or unavailable commands never receive a valid action explanation',
     for (const code of ['maju(2)', 'atas(0)', 'atas(121)', 'isi_air = -1', 'import os']) {
         assert.equal(explainLevel1Code(code)[0].invalid, true, code);
     }
-    assert.equal(explainLevel1Code('air_pos_2 = isi_air', 1)[0].invalid, true);
+    assert.equal(explainLevel1Code('air_pos = isi_air', 1)[0].invalid, true);
     assert.equal(explainLevel1Code('isi_air = 5', 3)[0].invalid, true);
 });
 
 test('assignment explains replacement and separates Python assignment from game transfer', () => {
     assert.match(explainLevel1Code('isi_air = 5 # bantuan', 2)[0].text, /diganti.*bukan ditambah/);
     assert.match(explainLevel1Code('isi_air = 4', 2)[0].text, /Target challenge ini adalah 5/);
-    const transfer = explainLevel1Code('air_pos_2 = isi_air', 3)[0];
+    const transfer = explainLevel1Code('air_pos = isi_air', 3)[0];
     assert.equal(transfer.invalid, false);
     assert.match(transfer.text, /Pengosongan ini adalah aturan game/);
 });

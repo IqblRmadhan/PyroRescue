@@ -1,4 +1,4 @@
-import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
+import { gameAudio } from './GameAudio.js';
 
 export class StoryTypewriter {
     constructor({
@@ -110,9 +110,6 @@ export default class StoryIntro {
         this.nextButton = root.querySelector('#story-next');
         this.nextLabel = root.querySelector('.story-next__label');
         this.skipButton = root.querySelector('#story-skip');
-        this.audioButton = root.querySelector('#story-audio-toggle');
-        this.audioButtonIcon = root.querySelector('.story-audio-toggle__icon');
-        this.audioButtonLabel = root.querySelector('.story-audio-toggle__label');
         this.status = root.querySelector('#story-status');
         this.gamePage = document.getElementById(root.dataset.gamePage);
         this.levelNumber = root.dataset.levelNumber ?? '1';
@@ -132,42 +129,17 @@ export default class StoryIntro {
         this.handleKeydown = this.handleKeydown.bind(this);
         this.showNext = this.showNext.bind(this);
         this.finish = this.finish.bind(this);
-        this.toggleAudio = this.toggleAudio.bind(this);
         this.resumeAudio = this.resumeAudio.bind(this);
 
         this.nextButton.addEventListener('click', this.showNext);
         this.skipButton.addEventListener('click', this.finish);
-        this.audioButton.addEventListener('click', this.toggleAudio);
         window.addEventListener('pointerdown', this.resumeAudio, { capture: true });
         window.addEventListener('keydown', this.handleKeydown);
         document.body.classList.add('story-is-open');
 
         if (!gameAudio.isMuted()) void gameAudio.preload();
-        this.renderAudioButton();
         this.showSlide(0);
         this.nextButton.focus();
-    }
-
-    renderAudioButton() {
-        const presentation = getAudioButtonPresentation(gameAudio.isMuted());
-        this.audioButtonIcon.textContent = presentation.icon;
-        this.audioButtonLabel.textContent = presentation.label;
-        this.audioButton.setAttribute('aria-label', presentation.ariaLabel);
-        this.audioButton.setAttribute('aria-pressed', String(presentation.pressed));
-    }
-
-    toggleAudio() {
-        const wasMuted = gameAudio.isMuted();
-        if (!wasMuted) gameAudio.play('uiClick');
-        const isMuted = gameAudio.toggleMuted();
-        this.renderAudioButton();
-
-        if (!isMuted) {
-            void gameAudio.preload();
-            void gameAudio.unlock().then((ready) => {
-                if (ready) gameAudio.play('uiClick');
-            });
-        }
     }
 
     resumeAudio() {
@@ -268,7 +240,6 @@ export default class StoryIntro {
         this.typewriter.cancel();
         this.nextButton.removeEventListener('click', this.showNext);
         this.skipButton.removeEventListener('click', this.finish);
-        this.audioButton.removeEventListener('click', this.toggleAudio);
         window.removeEventListener('pointerdown', this.resumeAudio, { capture: true });
         window.removeEventListener('keydown', this.handleKeydown);
         document.body.classList.remove('story-is-open');

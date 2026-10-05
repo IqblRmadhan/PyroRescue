@@ -395,7 +395,7 @@ export default class Level1Scene extends Phaser.Scene {
                     ? await this.fillWater(command.amount)
                     : this.challengeNumber === 2
                         ? await this.updateWaterAtPost(command.amount)
-                        : { success: false, message: 'Challenge 3 hanya menggunakan air_pos_2 = isi_air.' };
+                        : { success: false, message: 'Challenge 3 hanya menggunakan air_pos = isi_air.' };
                 if (!result.success) {
                     return { status: 'error', missionSuccess: false, message: result.message };
                 }
@@ -459,7 +459,7 @@ export default class Level1Scene extends Phaser.Scene {
             return 'Air sudah diterima Pos 2. Ikuti jalan ke kanan sampai petak FINISH untuk menuntaskan Level 1.';
         }
 
-        return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos_2 = isi_air.';
+        return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos = isi_air.';
     }
 
     async fillWater(amount) {

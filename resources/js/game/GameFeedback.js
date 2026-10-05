@@ -5,6 +5,7 @@ export function getOutcomeFeedback(outcome = {}) {
     return {
         state: isError ? 'error' : 'info',
         playErrorCue: isError,
+        visible: isError,
     };
 }
 

@@ -43,7 +43,7 @@ test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
 
 test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {
     const result = validator.validateVariable(
-        'kanan(6)\natas(7)\nkanan(4)\nair_pos_2 = isi_air',
+        'kanan(6)\natas(7)\nkanan(4)\nair_pos = isi_air',
         5,
         3,
     );
@@ -54,9 +54,9 @@ test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {
 
     for (const invalidCode of [
         'isi_air = 5',
-        'air_pos_2 = 5',
-        'air_pos = isi_air',
-        'air_pos_2 = isi_air\nair_pos_2 = isi_air',
+        'air_pos = 5',
+        'air_pos_2 = isi_air',
+        'air_pos = isi_air\nair_pos = isi_air',
     ]) {
         const invalidResult = validator.validateVariable(invalidCode, 5, 3);
         assert.equal(invalidResult.syntaxValid, false, invalidCode);

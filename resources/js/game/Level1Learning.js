@@ -15,8 +15,8 @@ export const variableLessons = {
     },
     3: {
         title: '3. Menggunakan nilai variabel',
-        code: 'air_pos_2 = isi_air',
-        explanation: 'Nilai isi_air sekarang 5, hasil 3 unit dari pompa + 2 unit dari Pos 1. Baris ini membaca nilai 5 dari isi_air dan menyimpannya ke air_pos_2.',
+        code: 'air_pos = isi_air',
+        explanation: 'Nilai isi_air sekarang 5, hasil 3 unit dari pompa + 2 unit dari Pos 1. Baris ini membaca nilai 5 dari isi_air dan menyimpannya ke air_pos.',
         effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air, lalu berjalan melewati gerbang menuju petak FINISH. Game mengosongkan isi_air setelah penyerahan; dalam Python biasa, assignment tidak mengosongkan variabel asal.',
     },
 };
@@ -47,8 +47,8 @@ export function explainLevel1Code(code, challengeNumber = 1) {
         const movement = normalized.match(/^(atas|bawah|kanan|kiri)\((\d+)\)$/);
         if (movement) {
             line.text = `Memanggil perintah ${movement[1]} dengan argumen ${movement[2]}: pemadam berjalan ke ${movement[1]} sebanyak ${movement[2]} petak mengikuti jalan. Perintah ini disediakan oleh PyroRescue.`;
-        } else if (normalized === 'air_pos_2=isi_air') {
-            line.text = 'Membaca nilai isi_air dan menyimpannya ke air_pos_2. Di penanda Pos 2, game menyerahkan air, lalu mengosongkan tangki pemain. Pengosongan ini adalah aturan game.';
+        } else if (normalized === 'air_pos=isi_air') {
+            line.text = 'Membaca nilai isi_air dan menyimpannya ke air_pos. Di penanda Pos 2, game menyerahkan air, lalu mengosongkan tangki pemain. Pengosongan ini adalah aturan game.';
         } else {
             const amount = validation.actions.water;
             line.text = `Menyimpan bilangan bulat ${amount} ke variabel isi_air. ${challengeNumber === 1 ? 'Di penanda pompa, tangki diisi sampai jumlah tersebut.' : 'Di Pos 1, 3 unit bawaan + 2 unit bantuan = 5 unit. Nilai lama 3 diganti dengan jumlah akhir, bukan ditambah 5 lagi.'}`;

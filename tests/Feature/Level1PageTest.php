@@ -31,7 +31,7 @@ class Level1PageTest extends TestCase
             ->assertSee('assets/story/level1/scene-1.png')
             ->assertSee('Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.')
             ->assertSee('LEWATI CERITA')
-            ->assertSee('id="story-audio-toggle"', false)
+            ->assertDontSee('id="story-audio-toggle"', false)
             ->assertSee('aria-label="Suara game"', false)
             ->assertSee('id="game-container"', false)
             ->assertSee('id="code-editor"', false)

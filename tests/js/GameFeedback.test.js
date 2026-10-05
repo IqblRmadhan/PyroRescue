@@ -9,10 +9,12 @@ test('progress feedback does not use the command error sound', () => {
     assert.deepEqual(getOutcomeFeedback({ status: 'progress' }), {
         state: 'info',
         playErrorCue: false,
+        visible: false,
     });
     assert.deepEqual(getOutcomeFeedback({ status: 'error' }), {
         state: 'error',
         playErrorCue: true,
+        visible: true,
     });
 });
 
