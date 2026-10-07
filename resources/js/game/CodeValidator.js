@@ -43,10 +43,13 @@ export default class CodeValidator {
                     return fail('jumlah_semprot harus berupa bilangan bulat dari 0 sampai 120.');
                 }
             } else if (waterAssignment) {
-                if (Number(waterAssignment[1]) !== 6) {
-                    return fail('Pompa Level 2 menyiapkan 6 unit: 2 untuk C1, 3 untuk C2, dan 1 untuk C3. Tulis isi_air = 6.');
+                const expectedWater = challengeNumber === 4 ? 2 : 6;
+                if (Number(waterAssignment[1]) !== expectedWater) {
+                    return fail(challengeNumber === 4
+                        ? 'Jumlah air harus sesuai kebutuhan api evaluasi.'
+                        : 'Pompa Level 2 menyiapkan 6 unit: 2 untuk C1, 3 untuk C2, dan 1 untuk C3. Tulis isi_air = 6.');
                 }
-                commands.push({ type: 'setWater', amount: 6 });
+                commands.push({ type: 'setWater', amount: expectedWater });
             } else if (loop) {
                 if (reservedLoopNames.has(loop[1])) {
                     return fail('Gunakan nama penghitung sederhana seperti i atau j.');
@@ -77,7 +80,7 @@ export default class CodeValidator {
                 commands.push({ type: 'spray' });
                 sprayCount += 1;
             } else {
-                return fail('Gunakan perintah gerak, isi_air = 6, semprot(), jumlah_semprot = angka, atau for i in range(...): dengan titik dua.');
+                return fail('Periksa ejaan perintah gerak, assignment variabel, semprot(), dan sintaks for/range.');
             }
             if (commands.length > 120) return fail('Gunakan maksimal 120 aksi dalam satu Run.');
         }
@@ -87,11 +90,15 @@ export default class CodeValidator {
             || (challengeNumber === 2 ? loopSprays === sprayCount : variableLoopSprays === sprayCount);
         result.missionSuccess = result.conceptValid && sprayCount === requiredCount;
         result.actions = { commands, sprayCount };
-        result.message = !result.conceptValid
-            ? challengeNumber === 2
-                ? 'Gunakan for dan range() untuk mengulang semprot(), bukan menulisnya satu per satu.'
-                : 'Simpan jumlah_semprot, lalu gunakan for i in range(jumlah_semprot):.'
-            : 'Kode valid. Pemadam akan menjalankan gerakan dan semprotan sesuai urutan.';
+        if (result.conceptValid) {
+            result.message = 'Kode valid. Pemadam akan menjalankan gerakan dan semprotan sesuai urutan.';
+        } else if (challengeNumber === 4) {
+            result.message = 'Kode belum memenuhi konsep evaluasi.';
+        } else if (challengeNumber === 2) {
+            result.message = 'Gunakan for dan range() untuk mengulang semprot(), bukan menulisnya satu per satu.';
+        } else {
+            result.message = 'Simpan jumlah_semprot, lalu gunakan for i in range(jumlah_semprot):.';
+        }
         return result;
     }
 

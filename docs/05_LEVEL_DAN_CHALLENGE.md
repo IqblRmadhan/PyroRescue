@@ -122,8 +122,11 @@ for i in range(jumlah_semprot):
 ### Evaluasi
 
 Api ketiga membutuhkan **1 semprotan** dan memakai sprite `LEVEL2-C3.png`.
-Setelah ketiga api padam, pemain mengikuti jalan bawah sampai petak FINISH
-untuk menerima hasil tiga bintang. Belum ada titik api evaluasi keempat.
+Setelah tiga api latihan padam, pemain mengikuti jalan bawah ke area evaluasi.
+Di sana tersedia pompa kedua dan satu api terakhir. Pemain mengambil 2 unit air,
+memakai variabel `jumlah_semprot` bersama `for/range()` untuk memadamkannya,
+lalu menuju petak FINISH. Panel materi, kamus, autocomplete, dan tombol Hint
+disembunyikan selama evaluasi. Hasil tiga bintang muncul setelah FINISH dicapai.
 
 Nomor file sprite mengikuti urutan challenge: C1 di tengah = 2 semprotan,
 C2 di kanan atas = 3 semprotan, dan C3 di kanan bawah = 1 semprotan.
@@ -135,7 +138,9 @@ semprotan yang melebihi sisa kebutuhan ditolak sebelum aksi berjalan. Reset
 mengembalikan posisi dan api challenge aktif ke checkpoint, sementara api
 challenge sebelumnya tetap padam. C2 harus memakai loop, sedangkan C3 harus
 memakai `jumlah_semprot` dalam `range()` pada setiap Run yang menyemprot.
-Checkpoint C2 mengembalikan empat unit air, dan checkpoint C3 satu unit air.
+Checkpoint C2 mengembalikan empat unit air, checkpoint C3 satu unit air,
+dan checkpoint evaluasi memulai dengan tangki kosong di ujung jembatan
+sebelum pompa kedua.
 
 ---
 

@@ -4,6 +4,15 @@ import CodeValidator from '../../resources/js/game/CodeValidator.js';
 
 const validator = new CodeValidator();
 
+test('evaluation accepts a fresh water variable and a variable controlled loop', () => {
+    const water = validator.validateLoop('isi_air = 2', 2, 4);
+    assert.deepEqual(water.actions.commands, [{ type: 'setWater', amount: 2 }]);
+    const fire = validator.validateLoop('jumlah_semprot = 2\nfor i in range(jumlah_semprot):\n    semprot()', 2, 4);
+    assert.equal(fire.missionSuccess, true);
+    assert.equal(validator.validateLoop('isi_air = 6', 2, 4).syntaxValid, false);
+    assert.equal(validator.validateLoop('for i in range(2):\n    semprot()', 2, 4).conceptValid, false);
+});
+
 test('Level 2 fills six units at the pump before spraying C1', () => {
     const result = validator.validateLoop(
         'kanan(17)\nbawah(2)\nisi_air = 6\nbawah(1)\nkanan(2)\nsemprot()\nsemprot()', 2, 1,

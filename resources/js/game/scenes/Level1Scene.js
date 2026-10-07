@@ -1,8 +1,9 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
+import { addFinishPoint } from '../FinishPoint.js';
+import { showChallengeMarker } from '../MapMarkers.js';
 import { addPumpLabel } from '../PumpLabel.js';
-import { addFinishGate } from '../FinishGate.js';
 import {
     firefighterAnimations,
     level1Assets,
@@ -19,7 +20,6 @@ const playerShadowOffsetY = 4;
 const npcPost1Scale = 0.37;
 const npcPost2Scale = 0.4;
 const pumpDisplaySize = 52;
-const actionMarkerDisplaySize = 20;
 const pumpCyclePause = 100;
 
 export default class Level1Scene extends Phaser.Scene {
@@ -59,7 +59,6 @@ export default class Level1Scene extends Phaser.Scene {
 
         this.load.image('levelMap', `${this.assetBaseUrl}/${level1MapImage}`);
         this.load.image('levelMapShadow', `${this.assetBaseUrl}/${level1MapShadowImage}`);
-        this.load.image('finishGate', `${this.assetBaseUrl}/ui/finish-gate.png`);
     }
 
     create() {
@@ -93,6 +92,7 @@ export default class Level1Scene extends Phaser.Scene {
     update(time, delta) {
         this.atmosphere?.update(delta);
         this.pumpLabel?.setZoom(this.cameras.main.zoom);
+        this.finishPoint?.setZoom(this.cameras.main.zoom);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
             this.waterLayer.tilePositionX += 0.02;
@@ -115,49 +115,12 @@ export default class Level1Scene extends Phaser.Scene {
         ).setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
 
         if (this.textures.exists('levelMap')) {
-            const mapTexture = this.createMapWithTransparentWater();
-            this.add.image(0, 0, mapTexture).setOrigin(0).setDepth(2);
+            // Map baru sudah transparan pada sungai; air animasi terlihat di bawahnya.
+            this.add.image(0, 0, 'levelMap').setOrigin(0).setDepth(2);
             return;
         }
 
         this.drawFallbackTerrain();
-    }
-
-    createMapWithTransparentWater() {
-        const textureKey = 'levelMapWithWaterCutout';
-
-        if (this.textures.exists(textureKey)) {
-            return textureKey;
-        }
-
-        const sourceImage = this.textures.get('levelMap').getSourceImage();
-        const canvasTexture = this.textures.createCanvas(textureKey, level1Map.width, level1Map.height);
-        const context = canvasTexture.getContext();
-        // Potong gambar pada petak akhir, tanpa mengubah skala jalan dan objek.
-        context.drawImage(sourceImage, 0, 0, level1Map.width, level1Map.height,
-            0, 0, level1Map.width, level1Map.height);
-
-        const imageData = context.getImageData(0, 0, level1Map.width, level1Map.height);
-        const pixels = imageData.data;
-
-        for (let index = 0; index < pixels.length; index += 4) {
-            const red = pixels[index];
-            const green = pixels[index + 1];
-            const blue = pixels[index + 2];
-            const darkestChannel = Math.min(red, green, blue);
-            const channelSpread = Math.max(red, green, blue) - darkestChannel;
-
-            if (darkestChannel >= 248 && channelSpread <= 7) {
-                pixels[index + 3] = 0;
-            } else if (darkestChannel >= 232 && channelSpread <= 12) {
-                pixels[index + 3] = Math.round(255 * ((248 - darkestChannel) / 16));
-            }
-        }
-
-        context.putImageData(imageData, 0, 0);
-        canvasTexture.refresh();
-
-        return textureKey;
     }
 
     drawFallbackTerrain() {
@@ -268,20 +231,24 @@ export default class Level1Scene extends Phaser.Scene {
     drawMissionObjects() {
         const playerPosition = tileToWorld(level1Map.start.column, level1Map.start.row);
         const pumpPosition = tileToWorld(level1Map.pump.column, level1Map.pump.row);
-        const waterActionPosition = tileToWorld(
-            level1Map.waterAction.column,
-            level1Map.waterAction.row,
-        );
         const post1NpcPosition = tileToWorld(level1Map.post1Npc.column, level1Map.post1Npc.row);
         const post2NpcPosition = tileToWorld(level1Map.post2Npc.column, level1Map.post2Npc.row);
 
-        this.actionMarker = this.add.sprite(
-            waterActionPosition.x,
-            waterActionPosition.y,
-            'actionMarker',
-            'pulse1',
-        ).setDisplaySize(actionMarkerDisplaySize, actionMarkerDisplaySize).setDepth(6)
-            .play('action-marker-pulse');
+        this.actionMarkers = {};
+        this.actionMarkerOutlines = {};
+        const actionTiles = {
+            1: level1Map.waterAction,
+            2: level1Map.post1Action,
+            3: level1Map.post2Action,
+            4: level1Map.finish,
+        };
+        for (const [number, tile] of Object.entries(actionTiles)) {
+            const position = tileToWorld(tile.column, tile.row);
+            this.actionMarkers[number] = this.add.sprite(position.x, position.y, 'actionMarker', 'pulse1')
+                .setDisplaySize(20, 20).setDepth(7).play('action-marker-pulse');
+            this.actionMarkerOutlines[number] = this.add.rectangle(position.x, position.y, 36, 36)
+                .setStrokeStyle(2, 0xffbc84, 0.94).setDepth(6.8);
+        }
         this.pump = this.add.sprite(pumpPosition.x, pumpPosition.y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9)
             .setDisplaySize(pumpDisplaySize, pumpDisplaySize)
@@ -318,7 +285,7 @@ export default class Level1Scene extends Phaser.Scene {
 
         this.post1Sign = this.drawPostSign(level1Map.post1Sign, 'POS 1');
         this.post2Sign = this.drawPostSign(level1Map.post2Sign, 'POS 2');
-        this.drawFinishSign();
+        this.drawFinishPoint();
     }
 
     drawPostSign(position, label) {
@@ -335,10 +302,9 @@ export default class Level1Scene extends Phaser.Scene {
         return this.add.container(position.x, position.y, [sign, title]).setDepth(13);
     }
 
-    drawFinishSign() {
+    drawFinishPoint() {
         const position = tileToWorld(level1Map.finish.column, level1Map.finish.row);
-        // Pemain melewati gerbang pada petak sebelumnya, lalu mencapai FINISH di petak terakhir.
-        this.finishSign = addFinishGate(this, position.x - level1Map.tileSize, position.y + 40)
+        this.finishPoint = addFinishPoint(this, position.x, position.y, { labelOffsetX: -30 })
             .setAlpha(0.85);
     }
 
@@ -360,20 +326,15 @@ export default class Level1Scene extends Phaser.Scene {
     setChallenge(challengeNumber) {
         this.challengeNumber = challengeNumber;
         this.requiredWater = challengeNumber === 1 ? 3 : 5;
-        const targets = {
-            1: level1Map.waterAction,
-            2: level1Map.post1Action,
-            3: level1Map.post2Action,
-        };
-        const target = targets[challengeNumber] ?? targets[1];
-        const markerPosition = tileToWorld(target.column, target.row);
-
-        this.actionMarker.setPosition(markerPosition.x, markerPosition.y);
+        for (const [number, marker] of Object.entries(this.actionMarkers)) {
+            const activeChallenge = this.hasDeliveredWater ? 4 : challengeNumber;
+            showChallengeMarker(marker, this.actionMarkerOutlines[number], Number(number), activeChallenge);
+        }
         this.post1Sign.setAlpha(challengeNumber === 2 ? 1 : 0.78)
             .setScale(challengeNumber === 2 ? 1.08 : 1);
         this.post2Sign.setAlpha(challengeNumber === 3 ? 1 : 0.78)
             .setScale(challengeNumber === 3 ? 1.08 : 1);
-        this.finishSign.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
+        this.finishPoint.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
         this.publishState();
     }
 
@@ -551,7 +512,8 @@ export default class Level1Scene extends Phaser.Scene {
         this.water = 0;
         this.onAudio('water');
         this.hasDeliveredWater = true;
-        this.finishSign.setAlpha(1);
+        showChallengeMarker(this.actionMarkers[4], this.actionMarkerOutlines[4], 4, 4);
+        this.finishPoint.setAlpha(1);
         this.publishState();
         this.setPlayerIdle(previousDirection);
 

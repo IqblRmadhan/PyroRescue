@@ -112,7 +112,7 @@ function hideHint() {
 function isTargetComplete(targetKey, state) {
     if (isLevel2) {
         return targetKey === 'location' ? state.atFire
-            : targetKey === 'water' ? state.water === 6
+            : targetKey === 'water' ? state.water === (currentChallenge === 4 ? 2 : 6)
                 : targetKey === 'fire' ? state.fireOut : targetKey === 'finish' && state.atFinish;
     }
     if (targetKey === 'location') {
@@ -210,9 +210,19 @@ function configureChallenge({ updateScene = true } = {}) {
     hintIndex = 0;
     missionTitle.textContent = definition.title;
     missionDescription.textContent = definition.description;
-    requiredWater.textContent = isLevel2 ? '6' : definition.requiredWater;
+    requiredWater.textContent = isLevel2 && currentChallenge < 4 ? '6' : definition.requiredWater;
+    if (isLevel2) {
+        const capacity = currentChallenge === 4 ? 2 : 6;
+        const waterHud = requiredWater.closest('.hud-counter');
+        waterHud.title = `Isi tangki / kapasitas ${capacity} unit`;
+        waterHud.setAttribute('aria-label', `Isi tangki dan kapasitas ${capacity} unit air`);
+    }
     hintText.textContent = defaultHint;
     hideHint();
+    const isEvaluation = isLevel2 && currentChallenge === 4;
+    prototypePage.classList.toggle('is-evaluation', isEvaluation);
+    hintButton.hidden = isEvaluation;
+    document.getElementById('code-suggestion-help').hidden = isEvaluation;
     editor.value = '';
     updateLineNumbers();
     renderTargets();
@@ -231,11 +241,11 @@ function configureChallenge({ updateScene = true } = {}) {
 function advanceChallenge(successMessage) {
     completedChallenges.add(currentChallenge);
 
-    if (currentChallenge === 3) {
+    if (currentChallenge === (isLevel2 ? 4 : 3)) {
         gameAudio.play('levelComplete');
         levelCompleted = true;
         hideFeedback();
-        resultStars.textContent = `${completedChallenges.size} / 3 bintang`;
+        resultStars.textContent = '3 / 3 bintang';
         levelResult.hidden = false;
         prototypePage.inert = true;
         resultReplay.focus();
@@ -318,6 +328,7 @@ async function runCode() {
 }
 
 function toggleHint() {
+    if (isLevel2 && currentChallenge === 4) return;
     if (!hintText.hidden) {
         gameAudio.play('uiClick');
         hideHint();

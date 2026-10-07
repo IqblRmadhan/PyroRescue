@@ -1,6 +1,6 @@
 import { level2Map } from './Level2Map.js';
 
-// Nomor challenge mengikuti area: tengah, kanan atas, lalu kanan bawah.
+// Nomor challenge mengikuti area: tengah, kanan atas, kanan bawah, lalu evaluasi.
 // Kekuatan aset: LEVEL2-C1 = 2 semprotan, LEVEL2-C2 = 3, LEVEL2-C3 = 1.
 const challenges = {
     1: {
@@ -40,20 +40,35 @@ const challenges = {
     },
     3: {
         title: 'Challenge 3 - Variabel dalam Perulangan',
-        description: 'Gunakan sisa 1 unit air di api kanan bawah. Simpan jumlah_semprot = 1, pakai dalam range(), lalu menuju FINISH.',
+        description: 'Gunakan sisa 1 unit air di api kanan bawah. Simpan jumlah_semprot = 1, lalu gunakan nilainya dalam range().',
         texture: 'fireC3',
         requiredWater: 1,
         targets: [
             { key: 'location', label: 'Pergi ke penanda api kanan bawah' },
             { key: 'fire', label: 'Padamkan api dengan variabel + for: 1 semprotan' },
-            { key: 'finish', label: 'Capai petak FINISH' },
         ],
         example: 'jumlah_semprot = 1\nfor i in range(jumlah_semprot):\n    semprot()',
         lesson: 'isi_air menyimpan satu unit air yang tersisa. Variabel jumlah_semprot menyimpan banyaknya iterasi. range(jumlah_semprot) membaca nilai 1, jadi semprot() memakai unit terakhir sekali.',
         hints: [
-            'Ikuti jalan ke kanan lalu turun. Setelah api padam, teruskan jalan ke bawah, lewati jembatan ke kiri, lalu turun ke FINISH.',
-            'Dari awal challenge: bawah(2), kanan(4), bawah(11). Tulis jumlah_semprot = 1, lalu for i in range(jumlah_semprot): dengan semprot() berindentasi. Setelah padam: bawah(6), kiri(17), bawah(6).',
+            'Ikuti jalan ke kanan lalu turun ke penanda api kanan bawah.',
+            'Dari awal challenge: bawah(2), kanan(4), bawah(11). Tulis jumlah_semprot = 1, lalu for i in range(jumlah_semprot): dengan semprot() berindentasi.',
         ],
+        nextMessage: 'Tiga area latihan selesai. Di area terakhir, selesaikan evaluasi secara mandiri tanpa hint.',
+    },
+    4: {
+        title: 'Evaluasi Akhir - Padamkan Api',
+        description: 'Di area terakhir, siapkan air, padamkan api, lalu capai FINISH. Gunakan kembali konsep yang telah dipelajari.',
+        texture: 'fireC1',
+        requiredWater: 2,
+        targets: [
+            { key: 'water', label: 'Siapkan pasokan air' },
+            { key: 'location', label: 'Temukan petak semprot terakhir' },
+            { key: 'fire', label: 'Padamkan api evaluasi' },
+            { key: 'finish', label: 'Capai petak FINISH' },
+        ],
+        example: '',
+        lesson: '',
+        hints: [],
     },
 };
 
@@ -64,7 +79,15 @@ export function getFirePresentation(number, challengeNumber, sprays, definitions
     const completed = fireNumber < challengeNumber || (isActive && sprays >= requiredSprays);
 
     if (completed) {
-        return { completed: true, label: `C${fireNumber} • PADAM`, markerState: 'completed' };
+        return {
+            completed: true,
+            label: fireNumber === 4 ? 'EVALUASI • PADAM' : `C${fireNumber} • PADAM`,
+            markerState: 'completed',
+        };
+    }
+
+    if (fireNumber === 4) {
+        return { completed: false, label: 'EVALUASI', markerState: 'visible' };
     }
 
     const remaining = isActive ? requiredSprays - sprays : requiredSprays;

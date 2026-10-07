@@ -31,5 +31,7 @@ test('route hints follow the relocated C2 marker', () => {
     assert.match(challenges[2].hints[1], /bawah\(2\), kanan\(4\)\./);
     assert.doesNotMatch(challenges[2].hints[1], /kanan\(4\), bawah\(2\)/);
     assert.match(challenges[3].hints[1], /bawah\(2\), kanan\(4\), bawah\(11\)/);
-    assert.match(challenges[3].hints[1], /Setelah padam: bawah\(6\), kiri\(17\), bawah\(6\)/);
+    assert.deepEqual(challenges[4].hints, []);
+    assert.equal(level2Config.getFirePresentation(4, 4, 0, challenges).label, 'EVALUASI');
+    assert.equal(level2Config.getFirePresentation(4, 4, 2, challenges).label, 'EVALUASI • PADAM');
 });

@@ -32,19 +32,23 @@ mengembalikan fokus ke PyroPad.
   mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
 - Awan bergerak di atas map dengan bayangan yang tampak di tanah. Awan digambar
   di belakang karakter serta penanda misi agar tidak menutupinya.
-- Map Level 1 berakhir pada petak FINISH setelah Pos 2. Gerbang berhias lentera
-  dipasang sebelum petak akhir, memakai gambar transparan dan label FINISH.
-  Gerbang tampak sejak awal dan menyala terang setelah air diserahkan. Pemain
-  berjalan melewatinya untuk membuka layar hasil tiga bintang dan tautan Level 2.
+- Map Level 1 memakai `level1-map-v2.png` berukuran 1600 × 1200 sesuai gambar baru.
+  Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
+- Petak FINISH memakai ubin kecil bermotif kotak-kotak di jalan, dengan label
+  singkat di atasnya. Pemain menginjak ubin setelah menyerahkan air untuk
+  membuka hasil tiga bintang dan tautan Level 2.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
   yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
+  Titik merah di pompa, Pos 1, Pos 2, dan FINISH tetap terlihat pada setiap
+  challenge; petak aktif memiliki garis tepi tambahan.
 
 ## Implementasi Level 2
 
 - `/game/2` memakai layout PyroPad yang sama, dengan materi `semprot()` dan
   `for/range`. Level tersedia dari menu utama dan hasil Level 1.
-- `Level2Map.js` mengikuti jalan pada `level2-map.png` berukuran 1600 × 1200.
-  Tiga titik kebakaran berada di tengah, kanan atas, dan kanan bawah.
+- `Level2Map.js` mengikuti jalan pada `level2-map-v2.png` berukuran 1600 × 1200.
+  Tiga titik latihan berada di tengah, kanan atas, dan kanan bawah. Titik
+  evaluasi berada dekat FINISH di bagian bawah peta.
 - Dua pohon di atas jalan dekat jembatan ditutup rumput dan diganti pompa Phaser;
   dua pohon di bawah jalan tetap tampak. Sprite pompa Level 1 digunakan ulang;
   pemain mengambil enam unit dengan `isi_air = 6` di penanda bawah pompa.
@@ -53,15 +57,16 @@ mengembalikan fokus ke PyroPad.
   empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
 - `Level2Challenges.js` menyimpan jumlah semprotan, sprite, materi, dan hint.
   Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (3 semprotan),
-  dan C3 kanan bawah (1 semprotan).
-- Setiap api memiliki penanda titik semprot berukuran 20 × 20 piksel seperti
-  Level 1. Semua penanda yang belum selesai tampil sama; penanda challenge
-  yang selesai disembunyikan.
+  dan C3 kanan bawah (1 semprotan). Evaluasi memakai api keempat (2 semprotan).
+- Setiap pompa, api, dan FINISH memiliki titik merah pada petak interaksinya.
+  Semua titik tetap terlihat, sedangkan petak aktif lebih terang dan memiliki
+  garis tepi tambahan.
   Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,
   atau status padam.
-- `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. HUD
-  menampilkan jumlah semprotan pada api aktif. Gerbang FINISH memakai gambar
-  yang sama dengan Level 1 dan menyelesaikan level hanya setelah api ketiga padam.
+- `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. Pompa
+  kedua menyediakan 2 unit air untuk evaluasi. Ubin FINISH menyelesaikan
+  level setelah api evaluasi padam. Selama evaluasi, Hint, materi, kamus,
+  dan autocomplete disembunyikan.
 - Validator mendukung satu tingkat loop berisi `semprot()`, dengan maksimal
   120 aksi per Run. Python pemain tidak dieksekusi oleh server atau shell.
 - Progress masih mengikuti prototype Level 1: state berada dalam halaman,

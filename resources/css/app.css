@@ -2317,6 +2317,9 @@
 }
 .game-guide-link { justify-self: center; padding: 6px; color: #ffda87; font-size: 14px; font-weight: 700; text-decoration: none; }
 .game-guide-link:hover { color: #fff5d7; text-decoration: underline; }
+.prototype-page.is-evaluation .game-guide-link,
+.prototype-page.is-evaluation .game-study,
+.prototype-page.is-evaluation #hint { display: none !important; }
 .game-prototype.game-workspace .game-study {
     display: grid;
     grid-column: 1 / -1;

@@ -9,13 +9,13 @@ import {
 } from '../../resources/js/game/Level1Map.js';
 
 test('map ends at the finish column without rescaling its 40 pixel tiles', () => {
-    assert.equal(level1Map.width, 1360);
+    assert.equal(level1Map.width, 1600);
     assert.equal(level1Map.height, 1200);
     assert.equal(level1Map.tileSize, 40);
     assert.equal(level1Map.terrain.length, 30);
-    assert(level1Map.terrain.every((row) => row.length === 34));
-    assert.equal(isWalkable(33, 11), true);
-    assert.equal(isWalkable(34, 11), false);
+    assert(level1Map.terrain.every((row) => row.length === 40));
+    assert.equal(isWalkable(39, 11), true);
+    assert.equal(isWalkable(40, 11), false);
 });
 
 test('one grid step moves exactly 40 pixels', () => {
@@ -37,13 +37,13 @@ test('player respawns on the left-bottom brown road facing north', () => {
 
 test('all main brown-road branches are walkable', () => {
     const roadTiles = [
-        [4, 13],  // loop kiri atas
+        [6, 18],  // tikungan baru menuju Pos 1
         [9, 18],  // pertemuan loop kiri
         [20, 16], // jembatan tengah
         [27, 11], // jalan lurus bagian atas
-        [33, 11], // FINISH setelah Pos 2
+        [39, 11], // FINISH setelah Pos 2
         [6, 23],  // cabang kiri bawah
-        [13, 26], // ujung jalan bawah
+        [4, 27],  // awal dekat kendaraan
     ];
 
     for (const [column, row] of roadTiles) {
@@ -63,11 +63,23 @@ test('grass and river tiles are not walkable', () => {
         [16, 26], // melewati ujung jalan buntu
         [34, 18], // di luar peta yang berakhir pada FINISH
         [37, 28], // cabang map lama yang sudah dipotong
+        [4, 13],  // loop lama kini berupa rumput
+        [9, 13],
+        [4, 18],
+        [10, 27], // cabang kanan bawah sudah tidak ada
+        [13, 26],
     ];
 
     for (const [column, row] of blockedTiles) {
         assert.equal(isWalkable(column, row), false, `${column},${row}`);
     }
+});
+
+test('the extended road connects Pos 2 to the last finish tile', () => {
+    for (let column = level1Map.post2Action.column; column <= level1Map.finish.column; column++) {
+        assert.equal(isWalkable(column, 11), true, `${column},11`);
+    }
+    assert.equal(level1Map.finish.column - level1Map.post2Action.column, 15);
 });
 
 test('water pump is beside the road but does not occupy a walkable tile', () => {

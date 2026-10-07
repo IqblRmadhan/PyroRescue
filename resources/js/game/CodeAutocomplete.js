@@ -54,6 +54,7 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
 }
 
 export function createLevel2Suggestions(requiredCount, challengeNumber) {
+    if (challengeNumber === 4) return [];
     const movements = createLevel1Suggestions().slice(0, 4);
     return [
         ...movements,

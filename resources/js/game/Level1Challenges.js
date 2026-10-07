@@ -51,7 +51,7 @@ export default {
             { key: 'finish', label: 'Capai petak FINISH di ujung jalan' },
         ],
         hints: [
-            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos = isi_air untuk menyerahkan 5 unit air.\n3. Tulis kanan(9) untuk mencapai petak FINISH. Tekan Run Code. Kamu juga boleh menjalankan langkah terakhir secara terpisah.',
+            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos = isi_air untuk menyerahkan 5 unit air.\n3. Tulis kanan(15) untuk mencapai petak FINISH. Tekan Run Code. Kamu juga boleh menjalankan langkah terakhir secara terpisah.',
         ],
     },
 };

@@ -1,9 +1,9 @@
 // Peta Level 1 berhenti setelah jalur dari Pos 2 menuju petak FINISH.
-const columns = 34;
+const columns = 40;
 const rows = 30;
 
 // Collision tetap berupa grid sederhana, walaupun visual map memakai satu PNG.
-// Setiap garis di bawah mengikuti pusat petak jalan coklat pada map 34 x 30.
+// Setiap garis di bawah mengikuti pusat petak jalan coklat pada map baru 40 x 30.
 const walkableTiles = new Set();
 
 function addHorizontalRoad(row, startColumn, endColumn) {
@@ -18,25 +18,19 @@ function addVerticalRoad(column, startRow, endRow) {
     }
 }
 
-// Loop kiri dan jalan menuju jembatan tengah.
-addHorizontalRoad(13, 4, 9);
-addVerticalRoad(4, 13, 18);
-addVerticalRoad(9, 13, 18);
-addHorizontalRoad(18, 4, 14);
+// Jalan dari pompa menuju Pos 1 dan jembatan tengah.
+addHorizontalRoad(18, 6, 14);
 addVerticalRoad(14, 18, 20);
 addHorizontalRoad(20, 14, 20);
 addVerticalRoad(20, 11, 20);
 
 // Jalan setelah Pos 2 berakhir di petak FINISH.
-addHorizontalRoad(11, 20, 33);
+addHorizontalRoad(11, 20, 39);
 
 // Cabang kiri bawah sampai ujung jalan dekat kendaraan pemadam.
 addVerticalRoad(6, 18, 24);
 addHorizontalRoad(24, 4, 6);
 addVerticalRoad(4, 24, 27);
-addHorizontalRoad(27, 4, 10);
-addVerticalRoad(10, 26, 27);
-addHorizontalRoad(26, 10, 13);
 
 const terrain = Array.from({ length: rows }, (_, row) => (
     Array.from({ length: columns }, (_, column) => (
@@ -60,7 +54,7 @@ export const level1Map = {
     post2Action: { column: 24, row: 11 },
     post2Npc: { column: 26, row: 10 },
     post2Sign: { x: 980, y: 280 },
-    finish: { column: 33, row: 11 },
+    finish: { column: 39, row: 11 },
 };
 
 export function getTerrain(column, row) {

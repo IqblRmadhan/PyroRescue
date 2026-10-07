@@ -273,5 +273,5 @@ export const burningTreeFramesByWater = {
 };
 
 // Simpan map final 1600 x 1200 pada lokasi ini.
-export const level1MapImage = 'maps/level1-map.png';
+export const level1MapImage = 'maps/level1-map-v2.png';
 export const level1MapShadowImage = 'maps/shadow_level1.png';
