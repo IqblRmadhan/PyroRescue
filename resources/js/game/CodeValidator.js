@@ -43,13 +43,12 @@ export default class CodeValidator {
                     return fail('jumlah_semprot harus berupa bilangan bulat dari 0 sampai 120.');
                 }
             } else if (waterAssignment) {
-                const expectedWater = challengeNumber === 4 ? 2 : 6;
-                if (Number(waterAssignment[1]) !== expectedWater) {
-                    return fail(challengeNumber === 4
-                        ? 'Jumlah air harus sesuai kebutuhan api evaluasi.'
-                        : 'Pompa Level 2 menyiapkan 6 unit: 2 untuk C1, 3 untuk C2, dan 1 untuk C3. Tulis isi_air = 6.');
+                const capacity = 6;
+                const amount = Number(waterAssignment[1]);
+                if (!Number.isSafeInteger(amount) || amount > capacity) {
+                    return fail(`Kapasitas pompa maksimal ${capacity} unit air.`);
                 }
-                commands.push({ type: 'setWater', amount: expectedWater });
+                commands.push({ type: 'setWater', amount });
             } else if (loop) {
                 if (reservedLoopNames.has(loop[1])) {
                     return fail('Gunakan nama penghitung sederhana seperti i atau j.');

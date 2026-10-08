@@ -18,4 +18,5 @@ export const level2Assets = {
     fireC1: { file: 'objects/LEVEL2-C1.png', frames: fireFrames },
     fireC2: { file: 'objects/LEVEL2-C2.png', frames: fireFrames },
     fireC3: { file: 'objects/LEVEL2-C3.png', frames: fireFrames },
+    fireEval: { file: 'objects/LEVEL2-EVAL.png', frames: fireFrames },
 };

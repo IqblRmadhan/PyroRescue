@@ -40,7 +40,7 @@ mengembalikan fokus ke PyroPad.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
   yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
   Titik merah di pompa, Pos 1, Pos 2, dan FINISH tetap terlihat pada setiap
-  challenge; petak aktif memiliki garis tepi tambahan.
+  challenge tanpa garis kotak kuning di sekeliling petak.
 
 ## Implementasi Level 2
 
@@ -49,24 +49,29 @@ mengembalikan fokus ke PyroPad.
 - `Level2Map.js` mengikuti jalan pada `level2-map-v2.png` berukuran 1600 × 1200.
   Tiga titik latihan berada di tengah, kanan atas, dan kanan bawah. Titik
   evaluasi berada dekat FINISH di bagian bawah peta.
-- Dua pohon di atas jalan dekat jembatan ditutup rumput dan diganti pompa Phaser;
-  dua pohon di bawah jalan tetap tampak. Sprite pompa Level 1 digunakan ulang;
+- Pompa Phaser ditempatkan di dekat jalan setelah jembatan tanpa bidang rumput
+  atau lapisan latar tambahan. Sprite pompa Level 1 digunakan ulang;
   pemain mengambil enam unit dengan `isi_air = 6` di penanda bawah pompa.
   HUD menampilkan sisa isi tangki, dan setiap `semprot()` memakai satu unit.
-- `Level2Assets.js` membaca setiap sprite api sebagai lima frame 150 × 150:
+- `Level2Assets.js` membaca setiap sprite api sebagai lima frame 200 × 200:
   empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
 - `Level2Challenges.js` menyimpan jumlah semprotan, sprite, materi, dan hint.
-  Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (3 semprotan),
-  dan C3 kanan bawah (1 semprotan). Evaluasi memakai api keempat (2 semprotan).
+  Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (1 semprotan),
+  dan C3 kanan bawah (3 semprotan). Evaluasi memakai `LEVEL2-EVAL.png`
+  (3 semprotan).
 - Setiap pompa, api, dan FINISH memiliki titik merah pada petak interaksinya.
-  Semua titik tetap terlihat, sedangkan petak aktif lebih terang dan memiliki
-  garis tepi tambahan.
+  Semua titik tetap terlihat dengan tingkat terang berbeda tanpa garis kotak
+  kuning di sekeliling petak.
   Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,
   atau status padam.
 - `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. Pompa
-  kedua menyediakan 2 unit air untuk evaluasi. Ubin FINISH menyelesaikan
+  kedua berada di rumput sebelah kiri jalan bawah dengan kapasitas 6 unit;
+  evaluasi membutuhkan 3 unit. Ubin FINISH menyelesaikan
   level setelah api evaluasi padam. Selama evaluasi, Hint, materi, kamus,
   dan autocomplete disembunyikan.
+- Assignment `isi_air` pada pompa mengganti isi tangki dan boleh berada di
+  bawah kapasitas. Nilai yang melebihi kapasitas ditolak. Animasi pompa
+  diputar satu siklus untuk setiap unit air yang diambil.
 - Validator mendukung satu tingkat loop berisi `semprot()`, dengan maksimal
   120 aksi per Run. Python pemain tidak dieksekusi oleh server atau shell.
 - Progress masih mengikuti prototype Level 1: state berada dalam halaman,

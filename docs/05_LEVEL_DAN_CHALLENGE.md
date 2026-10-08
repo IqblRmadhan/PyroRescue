@@ -85,11 +85,14 @@ Pemain mampu menggunakan `for` dan `range()` untuk menjalankan aksi berulang ses
 
 ## Misi
 Memadamkan beberapa titik api dengan jumlah penyemprotan sesuai kebutuhan.
-Dua pohon di atas jalan dekat jembatan digantikan pompa air, sedangkan dua
-pohon di bawah jalan tetap terlihat. Di penanda bawah pompa, pemain mengulang
+Dekat jalan setelah jembatan terdapat pompa air tanpa lapisan latar tambahan
+di atas gambar peta. Di penanda bawah pompa, pemain mengulang
 materi Level 1 dengan menulis `isi_air = 6`.
-Enam unit dipakai untuk dua semprotan di C1, tiga di C2, dan satu di C3.
+Enam unit dipakai untuk dua semprotan di C1, satu di C2, dan tiga di C3.
 Setiap `semprot()` mengurangi `isi_air` satu unit menurut aturan game.
+Pompa menerima assignment sebagian sampai kapasitas enam unit. Contohnya,
+`isi_air = 3` menghasilkan `3/6`; menjalankan nilai yang sama lagi tetap `3/6`
+karena assignment mengganti nilai. Nilai lebih dari enam ditolak.
 
 ### Challenge 1 — Mengenal Semprotan (area tengah)
 
@@ -104,16 +107,16 @@ Sebelum menuju C1, pemain harus mengisi tangki di pompa.
 ### Challenge 2 — Mengulang Semprotan (kanan atas)
 
 ```python
-for i in range(3):
+for i in range(1):
     semprot()
 ```
 
-Api membutuhkan **3 semprotan**, dengan `for/range`. Gunakan sprite `LEVEL2-C2.png`.
+Api membutuhkan **1 semprotan**, dengan `for/range`. Gunakan sprite `LEVEL2-C2.png`.
 
 ### Challenge 3 — Variabel + Perulangan (kanan bawah)
 
 ```python
-jumlah_semprot = 1
+jumlah_semprot = 3
 
 for i in range(jumlah_semprot):
     semprot()
@@ -121,15 +124,18 @@ for i in range(jumlah_semprot):
 
 ### Evaluasi
 
-Api ketiga membutuhkan **1 semprotan** dan memakai sprite `LEVEL2-C3.png`.
+Api ketiga membutuhkan **3 semprotan** dan memakai sprite `LEVEL2-C3.png`.
 Setelah tiga api latihan padam, pemain mengikuti jalan bawah ke area evaluasi.
-Di sana tersedia pompa kedua dan satu api terakhir. Pemain mengambil 2 unit air,
+Di sana tersedia pompa kedua dan satu api terakhir dengan sprite
+`LEVEL2-EVAL.png`. Pompa kedua berada di rumput sebelah kiri jalan bawah dan
+tetap memakai kapasitas tangki enam unit. Pemain mengambil minimal 3 unit air,
 memakai variabel `jumlah_semprot` bersama `for/range()` untuk memadamkannya,
 lalu menuju petak FINISH. Panel materi, kamus, autocomplete, dan tombol Hint
 disembunyikan selama evaluasi. Hasil tiga bintang muncul setelah FINISH dicapai.
 
 Nomor file sprite mengikuti urutan challenge: C1 di tengah = 2 semprotan,
-C2 di kanan atas = 3 semprotan, dan C3 di kanan bawah = 1 semprotan.
+C2 di kanan atas = 1 semprotan, C3 di kanan bawah = 3 semprotan, dan
+`LEVEL2-EVAL.png` untuk evaluasi = 3 semprotan.
 
 Gerakan memakai `atas(n)`, `bawah(n)`, `kanan(n)`, dan `kiri(n)` seperti Level 1.
 Semprotan hanya bekerja pada penanda api aktif. Semprotan yang kurang tetap
@@ -138,9 +144,9 @@ semprotan yang melebihi sisa kebutuhan ditolak sebelum aksi berjalan. Reset
 mengembalikan posisi dan api challenge aktif ke checkpoint, sementara api
 challenge sebelumnya tetap padam. C2 harus memakai loop, sedangkan C3 harus
 memakai `jumlah_semprot` dalam `range()` pada setiap Run yang menyemprot.
-Checkpoint C2 mengembalikan empat unit air, checkpoint C3 satu unit air,
-dan checkpoint evaluasi memulai dengan tangki kosong di ujung jembatan
-sebelum pompa kedua.
+Checkpoint C2 mengembalikan empat unit air, checkpoint C3 tiga unit air,
+dan checkpoint evaluasi memulai dengan tangki kosong di jalan sebelah pompa
+kedua.
 
 ---
 

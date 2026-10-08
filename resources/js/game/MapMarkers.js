@@ -1,7 +1,7 @@
 // Semua lokasi tetap terlihat; lokasi challenge aktif lebih mudah ditemukan.
 export function getChallengeMarkerStyle(markerChallenge, currentChallenge) {
     if (markerChallenge === currentChallenge) {
-        return { visible: true, alpha: 1, size: 24, outline: true };
+        return { visible: true, alpha: 1, size: 24, outline: false };
     }
 
     if (markerChallenge < currentChallenge) {

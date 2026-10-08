@@ -236,23 +236,6 @@ export const level1Assets = {
             pulse6: [1868, 249, 246, 246],
         },
     },
-    burningTree: {
-        file: 'objects/burning-tree.png',
-        frames: {
-            healthy: [0, 0, 40, 40],
-            small1: [40, 0, 40, 40],
-            small2: [80, 0, 40, 40],
-            small3: [120, 0, 40, 40],
-            medium1: [0, 40, 40, 40],
-            medium2: [40, 40, 40, 40],
-            medium3: [80, 40, 40, 40],
-            medium4: [120, 40, 40, 40],
-            large1: [0, 80, 40, 40],
-            large2: [40, 80, 40, 40],
-            large3: [80, 80, 40, 40],
-            large4: [120, 80, 40, 40],
-        },
-    },
     waterPump: {
         file: 'objects/water-pump.png',
         frames: {
@@ -264,12 +247,6 @@ export const level1Assets = {
             drop: [160, 80, 80, 80],
         },
     },
-};
-
-export const burningTreeFramesByWater = {
-    1: ['small1', 'small2', 'small3'],
-    2: ['medium1', 'medium2', 'medium3', 'medium4'],
-    3: ['large1', 'large2', 'large3', 'large4'],
 };
 
 // Simpan map final 1600 x 1200 pada lokasi ini.

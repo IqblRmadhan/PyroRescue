@@ -23,9 +23,9 @@ road(24, 25, 24, 29);
 export const level2Map = {
     width: 1600, height: 1200, tileSize: 40, columns: 40, rows: 30,
     start: { column: 0, row: 5, direction: 'east' },
-    evaluationStart: { column: 26, row: 23, direction: 'south' },
+    evaluationStart: { column: 38, row: 20, direction: 'south' },
     pump: { x: 620, y: 180, spriteOffsetX: -4, action: { column: 15, row: 5 }, capacity: 6 },
-    evaluationPump: { x: 1005, y: 940, action: { column: 26, row: 23 }, capacity: 2 },
+    evaluationPump: { x: 1480, y: 840, action: { column: 38, row: 20 }, capacity: 6 },
     finish: { column: 24, row: 29 },
     fires: {
         1: { x: 900, y: 475, size: 180, action: { column: 19, row: 8 }, direction: 'east' },
@@ -34,7 +34,7 @@ export const level2Map = {
             direction: 'north', label: { x: 1370, y: 50, placement: 'above' },
         },
         3: { x: 1450, y: 780, size: 225, action: { column: 38, row: 17 }, direction: 'west' },
-        4: { x: 1110, y: 1140, size: 135, action: { column: 24, row: 25 }, direction: 'east' },
+        4: { x: 1100, y: 1220, size: 210, action: { column: 24, row: 25 }, direction: 'east' },
     },
 };
 

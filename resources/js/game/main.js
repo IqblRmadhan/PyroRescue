@@ -4,7 +4,10 @@ import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import Level1Learning from './Level1Learning.js';
 import level1Challenges, { getLevel1MarkerStarterCode } from './Level1Challenges.js';
-import level2Challenges from './Level2Challenges.js';
+import level2Challenges, {
+    getLevel2WaterCapacity,
+    isLevel2WaterTargetComplete,
+} from './Level2Challenges.js';
 import Level2Scene from './scenes/Level2Scene.js';
 import Level2Learning from './Level2Learning.js';
 import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
@@ -112,7 +115,7 @@ function hideHint() {
 function isTargetComplete(targetKey, state) {
     if (isLevel2) {
         return targetKey === 'location' ? state.atFire
-            : targetKey === 'water' ? state.water === (currentChallenge === 4 ? 2 : 6)
+            : targetKey === 'water' ? isLevel2WaterTargetComplete(currentChallenge, state.water)
                 : targetKey === 'fire' ? state.fireOut : targetKey === 'finish' && state.atFinish;
     }
     if (targetKey === 'location') {
@@ -210,9 +213,9 @@ function configureChallenge({ updateScene = true } = {}) {
     hintIndex = 0;
     missionTitle.textContent = definition.title;
     missionDescription.textContent = definition.description;
-    requiredWater.textContent = isLevel2 && currentChallenge < 4 ? '6' : definition.requiredWater;
+    requiredWater.textContent = isLevel2 ? getLevel2WaterCapacity() : definition.requiredWater;
     if (isLevel2) {
-        const capacity = currentChallenge === 4 ? 2 : 6;
+        const capacity = getLevel2WaterCapacity();
         const waterHud = requiredWater.closest('.hud-counter');
         waterHud.title = `Isi tangki / kapasitas ${capacity} unit`;
         waterHud.setAttribute('aria-label', `Isi tangki dan kapasitas ${capacity} unit air`);

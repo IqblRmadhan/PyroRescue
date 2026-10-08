@@ -235,7 +235,6 @@ export default class Level1Scene extends Phaser.Scene {
         const post2NpcPosition = tileToWorld(level1Map.post2Npc.column, level1Map.post2Npc.row);
 
         this.actionMarkers = {};
-        this.actionMarkerOutlines = {};
         const actionTiles = {
             1: level1Map.waterAction,
             2: level1Map.post1Action,
@@ -246,8 +245,6 @@ export default class Level1Scene extends Phaser.Scene {
             const position = tileToWorld(tile.column, tile.row);
             this.actionMarkers[number] = this.add.sprite(position.x, position.y, 'actionMarker', 'pulse1')
                 .setDisplaySize(20, 20).setDepth(7).play('action-marker-pulse');
-            this.actionMarkerOutlines[number] = this.add.rectangle(position.x, position.y, 36, 36)
-                .setStrokeStyle(2, 0xffbc84, 0.94).setDepth(6.8);
         }
         this.pump = this.add.sprite(pumpPosition.x, pumpPosition.y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9)
@@ -328,7 +325,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.requiredWater = challengeNumber === 1 ? 3 : 5;
         for (const [number, marker] of Object.entries(this.actionMarkers)) {
             const activeChallenge = this.hasDeliveredWater ? 4 : challengeNumber;
-            showChallengeMarker(marker, this.actionMarkerOutlines[number], Number(number), activeChallenge);
+            showChallengeMarker(marker, null, Number(number), activeChallenge);
         }
         this.post1Sign.setAlpha(challengeNumber === 2 ? 1 : 0.78)
             .setScale(challengeNumber === 2 ? 1.08 : 1);
@@ -512,7 +509,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.water = 0;
         this.onAudio('water');
         this.hasDeliveredWater = true;
-        showChallengeMarker(this.actionMarkers[4], this.actionMarkerOutlines[4], 4, 4);
+        showChallengeMarker(this.actionMarkers[4], null, 4, 4);
         this.finishPoint.setAlpha(1);
         this.publishState();
         this.setPlayerIdle(previousDirection);

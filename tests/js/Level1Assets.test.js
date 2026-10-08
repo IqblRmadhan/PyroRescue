@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import {
-    burningTreeFramesByWater,
     firefighterAnimations,
     level1Assets,
     level1MapShadowImage,
@@ -12,22 +13,10 @@ test('level map shadow uses the dedicated Level 1 image', () => {
     assert.equal(level1MapShadowImage, 'maps/shadow_level1.png');
 });
 
-test('healthy tree is row 1 column 1 and is excluded from small fire frames', () => {
-    assert.deepEqual(level1Assets.burningTree.frames.healthy, [0, 0, 40, 40]);
-    assert.deepEqual(burningTreeFramesByWater[1], ['small1', 'small2', 'small3']);
-    assert.equal(burningTreeFramesByWater[1].includes('healthy'), false);
-});
-
-test('tree fire rows match the required water amount', () => {
-    assert.deepEqual(burningTreeFramesByWater[2], ['medium1', 'medium2', 'medium3', 'medium4']);
-    assert.deepEqual(burningTreeFramesByWater[3], ['large1', 'large2', 'large3', 'large4']);
-
-    for (const frame of burningTreeFramesByWater[2]) {
-        assert.equal(level1Assets.burningTree.frames[frame][1], 40);
-    }
-
-    for (const frame of burningTreeFramesByWater[3]) {
-        assert.equal(level1Assets.burningTree.frames[frame][1], 80);
+test('every Level 1 preload asset exists in the public asset directory', () => {
+    for (const asset of Object.values(level1Assets)) {
+        const assetPath = path.join(process.cwd(), 'public', 'assets', asset.file);
+        assert.equal(existsSync(assetPath), true, asset.file);
     }
 });
 

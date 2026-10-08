@@ -11,7 +11,9 @@ test('all Level 2 fires use five horizontal 200 pixel frames', () => {
         extinguished: [800, 0, 200, 200],
     };
 
-    for (const key of ['fireC1', 'fireC2', 'fireC3']) {
+    for (const key of ['fireC1', 'fireC2', 'fireC3', 'fireEval']) {
         assert.deepEqual(level2Assets[key].frames, expectedFrames);
     }
+
+    assert.equal(level2Assets.fireEval.file, 'objects/LEVEL2-EVAL.png');
 });

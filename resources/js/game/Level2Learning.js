@@ -8,7 +8,7 @@ export function explainLevel2Code(code) {
         let explanation = 'Gunakan perintah gerak, isi_air, jumlah_semprot, for/range, dan semprot().';
         if (text.startsWith('#')) explanation = 'Komentar untuk pembaca; tidak menjalankan aksi.';
         else if (/^(atas|bawah|kiri|kanan)\s*\(/.test(text)) explanation = 'Bergerak mengikuti jalan sebanyak angka di dalam kurung.';
-        else if (text.startsWith('isi_air')) explanation = 'Di penanda pompa, isi_air = 6 mengisi tangki untuk enam semprotan. Tiap semprot() memakai satu unit air.';
+        else if (text.startsWith('isi_air')) explanation = 'Di penanda pompa, assignment isi_air mengganti isi tangki hingga kapasitas enam unit. Menjalankan isi_air = 3 lagi tetap menghasilkan 3/6, bukan 6/6.';
         else if (text.startsWith('jumlah_semprot')) explanation = 'Menyimpan jumlah pengulangan. Assignment ini belum menyemprotkan air.';
         else if (text.startsWith('for ')) explanation = 'Mengulang blok di bawahnya sebanyak nilai range(). Akhiri dengan titik dua dan beri indentasi pada blok.';
         else if (text.startsWith('semprot')) explanation = 'Satu panggilan semprot() menghasilkan satu semprotan. Di dalam for, aksi ini diulang setiap iterasi.';
