@@ -2,17 +2,17 @@
 
 ## Implementasi ruang belajar Level 1
 
-Halaman game memakai peta di kiri serta target misi, PyroPad, dan tombol aksi
-di kanan. Materi dan kamus perintah berada dalam area lebar di bawah kedua
-panel. Halaman digulir secara utuh agar materi tidak
-terpotong dalam panel sempit. Pada layar kecil, map, PyroPad, dan panduan
-disusun vertikal. Tautan di bawah tombol aksi menuju materi.
+Halaman game memakai peta di kiri serta daftar Misi, PyroPad, dan tombol aksi
+di kanan. Tombol Baca Materi di bawah Run Code membuka popup materi dan kamus
+perintah. Pada layar kecil, map dan PyroPad disusun vertikal.
+Pemandu tampil sebagai dialog di bagian bawah layar, dengan karakter besar di
+kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuka.
 
 - `Level1Learning.js` mengganti materi sesuai challenge: membuat variabel,
   mengganti nilai, lalu memakai nilainya.
 - Saat pemain pertama kali mencapai penanda merah challenge Level 1, kode gerakan
   diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
-- Kamus perintah tersedia di area materi di bawah map dan PyroPad. Klik tombol
+- Kamus perintah tersedia di popup Baca Materi. Klik tombol
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
@@ -20,8 +20,24 @@ disusun vertikal. Tautan di bawah tombol aksi menuju materi.
   adalah aturan game, bukan perilaku assignment Python.
 - Tombol Hint biru, Ulangi merah, dan Suara hijau berada di kanan atas peta.
   Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
-- Dialog bawah tidak ditampilkan untuk petunjuk progres biasa. Dialog tetap muncul
-  untuk kesalahan kode dan keberhasilan challenge.
+- `MissionGuide.js` menentukan arahan menurut posisi dan keadaan misi terkini:
+  menuju pompa, mengisi air, menuju Pos 1, menuju Pos 2, lalu FINISH.
+- Setelah Run, pemandu menjelaskan aksi yang benar-benar selesai. Scene melaporkan
+  tiap aksi berhasil melalui callback `onCommandComplete`; aksi yang gagal atau
+  belum dijalankan tidak disebut berhasil. Teks kode disalin sebelum Run sehingga
+  pergantian isian editor di penanda tidak mengubah penjelasan.
+- Tombol Lanjut/Mengerti membaca penjelasan berurutan, kemudian menampilkan
+  instruksi berikutnya. Perpindahan challenge dan layar hasil menunggu penjelasan
+  terakhir dibaca. Run, Ulangi, dan Hapus dikunci selama rangkaian feedback.
+- Dialog menggunakan elemen HTML `dialog` di luar layout game agar tetap di
+  bawah viewport dan tidak ikut zoom workspace. Fokus keyboard berada di dalam
+  dialog; setelah instruksi ditutup, fokus kembali ke editor dan game aktif lagi.
+- Panel masuk dengan animasi naik, karakter bergerak pelan, dan pergantian pesan
+  memakai transisi geser/fade. Klik berulang dikunci selama transisi. Preferensi
+  `prefers-reduced-motion` mematikan animasi. Escape melakukan aksi yang sama
+  dengan tombol Lanjut/Mengerti tanpa melewati antrean penjelasan.
+- Potret pemandu memakai `assets/characters/mission-guide.png`, dengan gambar
+  asli tetap utuh dan ditampilkan sebagai potret melalui CSS.
 - Cubit touchpad (atau Ctrl + scroll) di peta untuk zoom. Geser dua jari atau
   klik dan seret untuk menggeser kamera tanpa tombol tambahan. Zoom keluar
   dibatasi agar map tetap memenuhi area game dan tidak terlalu kecil; zoom masuk
@@ -73,6 +89,9 @@ disusun vertikal. Tautan di bawah tombol aksi menuju materi.
   evaluasi membutuhkan 3 unit. Ubin FINISH menyelesaikan
   level setelah api evaluasi padam. Selama evaluasi, Hint, materi, kamus,
   dan autocomplete disembunyikan.
+- Pemandu Level 2 menjelaskan pengisian air, semprotan, serta perulangan pada tiga
+  challenge latihan. Pada evaluasi, dialog hanya memberi tujuan umum dan hasil;
+  penjelasan kode dan contoh jawaban tidak ditampilkan.
 - Assignment `isi_air` pada pompa mengganti isi tangki dan boleh berada di
   bawah kapasitas. Nilai yang melebihi kapasitas ditolak. Animasi pompa
   diputar satu siklus untuk setiap unit air yang diambil.

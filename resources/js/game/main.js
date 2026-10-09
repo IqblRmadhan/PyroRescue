@@ -12,6 +12,7 @@ import Level2Scene from './scenes/Level2Scene.js';
 import Level2Learning from './Level2Learning.js';
 import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
 import { getOutcomeFeedback, shouldPlayTargetCue } from './GameFeedback.js';
+import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -33,13 +34,20 @@ const audioButtonLabel = audioButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
+const guideTitle = document.getElementById('guide-title');
+const guideProgress = document.getElementById('guide-progress');
+const guideNextLabel = document.getElementById('guide-next-label');
+const guideCopy = feedback.querySelector('.mission-guide__copy');
+const guideStage = feedback.querySelector('.mission-guide__stage');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let guideTransitioning = false;
+const guideDialogue = new GuideDialogue();
 const hintText = document.getElementById('hint-text');
 const waterCount = document.getElementById('water-count');
 const requiredWater = document.getElementById('required-water');
 const missionStars = document.getElementById('mission-stars');
 const missionTargetCount = document.getElementById('mission-target-count');
 const missionTitle = document.getElementById('mission-title');
-const missionDescription = document.getElementById('mission-description');
 const targetList = document.getElementById('target-list');
 const levelResult = document.getElementById('level-result');
 const resultStars = document.getElementById('result-stars');
@@ -52,6 +60,8 @@ let latestState = {};
 let completedTargets = new Set();
 const completedChallenges = new Set();
 let levelCompleted = false;
+let sceneReady = false;
+let runningCode = false;
 
 function renderAudioButton() {
     const presentation = getAudioButtonPresentation(gameAudio.isMuted());
@@ -85,21 +95,89 @@ function updateLineNumbers() {
 }
 
 function showFeedback(message, state = 'info') {
-    feedbackMessage.textContent = message;
-    feedback.dataset.state = state;
-    feedbackOkButton.focus({ preventScroll: true });
+    guideDialogue.start([{ message, state }]);
+    setControlsDisabled(true);
+    renderGuide(true);
 }
 
 function hideFeedback() {
-    feedbackMessage.textContent = '';
-    delete feedback.dataset.state;
+    guideDialogue.reset();
+    feedback.close();
+    document.body.classList.remove('guide-is-open');
 }
 
-// Tombol aksi dikunci bersama selama animasi berjalan.
+function renderGuide(showInstruction = false) {
+    if (levelCompleted) return;
+    const entry = guideDialogue.current;
+    if (!entry && !showInstruction) return;
+    const wasOpen = feedback.open;
+    feedback.dataset.state = entry?.state ?? 'instruction';
+    const titles = {
+        instruction: 'Langkah berikutnya',
+        info: 'Arti kode yang kamu jalankan',
+        success: 'Misi berhasil!',
+        error: 'Mari perbaiki kodenya',
+    };
+    guideTitle.textContent = titles[feedback.dataset.state];
+    feedbackMessage.textContent = entry?.message ?? getGuideInstruction({
+        levelNumber: isLevel2 ? 2 : 1,
+        challengeNumber: currentChallenge,
+        state: latestState,
+    });
+    guideNextLabel.textContent = entry ? 'Lanjut' : 'Mengerti, ayo mulai';
+    guideProgress.textContent = guideDialogue.messages.length > 1
+        ? `${guideDialogue.messages.length - 1} penjelasan berikutnya` : entry ? 'Berikutnya: arahan misi' : 'Siap melanjutkan misi?';
+    guideCopy.scrollTop = 0;
+    if (!wasOpen) {
+        document.body.classList.add('guide-is-open');
+        feedback.showModal();
+    } else if (!reducedMotion.matches) {
+        guideCopy.animate([
+            { opacity: 0, transform: 'translateX(20px)' },
+            { opacity: 1, transform: 'translateX(0)' },
+        ], { duration: 260, easing: 'cubic-bezier(.22, 1, .36, 1)' });
+    }
+    feedbackOkButton.focus({ preventScroll: true });
+    setControlsDisabled(true);
+}
+
+async function nextGuideMessage() {
+    if (guideTransitioning || !feedback.open) return;
+    guideTransitioning = true;
+    feedbackOkButton.disabled = true;
+    gameAudio.play('uiClick');
+    const hasExplanation = Boolean(guideDialogue.current);
+
+    try {
+        if (!reducedMotion.matches) {
+            const target = hasExplanation ? guideCopy : guideStage;
+            await target.animate([
+                { opacity: 1, transform: 'translate(0, 0)' },
+                { opacity: 0, transform: hasExplanation ? 'translate(-14px, 0)' : 'translate(0, 24px)' },
+            ], { duration: 150, easing: 'ease-in', fill: 'forwards' }).finished;
+            target.getAnimations().forEach((animation) => animation.cancel());
+        }
+        if (hasExplanation) {
+            guideDialogue.next();
+            renderGuide(true);
+        } else {
+            hideFeedback();
+            editor.focus({ preventScroll: true });
+        }
+    } finally {
+        guideTransitioning = false;
+        feedbackOkButton.disabled = false;
+        if (feedback.open) feedbackOkButton.focus({ preventScroll: true });
+        setControlsDisabled(levelCompleted);
+    }
+}
+
+// Tombol aksi dikunci selama animasi dan selama penjelasan masih dibaca.
 function setControlsDisabled(disabled) {
-    runButton.disabled = disabled;
-    resetButton.disabled = disabled;
-    clearButton.disabled = disabled;
+    const locked = disabled || !sceneReady || feedback.open || Boolean(guideDialogue.current);
+    runButton.disabled = locked;
+    resetButton.disabled = locked;
+    clearButton.disabled = locked;
 }
 
 function hideHint() {
@@ -208,7 +286,7 @@ function configureChallenge({ updateScene = true } = {}) {
     latestState = {};
     hintIndex = 0;
     missionTitle.textContent = definition.title;
-    missionDescription.textContent = definition.description;
+    guideDialogue.reset();
     requiredWater.textContent = isLevel2 ? getLevel2WaterCapacity() : definition.requiredWater;
     if (isLevel2) {
         const capacity = getLevel2WaterCapacity();
@@ -237,7 +315,7 @@ function configureChallenge({ updateScene = true } = {}) {
     }
 }
 
-function advanceChallenge(successMessage) {
+function advanceChallenge() {
     completedChallenges.add(currentChallenge);
 
     if (currentChallenge === (isLevel2 ? 4 : 3)) {
@@ -251,14 +329,9 @@ function advanceChallenge(successMessage) {
         return;
     }
 
-    const completedChallenge = currentChallenge;
     if (!isLevel2) gameAudio.play('challengeComplete');
     currentChallenge += 1;
     configureChallenge();
-    showFeedback(
-        `${successMessage} ${challengeDefinitions[completedChallenge].nextMessage}`,
-        'success',
-    );
 }
 
 // 3. Hubungkan panel HTML dengan scene Phaser dan bantuan penulisan kode.
@@ -266,9 +339,9 @@ const Scene = isLevel2 ? Level2Scene : Level1Scene;
 const scene = new Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
     onReady() {
+        sceneReady = true;
         configureChallenge();
-        setControlsDisabled(false);
-        hideFeedback();
+        renderGuide(true);
     },
     onLoadError() {
         gameAudio.play('commandError');
@@ -287,11 +360,18 @@ const autocomplete = new CodeAutocomplete(
 
 // 4. Validasi dahulu, jalankan aksi, lalu tampilkan hasilnya.
 async function runCode() {
-    if (levelCompleted) return;
+    if (levelCompleted || runningCode || feedback.open || guideDialogue.current || !sceneReady) return;
 
     const definition = challengeDefinitions[currentChallenge];
+    const submittedCode = editor.value;
+    const initialWater = latestState.water ?? 0;
+    const instructionBefore = getGuideInstruction({
+        levelNumber: isLevel2 ? 2 : 1,
+        challengeNumber: currentChallenge,
+        state: latestState,
+    });
     const result = validator[isLevel2 ? 'validateLoop' : 'validateVariable'](
-        editor.value,
+        submittedCode,
         definition.requiredWater,
         currentChallenge,
     );
@@ -305,23 +385,40 @@ async function runCode() {
     gameAudio.play('run');
 
     hideFeedback();
+    runningCode = true;
     setControlsDisabled(true);
 
     try {
-        const outcome = await scene.runCommands(result.actions.commands);
-
-        if (outcome.missionSuccess) {
-            advanceChallenge(outcome.message);
-        } else {
-            const outcomeFeedback = getOutcomeFeedback(outcome);
-            if (outcomeFeedback.playErrorCue) gameAudio.play('commandError');
-            if (outcomeFeedback.visible) {
-                showFeedback(outcome.message, outcomeFeedback.state);
-            } else {
-                hideFeedback();
-            }
+        const completedCommands = [];
+        const outcome = await scene.runCommands(result.actions.commands, (command) => completedCommands.push(command));
+        const messages = explainExecutedCommands({
+            levelNumber: isLevel2 ? 2 : 1,
+            challengeNumber: currentChallenge,
+            commands: completedCommands,
+            code: submittedCode,
+            initialWater,
+        }).map((message) => ({ message, state: 'info' }));
+        const outcomeFeedback = getOutcomeFeedback(outcome);
+        if (outcomeFeedback.playErrorCue) gameAudio.play('commandError');
+        if (outcomeFeedback.visible || outcome.missionSuccess) {
+            messages.push({ message: outcome.message, state: outcome.missionSuccess ? 'success' : outcomeFeedback.state });
         }
+        const shouldOpenGuide = guideDialogue.start(messages, () => {
+            if (outcome.missionSuccess) advanceChallenge();
+        }, {
+            instructionBefore,
+            instructionAfter: getGuideInstruction({
+                levelNumber: isLevel2 ? 2 : 1,
+                challengeNumber: currentChallenge,
+                state: latestState,
+            }),
+        });
+        if (shouldOpenGuide) renderGuide(true);
+    } catch (error) {
+        console.error('Aksi game tidak dapat diselesaikan.', error);
+        showFeedback('Aksi terhenti. Tekan Mengerti, lalu Ulangi untuk kembali ke awal challenge.', 'error');
     } finally {
+        runningCode = false;
         setControlsDisabled(levelCompleted);
     }
 }
@@ -357,6 +454,7 @@ async function resetChallenge() {
         await scene.resetChallenge(currentChallenge, true);
         autocomplete.hide();
         hideFeedback();
+        renderGuide(true);
     } finally {
         setControlsDisabled(false);
     }
@@ -381,9 +479,16 @@ resetButton.addEventListener('click', resetChallenge);
 clearButton.addEventListener('click', clearCode);
 hintButton.addEventListener('click', toggleHint);
 audioButton.addEventListener('click', toggleAudio);
-feedbackOkButton.addEventListener('click', () => {
-    gameAudio.play('uiClick');
-    hideFeedback();
+feedbackOkButton.addEventListener('click', nextGuideMessage);
+feedback.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    void nextGuideMessage();
+});
+feedback.addEventListener('keydown', (event) => {
+    if (event.key === 'Tab') {
+        event.preventDefault();
+        feedbackOkButton.focus({ preventScroll: true });
+    }
 });
 resultReplay.addEventListener('click', () => {
     gameAudio.play('uiClick');

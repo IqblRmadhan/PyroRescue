@@ -248,7 +248,7 @@ export default class Level2Scene extends Phaser.Scene {
         });
     }
 
-    async runCommands(commands) {
+    async runCommands(commands, onCommandComplete = () => {}) {
         const requested = commands.filter((command) => command.type === 'spray').length;
         const remaining = this.requiredWater - this.sprays;
         if (requested > remaining) {
@@ -277,6 +277,7 @@ export default class Level2Scene extends Phaser.Scene {
                 }
                 await this.spray();
             }
+            onCommandComplete(command);
         }
         const fireOut = this.sprays === this.requiredWater;
         const missionSuccess = fireOut && (this.challengeNumber < 4 || this.isAt(level2Map.finish));

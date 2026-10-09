@@ -42,11 +42,20 @@ class Level1PageTest extends TestCase
             ->assertSee('bawah(angka)')
             ->assertSee('kanan(angka)')
             ->assertSee('Run Code')
+            ->assertSee('id="material-open"', false)
+            ->assertSee('id="material-dialog"', false)
+            ->assertSee('aria-modal="true"', false)
+            ->assertSeeInOrder([
+                'id="run-code"',
+                'id="material-open"',
+                'id="material-dialog"',
+            ], false)
             ->assertSee('Hint')
             ->assertSee('id="audio-toggle"', false)
             ->assertSee('aria-pressed="true"', false)
             ->assertSee('id="reset"', false)
             ->assertSee('id="clear-code"', false)
+            ->assertSee('<h2 id="target-title">Misi</h2>', false)
             ->assertDontSee('class="game-study__heading"', false)
             ->assertDontSee('class="game-study__flow"', false)
             ->assertDontSee('id="variable-watch-title"', false)

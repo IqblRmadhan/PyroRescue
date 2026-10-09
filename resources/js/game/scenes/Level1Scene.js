@@ -345,7 +345,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.publishState();
     }
 
-    async runCommands(commands) {
+    async runCommands(commands, onCommandComplete = () => {}) {
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         this.setPlayerIdle(this.direction);
 
@@ -355,6 +355,7 @@ export default class Level1Scene extends Phaser.Scene {
                 if (!moved) {
                     return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan tanah. Periksa sequence gerakanmu.' };
                 }
+                onCommandComplete(command);
                 continue;
             }
 
@@ -367,6 +368,7 @@ export default class Level1Scene extends Phaser.Scene {
                 if (!result.success) {
                     return { status: 'error', missionSuccess: false, message: result.message };
                 }
+                onCommandComplete(command);
                 continue;
             }
 
@@ -375,6 +377,7 @@ export default class Level1Scene extends Phaser.Scene {
                 if (!result.success) {
                     return { status: 'error', missionSuccess: false, message: result.message };
                 }
+                onCommandComplete(command);
             }
         }
 

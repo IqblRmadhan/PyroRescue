@@ -145,14 +145,6 @@
                     </div>
                 </div>
 
-                <div id="feedback" class="game-dialog" role="status" aria-live="polite">
-                    <span class="feedback-icon" aria-hidden="true"></span>
-                    <div class="feedback-copy">
-                        <strong class="feedback-title" aria-hidden="true"></strong>
-                        <p id="feedback-message"></p>
-                    </div>
-                    <button id="feedback-ok" type="button">OK</button>
-                </div>
             </section>
 
             <aside class="game-panel wood-frame" aria-label="Misi dan editor PyroPad">
@@ -160,14 +152,13 @@
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
                         <h2 id="mission-title">{{ $isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air' }}</h2>
-                        <p id="mission-description">{{ $isLevel2 ? 'Isi isi_air = 6 di pompa, lalu gunakan 2 semprotan untuk api C1.' : 'Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel isi_air.' }}</p>
                     </div>
                 </section>
 
                 <section class="mission-card mission-card--targets" aria-labelledby="target-title">
                     <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
                     <div>
-                        <h2 id="target-title">Target</h2>
+                        <h2 id="target-title">Misi</h2>
                         <ul id="target-list" class="target-list">
                             <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel2 ? 'Ambil 6 unit air di pompa' : 'Pergi ke pompa air' }}</li>
                             @if($isLevel2)
@@ -210,14 +201,57 @@
                             Hapus
                         </button>
                     </div>
+                    <button id="material-open" class="game-guide-button" type="button"
+                            aria-controls="material-dialog" aria-expanded="false">
+                        <span aria-hidden="true">&#128214;</span>
+                        Baca Materi
+                    </button>
                     <p id="editor-action-status" class="sr-only" role="status"></p>
-
-                    <a class="game-guide-link" href="#learning-panel">Baca materi <span aria-hidden="true">↓</span></a>
-
                 </div>
             </aside>
+        </main>
 
-            <section id="learning-panel" class="learning-panel game-study wood-frame" aria-label="Materi dan kamus perintah">
+        <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
+    </div>
+
+    <dialog id="feedback" class="mission-guide" data-state="instruction"
+            aria-labelledby="guide-title" aria-describedby="feedback-message">
+        <div class="mission-guide__stage">
+            <div class="mission-guide__portrait" aria-hidden="true">
+                <img src="{{ asset('assets/characters/mission-guide.png') }}" alt="" width="887" height="1774">
+            </div>
+            <div class="mission-guide__bubble">
+                <div class="mission-guide__heading">
+                    <span class="mission-guide__name"><span class="mission-guide__badge" aria-hidden="true">&#10022;</span> TIM PYRORESCUE</span>
+                    <span class="mission-guide__role">PEMANDU MISI</span>
+                </div>
+                <div class="mission-guide__copy" role="status" aria-live="polite" aria-atomic="true">
+                    <strong id="guide-title">Langkah berikutnya</strong>
+                    <p id="feedback-message"></p>
+                </div>
+                <div class="mission-guide__actions">
+                    <small id="guide-progress"></small>
+                    <button id="feedback-ok" type="button" autofocus>
+                        <span id="guide-next-label">Mengerti</span>
+                        <span class="mission-guide__arrow" aria-hidden="true">&#10140;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </dialog>
+
+    <section id="material-dialog" class="material-dialog" role="dialog" aria-modal="true"
+             aria-labelledby="material-dialog-title" hidden>
+        <div class="material-dialog__card">
+            <header class="material-dialog__header">
+                <div>
+                    <span class="learning-eyebrow">MODUL BELAJAR</span>
+                    <h2 id="material-dialog-title">Materi Python</h2>
+                </div>
+                <button class="material-dialog__close" type="button" data-material-close aria-label="Tutup materi">&times;</button>
+            </header>
+
+            <section id="learning-panel" class="learning-panel game-study" aria-label="Materi dan kamus perintah">
                 <section class="learning-card">
                     <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
                     @if($isLevel2)
@@ -262,10 +296,12 @@
                 </section>
 
             </section>
-        </main>
 
-        <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
-    </div>
+            <footer class="material-dialog__footer">
+                <button type="button" data-material-close>Tutup</button>
+            </footer>
+        </div>
+    </section>
 
     <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div class="level-result__card">

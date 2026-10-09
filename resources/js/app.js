@@ -8,6 +8,8 @@ if (levelCarousel) {
 const gamePrototype = document.querySelector('.game-prototype');
 
 if (gamePrototype) {
+    import('./game/MaterialDialog.js').then(({ initMaterialDialog }) => initMaterialDialog());
+
     const hasMobileUserAgent = navigator.userAgentData?.mobile === true
         || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
     const hasMobileScreen = window.matchMedia('(pointer: coarse)').matches
