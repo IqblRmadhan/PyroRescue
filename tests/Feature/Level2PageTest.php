@@ -12,6 +12,7 @@ class Level2PageTest extends TestCase
         $this->post(route('login.guest'));
         $this->get('/main-menu')->assertOk()->assertSee(url('/game/2'), false);
         $this->get('/game/2')->assertOk()
+            ->assertSee('class="game-prototype game-workspace game-scale-80"', false)
             ->assertSee('Hutan Gambut Berasap')
             ->assertSee('id="level-story"', false)
             ->assertSee('data-level-number="2"', false)
@@ -32,6 +33,11 @@ class Level2PageTest extends TestCase
             ->assertSee('semprot()')
             ->assertSee('isi_air = 6')
             ->assertSee('for')
+            ->assertDontSee('class="game-study__heading"', false)
+            ->assertDontSee('class="game-study__flow"', false)
+            ->assertDontSee('id="variable-watch-title"', false)
+            ->assertDontSee('id="code-explanation-title"', false)
+            ->assertDontSee('id="study-tips-title"', false)
             ->assertDontSee('Air sampai di Pos 2');
     }
 }

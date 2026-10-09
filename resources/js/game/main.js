@@ -20,7 +20,7 @@ const challengeDefinitions = isLevel2 ? level2Challenges : level1Challenges;
 const createSuggestions = isLevel2 ? createLevel2Suggestions : createLevel1Suggestions;
 const editor = document.getElementById('code-editor');
 const Learning = isLevel2 ? Level2Learning : Level1Learning;
-const learning = new Learning(editor, document.getElementById('learning-panel'));
+const learning = new Learning(document.getElementById('learning-panel'));
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
@@ -52,8 +52,6 @@ let latestState = {};
 let completedTargets = new Set();
 const completedChallenges = new Set();
 let levelCompleted = false;
-
-if (!gameAudio.isMuted()) void gameAudio.preload();
 
 function renderAudioButton() {
     const presentation = getAudioButtonPresentation(gameAudio.isMuted());
@@ -144,8 +142,6 @@ function renderMissionState(state = {}) {
         gameAudio.setFireNearby(persistentState.fireNearby);
     }
     latestState = { ...latestState, ...persistentState };
-    learning.renderState(latestState);
-
     const markerStarterCode = !isLevel2
         ? getLevel1MarkerStarterCode({
             challengeNumber: currentChallenge,

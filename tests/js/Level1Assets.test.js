@@ -2,15 +2,63 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
+import * as Level1Assets from '../../resources/js/game/Level1Assets.js';
 import {
     firefighterAnimations,
     level1Assets,
+    level1MapImage,
     level1MapShadowImage,
     npcAnimations,
 } from '../../resources/js/game/Level1Assets.js';
 
+test('Level 1 uses the final map filename without a version suffix', () => {
+    assert.equal(level1MapImage, 'maps/level1-map.png');
+    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map.png')), true);
+    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map-v2.png')), false);
+});
+
 test('level map shadow uses the dedicated Level 1 image', () => {
     assert.equal(level1MapShadowImage, 'maps/shadow_level1.png');
+});
+
+test('level map shadow fills the complete 1600 by 1200 map', () => {
+    const state = {};
+    const shadow = {
+        setOrigin(value) {
+            state.origin = value;
+            return this;
+        },
+        setDisplaySize(width, height) {
+            state.width = width;
+            state.height = height;
+            return this;
+        },
+        setDepth(value) {
+            state.depth = value;
+            return this;
+        },
+    };
+    const scene = {
+        add: {
+            image(x, y, texture) {
+                Object.assign(state, { x, y, texture });
+                return shadow;
+            },
+        },
+    };
+
+    assert.equal(typeof Level1Assets.addLevel1MapShadow, 'function');
+    Level1Assets.addLevel1MapShadow(scene, 1600, 1200);
+
+    assert.deepEqual(state, {
+        x: 0,
+        y: 0,
+        texture: 'levelMapShadow',
+        origin: 0,
+        width: 1600,
+        height: 1200,
+        depth: 0,
+    });
 });
 
 test('every Level 1 preload asset exists in the public asset directory', () => {
@@ -40,6 +88,14 @@ test('action marker uses all six pulse frames from the new sheet', () => {
         pulse5: [1506, 249, 246, 246],
         pulse6: [1868, 249, 246, 246],
     });
+});
+
+test('water pump marker uses the blue sheet with the same pulse frames', () => {
+    assert.equal(level1Assets.waterPumpAction?.file, 'effects/water-pump-action.png');
+    assert.deepEqual(
+        level1Assets.waterPumpAction?.frames,
+        level1Assets.actionMarker.frames,
+    );
 });
 
 test('all firefighter animations provide six frames', () => {

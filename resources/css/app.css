@@ -2094,14 +2094,6 @@
 .learning-card .lesson-code { display: block; padding: 10px; border-radius: 5px; color: #a6e0fc; background: #132433; font-size: 17px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .lesson-effect { border-left: 3px solid #488559; padding: 8px 10px; background: #e7efda; }
 .learning-card .learning-note { border-top: 1px solid #dac8a8; padding: 10px 0 0; background: transparent; font-size: 13px; color: #534b3d; }
-.variable-readout { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; padding: 8px 0; }
-.variable-readout output { font-size: 28px; font-weight: 700; color: #15654b; }
-.variable-watch p { font-size: 13px; }
-.code-explanations { margin: 12px 0 0; padding-left: 25px; }
-.code-explanations li { padding: 8px 0; border-top: 1px solid #ddccb0; }
-.code-explanations li > code { display: block; white-space: pre-wrap; font-size: 14px; }
-.code-explanations li p { font-size: 14px; }
-.code-explanations .has-error { color: #922d24; }
 .game-prototype .learning-note { display: block; }
 .game-prototype .hud-counter { min-height: 50px; font-size: 25px; }
 .game-prototype #feedback { font-size: 15px; }
@@ -2276,6 +2268,15 @@
     min-height: 100dvh;
     padding-bottom: 28px;
 }
+
+/* Tampilkan workspace desktop seperti browser pada zoom 80%, tanpa mengecilkan lebar dua kolom. */
+@media (min-width: 901px) {
+    .game-prototype.game-scale-80 .game-header,
+    .game-prototype.game-scale-80 .game-layout {
+        zoom: .8;
+    }
+}
+
 .game-prototype.game-workspace .game-layout {
     grid-template-columns: minmax(0, 1.35fr) minmax(380px, 1fr);
     grid-template-rows: auto auto;
@@ -2333,17 +2334,6 @@
     line-height: 1.7;
     scroll-margin-top: 16px;
 }
-.game-study__heading { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #f8f2e1; }
-.game-study__eyebrow { color: #eec577; font-size: 11px; font-weight: 800; letter-spacing: .13em; }
-.game-study__heading h2 { margin: 4px 0 7px; font-size: clamp(23px, 2vw, 30px); line-height: 1.25; }
-.game-study__heading p { max-width: 850px; margin: 0; color: #c5dedb; font-size: 15px; }
-.game-study__return { flex-shrink: 0; padding: 10px 15px; border: 1px solid #729d97; border-radius: 8px; color: #fff3cd; font-size: 14px; font-weight: 700; text-decoration: none; }
-.game-study__return:hover { background: #244f5a; }
-.game-study__flow { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin: 0 0 4px; padding: 0; list-style: none; }
-.game-study__flow li { display: flex; align-items: flex-start; gap: 12px; padding: 15px; border: 1px solid #476a74; border-radius: 10px; background: #1b3e50; color: #eef5e9; }
-.game-study__flow li > span { color: #ffd082; font-size: 22px; font-weight: 800; line-height: 1.4; }
-.game-study__flow strong { font-size: 15px; }
-.game-study__flow p { margin: 3px 0 0; color: #c5dddc; font-size: 14px; line-height: 1.6; }
 .game-prototype.game-workspace .game-study .learning-card {
     min-width: 0;
     margin: 0;
@@ -2360,10 +2350,7 @@
 .game-prototype.game-workspace .command-reference-list button { padding: 10px 12px; font-size: 14px; }
 .game-prototype.game-workspace .code-suggestion-help__example code { color: #dff5ff; font-size: 16px; }
 .game-prototype.game-workspace .game-study .learning-note { font-size: 14px; }
-.game-study__tips { grid-column: 1 / -1; }
-.game-study__tips ul { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin: 12px 0 0; padding-left: 20px; }
-.game-study__tips li { padding-left: 4px; }
-.game-guide-link:focus-visible, .game-study__return:focus-visible { outline: 3px solid #f8ce78; outline-offset: 3px; }
+.game-guide-link:focus-visible { outline: 3px solid #f8ce78; outline-offset: 3px; }
 
 @media (max-width: 900px) {
     .game-prototype.game-workspace .game-layout { grid-template-columns: minmax(0, 1fr); }
@@ -2371,8 +2358,6 @@
     .game-prototype.game-workspace .game-panel { height: auto; min-height: 0; }
     .game-prototype.game-workspace .panel-content { min-height: 0; }
     .game-prototype.game-workspace .game-study { grid-template-columns: minmax(0, 1fr); }
-    .game-study__heading { align-items: flex-start; flex-direction: column; gap: 12px; }
-    .game-study__flow, .game-study__tips ul { grid-template-columns: minmax(0, 1fr); gap: 12px; }
     .game-prototype.game-workspace .game-study .learning-card { padding: 18px; }
 }
 

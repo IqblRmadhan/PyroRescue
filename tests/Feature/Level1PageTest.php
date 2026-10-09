@@ -25,6 +25,7 @@ class Level1PageTest extends TestCase
 
         $this->get('/game/1')
             ->assertOk()
+            ->assertSee('class="game-prototype game-workspace game-scale-80"', false)
             ->assertSee('data-audio-base-url=', false)
             ->assertSee('Tepi Sungai Terbakar')
             ->assertSee('id="level-story"', false)
@@ -46,6 +47,11 @@ class Level1PageTest extends TestCase
             ->assertSee('aria-pressed="true"', false)
             ->assertSee('id="reset"', false)
             ->assertSee('id="clear-code"', false)
+            ->assertDontSee('class="game-study__heading"', false)
+            ->assertDontSee('class="game-study__flow"', false)
+            ->assertDontSee('id="variable-watch-title"', false)
+            ->assertDontSee('id="code-explanation-title"', false)
+            ->assertDontSee('id="study-tips-title"', false)
             ->assertSeeInOrder([
                 'class="game-map-controls"',
                 'id="audio-toggle" class="hint-button hint-button--audio"',

@@ -58,7 +58,7 @@
     <title>PyroRescue - Level {{ $levelNumber }}: {{ $levelTitle }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="game-prototype game-workspace" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
+<body class="game-prototype game-workspace game-scale-80" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title"
              data-game-page="prototype-page" data-level-number="{{ $levelNumber }}">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level {{ $levelNumber }}</h1>
@@ -212,25 +212,12 @@
                     </div>
                     <p id="editor-action-status" class="sr-only" role="status"></p>
 
-                    <a class="game-guide-link" href="#learning-panel">Baca materi &amp; tips bermain <span aria-hidden="true">↓</span></a>
+                    <a class="game-guide-link" href="#learning-panel">Baca materi <span aria-hidden="true">↓</span></a>
 
                 </div>
             </aside>
 
-            <section id="learning-panel" class="learning-panel game-study wood-frame" aria-labelledby="study-title">
-                <header class="game-study__heading">
-                    <div>
-                        <span class="game-study__eyebrow">BACA, COBA, LALU AMATI</span>
-                        <h2 id="study-title">Panduan belajar &amp; bermain</h2>
-                        <p>Pelajari materinya di sini, lalu terapkan di PyroPad. Penjelasan mengikuti challenge yang sedang kamu mainkan.</p>
-                    </div>
-                    <a href="#code-editor" class="game-study__return">Kembali ke PyroPad ↑</a>
-                </header>
-                <ol class="game-study__flow" aria-label="Cara memainkan misi">
-                    <li><span>01</span><div><strong>Amati map dan target</strong><p>Temukan penanda merah dan hitung petak jalan menuju tujuan.</p></div></li>
-                    <li><span>02</span><div><strong>Susun kode di PyroPad</strong><p>{{ $isLevel2 ? 'Isi isi_air di pompa, lalu gunakan semprot() atau for/range sesuai misi.' : 'Tulis perintah gerak berurutan, lalu kode variabel sesuai misi.' }}</p></div></li>
-                    <li><span>03</span><div><strong>Jalankan dan periksa</strong><p>{{ $isLevel2 ? 'Tekan Run Code, amati setiap semprotan dan api yang padam.' : 'Tekan Run Code, amati gerakan, isi tangki, dan target yang tercentang.' }}</p></div></li>
-                </ol>
+            <section id="learning-panel" class="learning-panel game-study wood-frame" aria-label="Materi dan kamus perintah">
                 <section class="learning-card">
                     <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
                     @if($isLevel2)
@@ -274,26 +261,6 @@
                 </aside>
                 </section>
 
-                <section class="learning-card variable-watch" aria-labelledby="variable-watch-title">
-                    <h3 id="variable-watch-title">{{ $isLevel2 ? 'Semprotan pada api aktif' : 'Isi tangki sekarang' }}</h3>
-                    <div class="variable-readout"><code>{{ $isLevel2 ? 'semprot()' : 'isi_air' }}</code><span>{{ $isLevel2 ? '×' : '=' }}</span><output id="learning-water">0</output><small>{{ $isLevel2 ? 'kali' : 'unit air' }}</small></div>
-                    <p id="learning-water-note">Amati nilainya setelah menjalankan kode.</p>
-                </section>
-
-                <section class="learning-card" aria-labelledby="code-explanation-title">
-                    <h3 id="code-explanation-title">Arti kode kamu</h3>
-                    <p>Penjelasan mengikuti kode yang kamu ketik. Aksi game terjadi setelah Run Code.</p>
-                    <ol id="code-explanations" class="code-explanations"></ol>
-                    <p id="code-explanations-empty">Mulai dengan perintah gerak, misalnya <code>atas(1)</code>. Angka dalam kurung menentukan jumlah petak.</p>
-                </section>
-                <section class="learning-card game-study__tips" aria-labelledby="study-tips-title">
-                    <h3 id="study-tips-title">Tips agar misi lebih mudah</h3>
-                    <ul>
-                        <li><strong>Gerak lewat jalan tanah.</strong> Angka pada <code>atas(2)</code> berarti bergerak dua petak ke atas.</li>
-                        <li><strong>Datangi penanda dahulu.</strong> {{ $isLevel2 ? 'Isi air di penanda pompa; jalankan semprot() setelah sampai di penanda api aktif.' : 'Jalankan kode variabel setelah pemadam sampai di lokasi yang diminta.' }}</li>
-                        <li><strong>Baca hasil setiap percobaan.</strong> Perhatikan pesan di map. Gunakan Hint saat membutuhkan petunjuk berikutnya.</li>
-                    </ul>
-                </section>
             </section>
         </main>
 

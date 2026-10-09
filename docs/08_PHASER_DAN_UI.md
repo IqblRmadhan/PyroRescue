@@ -3,18 +3,16 @@
 ## Implementasi ruang belajar Level 1
 
 Halaman game memakai peta di kiri serta target misi, PyroPad, dan tombol aksi
-di kanan. Materi, kamus perintah, penjelasan kode, dan tips berada dalam area
-lebar di bawah kedua panel. Halaman digulir secara utuh agar materi tidak
+di kanan. Materi dan kamus perintah berada dalam area lebar di bawah kedua
+panel. Halaman digulir secara utuh agar materi tidak
 terpotong dalam panel sempit. Pada layar kecil, map, PyroPad, dan panduan
-disusun vertikal. Tautan di bawah tombol aksi menuju panduan; tautan di panduan
-mengembalikan fokus ke PyroPad.
+disusun vertikal. Tautan di bawah tombol aksi menuju materi.
 
-- `Level1Learning.js` menjelaskan setiap baris di PyroPad tanpa menjalankan kode.
-  Materi mengikuti challenge: membuat variabel, mengganti nilai, lalu memakai nilainya.
-- Nilai `isi_air` pada panel belajar mengikuti state Phaser setelah aksi berlangsung.
+- `Level1Learning.js` mengganti materi sesuai challenge: membuat variabel,
+  mengganti nilai, lalu memakai nilainya.
 - Saat pemain pertama kali mencapai penanda merah challenge Level 1, kode gerakan
   diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
-- Kamus perintah tersedia di area panduan di bawah map dan PyroPad. Klik tombol
+- Kamus perintah tersedia di area materi di bawah map dan PyroPad. Klik tombol
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
@@ -32,21 +30,23 @@ mengembalikan fokus ke PyroPad.
   mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
 - Awan bergerak di atas map dengan bayangan yang tampak di tanah. Awan digambar
   di belakang karakter serta penanda misi agar tidak menutupinya.
-- Map Level 1 memakai `level1-map-v2.png` berukuran 1600 × 1200 sesuai gambar baru.
+- Map Level 1 memakai `level1-map.png` berukuran 1600 × 1200.
   Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
-- Petak FINISH memakai ubin kecil bermotif kotak-kotak di jalan, dengan label
-  singkat di atasnya. Pemain menginjak ubin setelah menyerahkan air untuk
+- Petak FINISH Level 1 memakai ubin kecil bermotif kotak-kotak di jalan tanpa
+  label dan marker merah. Pemain menginjak ubin setelah menyerahkan air untuk
   membuka hasil tiga bintang dan tautan Level 2.
+- Label pompa, pos, dan kebakaran memakai bentuk papan, panah,
+  tipografi, dan aturan zoom yang sama. Warna dibedakan berdasarkan fungsi.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
   yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
-  Titik merah di pompa, Pos 1, Pos 2, dan FINISH tetap terlihat pada setiap
-  challenge tanpa garis kotak kuning di sekeliling petak.
+  Titik biru di pompa serta titik merah di Pos 1 dan Pos 2 tetap terlihat pada
+  setiap challenge tanpa garis kotak kuning di sekeliling petak.
 
 ## Implementasi Level 2
 
 - `/game/2` memakai layout PyroPad yang sama, dengan materi `semprot()` dan
   `for/range`. Level tersedia dari menu utama dan hasil Level 1.
-- `Level2Map.js` mengikuti jalan pada `level2-map-v2.png` berukuran 1600 × 1200.
+- `Level2Map.js` mengikuti jalan pada `level2-map.png` berukuran 1600 × 1200.
   Tiga titik latihan berada di tengah, kanan atas, dan kanan bawah. Titik
   evaluasi berada dekat FINISH di bagian bawah peta.
 - Pompa Phaser ditempatkan di dekat jalan setelah jembatan tanpa bidang rumput
@@ -59,7 +59,11 @@ mengembalikan fokus ke PyroPad.
   Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (1 semprotan),
   dan C3 kanan bawah (3 semprotan). Evaluasi memakai `LEVEL2-EVAL.png`
   (3 semprotan).
-- Setiap pompa, api, dan FINISH memiliki titik merah pada petak interaksinya.
+- Marker evaluasi berada pada petak jalan `(24,27)`, dua petak di atas FINISH.
+  Label EVALUASI berada pada posisi `(1100,1080)`.
+- Setiap pompa memiliki titik biru, sedangkan api memiliki titik merah pada
+  petak interaksinya. FINISH Level 2 memakai ubin kotak-kotak yang sama dengan
+  Level 1 tanpa label dan marker merah.
   Semua titik tetap terlihat dengan tingkat terang berbeda tanpa garis kotak
   kuning di sekeliling petak.
   Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,

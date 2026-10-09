@@ -14,9 +14,28 @@ export const level2Assets = {
     firefighterSpray: level1Assets.firefighterSpray,
     firefighterRespawn: level1Assets.firefighterRespawn,
     actionMarker: level1Assets.actionMarker,
+    waterPumpAction: level1Assets.waterPumpAction,
     waterPump: level1Assets.waterPump,
     fireC1: { file: 'objects/LEVEL2-C1.png', frames: fireFrames },
     fireC2: { file: 'objects/LEVEL2-C2.png', frames: fireFrames },
     fireC3: { file: 'objects/LEVEL2-C3.png', frames: fireFrames },
     fireEval: { file: 'objects/LEVEL2-EVAL.png', frames: fireFrames },
 };
+
+export const level2MapImage = 'maps/level2-map.png';
+export const level2MapShadowImage = 'maps/shadow_level2.png';
+
+export function addLevel2MapShadow(scene, width, height) {
+    const shadow = scene.add.image(0, 0, 'level2Shadow')
+        .setOrigin(0)
+        .setDisplaySize(width, height)
+        .setDepth(0);
+
+    scene.add.image(0, 0, 'level2Shadow')
+        .setOrigin(0)
+        .setDisplaySize(width, height)
+        .setDepth(0)
+        .setAlpha(0.8);
+
+    return shadow;
+}

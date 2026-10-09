@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import * as Level1Map from '../../resources/js/game/Level1Map.js';
 import {
     isNextTo,
     isOnTile,
@@ -7,6 +8,15 @@ import {
     level1Map,
     tileToWorld,
 } from '../../resources/js/game/Level1Map.js';
+
+test('Level 1 map decorations exclude the finish marker', () => {
+    assert.equal(typeof Level1Map.getLevel1ActionTiles, 'function');
+    assert.deepEqual(Level1Map.getLevel1ActionTiles(level1Map), {
+        1: level1Map.waterAction,
+        2: level1Map.post1Action,
+        3: level1Map.post2Action,
+    });
+});
 
 test('map ends at the finish column without rescaling its 40 pixel tiles', () => {
     assert.equal(level1Map.width, 1600);

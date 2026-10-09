@@ -184,6 +184,15 @@ export const npcAnimations = {
     },
 };
 
+const actionMarkerFrames = {
+    pulse1: [58, 249, 246, 246],
+    pulse2: [420, 249, 246, 246],
+    pulse3: [782, 249, 246, 246],
+    pulse4: [1144, 249, 246, 246],
+    pulse5: [1506, 249, 246, 246],
+    pulse6: [1868, 249, 246, 246],
+};
+
 export const level1Assets = {
     groundTerrain: {
         file: 'tiles/ground.png',
@@ -227,14 +236,11 @@ export const level1Assets = {
     },
     actionMarker: {
         file: 'effects/action-marker.png',
-        frames: {
-            pulse1: [58, 249, 246, 246],
-            pulse2: [420, 249, 246, 246],
-            pulse3: [782, 249, 246, 246],
-            pulse4: [1144, 249, 246, 246],
-            pulse5: [1506, 249, 246, 246],
-            pulse6: [1868, 249, 246, 246],
-        },
+        frames: actionMarkerFrames,
+    },
+    waterPumpAction: {
+        file: 'effects/water-pump-action.png',
+        frames: actionMarkerFrames,
     },
     waterPump: {
         file: 'objects/water-pump.png',
@@ -250,5 +256,12 @@ export const level1Assets = {
 };
 
 // Simpan map final 1600 x 1200 pada lokasi ini.
-export const level1MapImage = 'maps/level1-map-v2.png';
+export const level1MapImage = 'maps/level1-map.png';
 export const level1MapShadowImage = 'maps/shadow_level1.png';
+
+export function addLevel1MapShadow(scene, width, height) {
+    return scene.add.image(0, 0, 'levelMapShadow')
+        .setOrigin(0)
+        .setDisplaySize(width, height)
+        .setDepth(0);
+}

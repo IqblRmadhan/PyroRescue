@@ -96,7 +96,9 @@ export function createWebAudioEngine({
 
         const loading = (async () => {
             try {
-                const response = await fetchFile(`${normalizedBaseUrl}/${fileName}`);
+                const response = await fetchFile(`${normalizedBaseUrl}/${fileName}`, {
+                    cache: 'force-cache',
+                });
                 if (!response.ok) return markFailure();
                 const buffer = await context.decodeAudioData(await response.arrayBuffer());
                 buffers.set(key, buffer);
@@ -232,6 +234,8 @@ export class GameAudio {
     }
 
     async preload() {
+        if (!this.unlocked) return false;
+
         try {
             this.engine ??= this.engineFactory();
             if (!this.engine) return false;
@@ -245,10 +249,7 @@ export class GameAudio {
 
     async unlock() {
         const engineIsRunning = this.engine?.isRunning?.() ?? true;
-        if (this.unlocked && engineIsRunning) {
-            void this.preload();
-            return true;
-        }
+        if (this.unlocked && engineIsRunning) return true;
         if (this.unlockPromise) return this.unlockPromise;
 
         this.unlockPromise = this.resumeEngine();
@@ -264,13 +265,13 @@ export class GameAudio {
             this.engine ??= this.engineFactory();
             if (!this.engine) return false;
 
-            void this.preload();
             await this.engine.resume();
             if (!this.unlocked) {
                 this.engine.setMuted(this.muted);
                 this.engine.startBackground();
                 this.engine.setFireNearby?.(this.fireNearby);
                 this.unlocked = true;
+                void this.preload();
             }
 
             return true;

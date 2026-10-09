@@ -123,7 +123,7 @@ test('concurrent unlock requests initialize the background only once', async () 
     assert.deepEqual(calls, ['resume', 'muted', 'background']);
 });
 
-test('preload prepares assets without unlocking or starting the background', async () => {
+test('preload waits for user interaction before preparing audio assets', async () => {
     const calls = [];
     const audio = new GameAudio({
         storage: createStorage(),
@@ -137,8 +137,12 @@ test('preload prepares assets without unlocking or starting the background', asy
     });
 
     assert.equal(typeof audio.preload, 'function');
-    assert.equal(await audio.preload(), true);
-    assert.deepEqual(calls, ['preload']);
+    assert.equal(await audio.preload(), false);
+    assert.deepEqual(calls, []);
+
+    assert.equal(await audio.unlock(), true);
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.deepEqual(calls, ['resume', 'background', 'preload']);
 });
 
 test('fire proximity requested before unlock is applied when audio starts', async () => {
@@ -164,7 +168,7 @@ test('fire proximity requested before unlock is applied when audio starts', asyn
     assert.deepEqual(fireStates, [true, false]);
 });
 
-test('later unlock interactions retry preload even while audio is already running', async () => {
+test('later unlock interactions do not restart preload while audio is already running', async () => {
     let preloadCount = 0;
     const engine = {
         async preload() { preloadCount += 1; },
@@ -185,7 +189,7 @@ test('later unlock interactions retry preload even while audio is already runnin
 
     await audio.unlock();
     await new Promise((resolve) => setImmediate(resolve));
-    assert.equal(preloadCount, 2);
+    assert.equal(preloadCount, 1);
 });
 
 test('a cue requested while audio is suspended resumes without replaying a stale cue', async () => {
@@ -254,7 +258,9 @@ test('physical audio loading does not block resume and retries failed files', as
     let currentTime = 1_000;
     let releaseFirstLoad;
     const firstLoadGate = new Promise((resolve) => { releaseFirstLoad = resolve; });
-    const fetchFile = async (url) => {
+    const requestOptions = [];
+    const fetchFile = async (url, options) => {
+        requestOptions.push(options);
         const fileName = url.split('/').pop();
         const total = (attempts.get(fileName) ?? 0) + 1;
         attempts.set(fileName, total);
@@ -281,6 +287,7 @@ test('physical audio loading does not block resume and retries failed files', as
     releaseFirstLoad();
     await firstPreload;
     assert.deepEqual(started, ['music-loop.wav']);
+    assert.equal(requestOptions.every((options) => options?.cache === 'force-cache'), true);
     assert.equal(attempts.get('ui-click.wav'), 1);
 
     await engine.preload();

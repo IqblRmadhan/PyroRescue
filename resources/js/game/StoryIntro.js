@@ -137,7 +137,6 @@ export default class StoryIntro {
         window.addEventListener('keydown', this.handleKeydown);
         document.body.classList.add('story-is-open');
 
-        if (!gameAudio.isMuted()) void gameAudio.preload();
         this.showSlide(0);
         this.nextButton.focus();
     }

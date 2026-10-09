@@ -6,6 +6,13 @@ const labelThemes = {
         strokeColor: '#082633',
         fontFamily: 'Trebuchet MS, Arial, sans-serif',
     },
+    post: {
+        backgroundColor: 0x24523f,
+        borderColor: 0xd9c06f,
+        textColor: '#fff8df',
+        strokeColor: '#0c2c20',
+        fontFamily: 'Trebuchet MS, Arial, sans-serif',
+    },
     fire: {
         backgroundColor: 0x8c3028,
         borderColor: 0xffb071,
@@ -125,4 +132,8 @@ export function addPumpLabel(scene, x, y) {
 
 export function addFireLabel(scene, x, y, text = '', placement = 'above') {
     return addPointerLabel(scene, x, y, text, 'fire', placement);
+}
+
+export function addPostLabel(scene, x, y, text) {
+    return addPointerLabel(scene, x, y, text, 'post');
 }

@@ -1,5 +1,3 @@
-import CodeValidator from './CodeValidator.js';
-
 export const variableLessons = {
     1: {
         title: '1. Membuat variabel',
@@ -21,53 +19,11 @@ export const variableLessons = {
     },
 };
 
-const validator = new CodeValidator();
-
-// Hanya menjelaskan teks; validasi dan eksekusi misi tetap dilakukan oleh game.
-export function explainLevel1Code(code, challengeNumber = 1) {
-    const requiredWater = challengeNumber === 1 ? 3 : 5;
-    return code.replace(/\r\n?/g, '\n').split('\n').flatMap((source, index) => {
-        const trimmed = source.trim();
-        if (!trimmed) return [];
-
-        const line = { number: index + 1, code: source, text: '', invalid: false };
-        if (trimmed.startsWith('#')) {
-            line.text = 'Komentar: catatan untuk pembaca kode. Baris ini tidak menjalankan aksi.';
-            return [line];
-        }
-
-        const validation = validator.validateVariable(source, requiredWater, challengeNumber);
-        if (!validation.syntaxValid) {
-            line.text = validation.message;
-            line.invalid = true;
-            return [line];
-        }
-
-        const normalized = source.split('#')[0].replace(/[ \t]/g, '');
-        const movement = normalized.match(/^(atas|bawah|kanan|kiri)\((\d+)\)$/);
-        if (movement) {
-            line.text = `Memanggil perintah ${movement[1]} dengan argumen ${movement[2]}: pemadam berjalan ke ${movement[1]} sebanyak ${movement[2]} petak mengikuti jalan. Perintah ini disediakan oleh PyroRescue.`;
-        } else if (normalized === 'air_pos=isi_air') {
-            line.text = 'Membaca nilai isi_air dan menyimpannya ke air_pos. Di penanda Pos 2, game menyerahkan air, lalu mengosongkan tangki pemain. Pengosongan ini adalah aturan game.';
-        } else {
-            const amount = validation.actions.water;
-            line.text = `Menyimpan bilangan bulat ${amount} ke variabel isi_air. ${challengeNumber === 1 ? 'Di penanda pompa, tangki diisi sampai jumlah tersebut.' : 'Di Pos 1, 3 unit bawaan + 2 unit bantuan = 5 unit. Nilai lama 3 diganti dengan jumlah akhir, bukan ditambah 5 lagi.'}`;
-            if (amount !== requiredWater) {
-                line.text += ` Target challenge ini adalah ${requiredWater} unit.`;
-            }
-        }
-        return [line];
-    });
-}
-
 export default class Level1Learning {
-    constructor(editor, root, { lessons = variableLessons, explainCode = explainLevel1Code } = {}) {
-        this.editor = editor;
+    constructor(root, { lessons = variableLessons } = {}) {
         this.root = root;
         this.challengeNumber = 1;
         this.lessons = lessons;
-        this.explainCode = explainCode;
-        editor.addEventListener('input', () => this.renderCode());
     }
 
     setChallenge(challengeNumber) {
@@ -84,32 +40,5 @@ export default class Level1Learning {
                 step.removeAttribute('aria-current');
             }
         }
-        this.renderCode();
-    }
-
-    renderState(state) {
-        if (Number.isFinite(state.water)) {
-            this.root.querySelector('#learning-water').textContent = state.water;
-        }
-        this.root.querySelector('#learning-water-note').textContent = state.postWater > 0
-            ? `${state.postWater} unit telah diserahkan ke Pos 2. Tangki dikosongkan oleh aturan misi.`
-            : 'Nilai ini mengikuti isi tangki di game, bukan sekadar angka yang sedang diketik.';
-    }
-
-    renderCode() {
-        const lines = this.explainCode(this.editor.value, this.challengeNumber);
-        const items = lines.map((line) => {
-            const item = document.createElement('li');
-            item.value = line.number;
-            item.classList.toggle('has-error', line.invalid);
-            const code = document.createElement('code');
-            code.textContent = line.code;
-            const text = document.createElement('p');
-            text.textContent = line.text;
-            item.append(code, text);
-            return item;
-        });
-        this.root.querySelector('#code-explanations').replaceChildren(...items);
-        this.root.querySelector('#code-explanations-empty').hidden = items.length > 0;
     }
 }

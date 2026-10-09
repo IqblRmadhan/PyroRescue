@@ -1,17 +1,25 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import { addFinishPoint } from '../FinishPoint.js';
-import { showChallengeMarker } from '../MapMarkers.js';
-import { addPumpLabel } from '../PumpLabel.js';
+import { addFinishTile } from '../FinishPoint.js';
+import { getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
+import { addPostLabel, addPumpLabel } from '../PumpLabel.js';
 import {
+    addLevel1MapShadow,
     firefighterAnimations,
     level1Assets,
     level1MapImage,
     level1MapShadowImage,
     npcAnimations,
 } from '../Level1Assets.js';
-import { getTerrain, isOnTile, isWalkable, level1Map, tileToWorld } from '../Level1Map.js';
+import {
+    getLevel1ActionTiles,
+    getTerrain,
+    isOnTile,
+    isWalkable,
+    level1Map,
+    tileToWorld,
+} from '../Level1Map.js';
 
 const cameraZoom = 1.15;
 const waterLayerAlpha = 0.84;
@@ -92,7 +100,8 @@ export default class Level1Scene extends Phaser.Scene {
     update(time, delta) {
         this.atmosphere?.update(delta);
         this.pumpLabel?.setZoom(this.cameras.main.zoom);
-        this.finishPoint?.setZoom(this.cameras.main.zoom);
+        this.post1Sign?.setZoom(this.cameras.main.zoom);
+        this.post2Sign?.setZoom(this.cameras.main.zoom);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
             this.waterLayer.tilePositionX += 0.02;
@@ -100,10 +109,7 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     drawTerrain() {
-        this.add.image(0, 0, 'levelMapShadow')
-            .setOrigin(0)
-            .setCrop(0, 0, level1Map.width, level1Map.height)
-            .setDepth(0);
+        addLevel1MapShadow(this, level1Map.width, level1Map.height);
 
         this.waterLayer = this.add.tileSprite(
             0,
@@ -213,6 +219,16 @@ export default class Level1Scene extends Phaser.Scene {
                 repeat: -1,
             });
         }
+
+        if (!this.anims.exists('water-pump-marker-pulse')) {
+            this.anims.create({
+                key: 'water-pump-marker-pulse',
+                frames: ['pulse1', 'pulse2', 'pulse3', 'pulse4', 'pulse5', 'pulse6']
+                    .map((frame) => ({ key: 'waterPumpAction', frame })),
+                frameRate: 8,
+                repeat: -1,
+            });
+        }
     }
 
     drawGrid() {
@@ -235,16 +251,20 @@ export default class Level1Scene extends Phaser.Scene {
         const post2NpcPosition = tileToWorld(level1Map.post2Npc.column, level1Map.post2Npc.row);
 
         this.actionMarkers = {};
-        const actionTiles = {
-            1: level1Map.waterAction,
-            2: level1Map.post1Action,
-            3: level1Map.post2Action,
-            4: level1Map.finish,
-        };
+        const actionTiles = getLevel1ActionTiles(level1Map);
         for (const [number, tile] of Object.entries(actionTiles)) {
             const position = tileToWorld(tile.column, tile.row);
-            this.actionMarkers[number] = this.add.sprite(position.x, position.y, 'actionMarker', 'pulse1')
-                .setDisplaySize(20, 20).setDepth(7).play('action-marker-pulse');
+            const markerType = Number(number) === 1 ? 'pump' : 'post';
+            const animation = markerType === 'pump'
+                ? 'water-pump-marker-pulse'
+                : 'action-marker-pulse';
+            const markerSize = getChallengeMarkerStyle(Number(number), 1, markerType).size;
+            this.actionMarkers[number] = this.add.sprite(
+                position.x,
+                position.y,
+                getMarkerTexture(markerType),
+                'pulse1',
+            ).setDisplaySize(markerSize, markerSize).setDepth(7).play(animation);
         }
         this.pump = this.add.sprite(pumpPosition.x, pumpPosition.y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9)
@@ -280,29 +300,20 @@ export default class Level1Scene extends Phaser.Scene {
         this.player = this.add.sprite(playerPosition.x, playerPosition.y, 'firefighterIdle', 'idle-north-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(10);
 
-        this.post1Sign = this.drawPostSign(level1Map.post1Sign, 'POS 1');
-        this.post2Sign = this.drawPostSign(level1Map.post2Sign, 'POS 2');
-        this.drawFinishPoint();
-    }
-
-    drawPostSign(position, label) {
-        const sign = this.add.graphics();
-        sign.fillStyle(0x071e29, 0.45).fillRoundedRect(-48, -15, 100, 40, 6);
-        sign.fillStyle(0x153d48).fillRoundedRect(-50, -19, 100, 36, 6);
-        sign.lineStyle(2, 0xffd277).strokeRoundedRect(-50, -19, 100, 36, 6);
-        sign.fillStyle(0xffd277).fillTriangle(-7, 17, 7, 17, 0, 28);
-        const title = this.add.text(0, -1, label, {
-            fontFamily: 'monospace', fontSize: '18px', fontStyle: 'bold', color: '#fff8df',
-            stroke: '#0b2531', strokeThickness: 2,
-        }).setOrigin(0.5);
-
-        return this.add.container(position.x, position.y, [sign, title]).setDepth(13);
-    }
-
-    drawFinishPoint() {
-        const position = tileToWorld(level1Map.finish.column, level1Map.finish.row);
-        this.finishPoint = addFinishPoint(this, position.x, position.y, { labelOffsetX: -30 })
-            .setAlpha(0.85);
+        this.post1Sign = addPostLabel(
+            this,
+            level1Map.post1Sign.x,
+            level1Map.post1Sign.y + 28,
+            'POS 1',
+        );
+        this.post2Sign = addPostLabel(
+            this,
+            level1Map.post2Sign.x,
+            level1Map.post2Sign.y + 28,
+            'POS 2',
+        );
+        const finishPosition = tileToWorld(level1Map.finish.column, level1Map.finish.row);
+        this.finishTile = addFinishTile(this, finishPosition.x, finishPosition.y).setAlpha(0.85);
     }
 
     configureCamera() {
@@ -325,13 +336,12 @@ export default class Level1Scene extends Phaser.Scene {
         this.requiredWater = challengeNumber === 1 ? 3 : 5;
         for (const [number, marker] of Object.entries(this.actionMarkers)) {
             const activeChallenge = this.hasDeliveredWater ? 4 : challengeNumber;
-            showChallengeMarker(marker, null, Number(number), activeChallenge);
+            const markerType = Number(number) === 1 ? 'pump' : 'action';
+            showChallengeMarker(marker, null, Number(number), activeChallenge, markerType);
         }
-        this.post1Sign.setAlpha(challengeNumber === 2 ? 1 : 0.78)
-            .setScale(challengeNumber === 2 ? 1.08 : 1);
-        this.post2Sign.setAlpha(challengeNumber === 3 ? 1 : 0.78)
-            .setScale(challengeNumber === 3 ? 1.08 : 1);
-        this.finishPoint.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
+        this.post1Sign.container.setAlpha(challengeNumber === 2 ? 1 : 0.78);
+        this.post2Sign.container.setAlpha(challengeNumber === 3 ? 1 : 0.78);
+        this.finishTile.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
         this.publishState();
     }
 
@@ -509,8 +519,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.water = 0;
         this.onAudio('water');
         this.hasDeliveredWater = true;
-        showChallengeMarker(this.actionMarkers[4], null, 4, 4);
-        this.finishPoint.setAlpha(1);
+        this.finishTile.setAlpha(1);
         this.publishState();
         this.setPlayerIdle(previousDirection);
 

@@ -1,10 +1,20 @@
 import Phaser from 'phaser';
 import { firefighterAnimations } from '../Level1Assets.js';
-import { level2Assets } from '../Level2Assets.js';
-import { isLevel2Walkable, level2Map, level2TileToWorld } from '../Level2Map.js';
+import {
+    addLevel2MapShadow,
+    level2Assets,
+    level2MapImage,
+    level2MapShadowImage,
+} from '../Level2Assets.js';
+import {
+    getLevel2FinishVisual,
+    isLevel2Walkable,
+    level2Map,
+    level2TileToWorld,
+} from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import { addFinishPoint } from '../FinishPoint.js';
-import { showChallengeMarker } from '../MapMarkers.js';
+import { addFinishTile } from '../FinishPoint.js';
+import { getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
 import { addFireLabel, addPumpLabel } from '../PumpLabel.js';
 import challenges, {
     getFirePresentation,
@@ -44,8 +54,8 @@ export default class Level2Scene extends Phaser.Scene {
         for (const [key, asset] of Object.entries(level2Assets)) {
             this.load.image(key, `${this.assetBaseUrl}/${asset.file}`);
         }
-        this.load.image('level2Map', `${this.assetBaseUrl}/maps/level2-map-v2.png`);
-        this.load.image('level2Shadow', `${this.assetBaseUrl}/maps/shadow_level2.png`);
+        this.load.image('level2Map', `${this.assetBaseUrl}/${level2MapImage}`);
+        this.load.image('level2Shadow', `${this.assetBaseUrl}/${level2MapShadowImage}`);
     }
 
     create() {
@@ -93,6 +103,12 @@ export default class Level2Scene extends Phaser.Scene {
             frameRate: 8, repeat: -1,
         });
         this.anims.create({
+            key: 'level2-pump-marker',
+            frames: ['pulse1', 'pulse2', 'pulse3', 'pulse4', 'pulse5', 'pulse6']
+                .map((frame) => ({ key: 'waterPumpAction', frame })),
+            frameRate: 8, repeat: -1,
+        });
+        this.anims.create({
             key: 'level2-pump-flow',
             frames: ['idle', 'start', 'stream', 'flow', 'slow', 'drop']
                 .map((frame) => ({ key: 'waterPump', frame })),
@@ -101,8 +117,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawMap() {
-        // Geser bayangan sedikit agar tepiannya muncul di air, di bawah peta.
-        this.add.image(24, 24, 'level2Shadow').setOrigin(0).setDepth(0);
+        addLevel2MapShadow(this, level2Map.width, level2Map.height);
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
             .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
@@ -136,16 +151,15 @@ export default class Level2Scene extends Phaser.Scene {
             );
 
             const marker = level2TileToWorld(fire.action.column, fire.action.row);
-            this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
+            this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, getMarkerTexture('fire'), 'pulse1')
                 .setDisplaySize(24, 24).setDepth(7).play('level2-marker');
         }
-        const finish = level2TileToWorld(level2Map.finish.column, level2Map.finish.row);
-        this.finishMarker = this.add.sprite(finish.x, finish.y, 'actionMarker', 'pulse1')
-            .setDisplaySize(20, 20).setDepth(7).play('level2-marker');
+        const finishTile = getLevel2FinishVisual(level2Map).tile;
+        const finish = level2TileToWorld(finishTile.column, finishTile.row);
         this.playerShadow = this.add.ellipse(0, 0, 24, 6, 0x172b1b, 0.24).setDepth(8);
         this.player = this.add.sprite(0, 0, 'firefighterIdle', 'idle-east-1')
             .setOrigin(0.5, 0.9).setScale(playerScale).setDepth(9);
-        this.finishPoint = addFinishPoint(this, finish.x, finish.y).setAlpha(0.7);
+        this.finishTile = addFinishTile(this, finish.x, finish.y).setAlpha(0.7);
     }
 
     drawPumpStation() {
@@ -154,8 +168,9 @@ export default class Level2Scene extends Phaser.Scene {
             .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
         this.pumpLabel = addPumpLabel(this, x, y);
         const marker = level2TileToWorld(action.column, action.row);
-        this.pumpMarker = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
-            .setDisplaySize(24, 24).setDepth(7).play('level2-marker');
+        const markerSize = getChallengeMarkerStyle(1, 1, 'pump').size;
+        this.pumpMarker = this.add.sprite(marker.x, marker.y, getMarkerTexture('pump'), 'pulse1')
+            .setDisplaySize(markerSize, markerSize).setDepth(7).play('level2-pump-marker');
     }
 
     drawEvaluationPump() {
@@ -164,15 +179,15 @@ export default class Level2Scene extends Phaser.Scene {
             .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
         this.evaluationPumpLabel = addPumpLabel(this, x, y);
         const marker = level2TileToWorld(action.column, action.row);
-        this.evaluationPumpMarker = this.add.sprite(marker.x, marker.y, 'actionMarker', 'pulse1')
-            .setDisplaySize(24, 24).setDepth(7).play('level2-marker');
+        const markerSize = getChallengeMarkerStyle(4, 1, 'pump').size;
+        this.evaluationPumpMarker = this.add.sprite(marker.x, marker.y, getMarkerTexture('pump'), 'pulse1')
+            .setDisplaySize(markerSize, markerSize).setDepth(7).play('level2-pump-marker');
     }
 
     update() {
         const zoom = this.cameras.main.zoom;
         this.pumpLabel?.setZoom(zoom);
         this.evaluationPumpLabel?.setZoom(zoom);
-        this.finishPoint?.setZoom(zoom);
         for (const label of Object.values(this.fireLabels ?? {})) label.setZoom(zoom);
         if (this.waterLayer) {
             this.waterLayer.tilePositionY += 0.08;
@@ -184,8 +199,8 @@ export default class Level2Scene extends Phaser.Scene {
         this.challengeNumber = challengeNumber;
         this.requiredWater = challenges[challengeNumber].requiredWater;
         this.sprays = 0;
-        showChallengeMarker(this.pumpMarker, null, 1, challengeNumber);
-        showChallengeMarker(this.evaluationPumpMarker, null, 4, challengeNumber);
+        showChallengeMarker(this.pumpMarker, null, 1, challengeNumber, 'pump');
+        showChallengeMarker(this.evaluationPumpMarker, null, 4, challengeNumber, 'pump');
         this.updateFires();
         this.publishState();
     }
@@ -208,8 +223,7 @@ export default class Level2Scene extends Phaser.Scene {
             showChallengeMarker(marker, null, Number(number), this.challengeNumber);
         }
         const finishedFire = this.challengeNumber === 4 && this.sprays === this.requiredWater;
-        showChallengeMarker(this.finishMarker, null, 5, finishedFire ? 5 : this.challengeNumber);
-        this.finishPoint.setAlpha(finishedFire ? 1 : this.challengeNumber === 4 ? 0.9 : 0.7);
+        this.finishTile.setAlpha(finishedFire ? 1 : this.challengeNumber === 4 ? 0.9 : 0.7);
     }
 
     isAt(target) {

@@ -57,6 +57,14 @@ export const level1Map = {
     finish: { column: 39, row: 11 },
 };
 
+export function getLevel1ActionTiles(map) {
+    return {
+        1: map.waterAction,
+        2: map.post1Action,
+        3: map.post2Action,
+    };
+}
+
 export function getTerrain(column, row) {
     return level1Map.terrain[row]?.[column] ?? '~';
 }

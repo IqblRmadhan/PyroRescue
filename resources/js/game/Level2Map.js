@@ -1,4 +1,4 @@
-// Petak 40 piksel mengikuti pusat jalan pada level2-map-v2.png (1600 x 1200).
+// Petak 40 piksel mengikuti pusat jalan pada level2-map.png (1600 x 1200).
 const walkableTiles = new Set();
 function road(column, row, endColumn, endRow) {
     for (let x = column; x <= endColumn; x += 1) {
@@ -34,9 +34,20 @@ export const level2Map = {
             direction: 'north', label: { x: 1370, y: 50, placement: 'above' },
         },
         3: { x: 1450, y: 780, size: 225, action: { column: 38, row: 17 }, direction: 'west' },
-        4: { x: 1100, y: 1220, size: 210, action: { column: 24, row: 25 }, direction: 'east' },
+        4: {
+            x: 1100,
+            y: 1220,
+            size: 210,
+            action: { column: 24, row: 27 },
+            direction: 'east',
+            label: { x: 1100, y: 1080, placement: 'above' },
+        },
     },
 };
+
+export function getLevel2FinishVisual(map) {
+    return { tile: map.finish };
+}
 
 export function isLevel2Walkable(column, row) {
     return walkableTiles.has(`${column},${row}`);
