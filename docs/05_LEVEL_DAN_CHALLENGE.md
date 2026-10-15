@@ -152,53 +152,81 @@ kedua.
 
 # Level 3 — Suaka Bekantan
 
-## Materi
-Percabangan `if/else`.
+Implementasi mengikuti **Modul-PyroRescue.pdf, BAB III, halaman 18–23**.
+Rancangan lama berdasarkan `ukuran_api` diganti dengan Boolean `api_padam`.
 
-## Tujuan Pembelajaran
-Pemain mampu menentukan tindakan berdasarkan kondisi serta menggabungkan variabel dan perulangan.
+## Misi dan kondisi
 
-## Misi
-Menentukan tindakan berdasarkan ukuran api untuk membuka jalur menuju bekantan.
+Pemain memadamkan api habitat, memeriksa keselamatan bekantan, lalu menentukan
+status dengan `if/else`. Sistem game memperbarui `api_padam` setelah semprotan;
+pemain tidak dapat mengisi variabel kondisi ini sendiri.
 
-### Challenge 1 — Kenali Kondisi
+Map sementara menggunakan `level3-map.png` dan `shadow_level3.png` (1600 × 1200).
+Pohon terbakar, pompa, karakter, marker, serta animasi dipakai kembali dari Level 2.
+Pose bekantan dibaca dari `objects/Bekantan.png`. Story Level 2 dipakai sementara
+sesuai permintaan; pembelajaran dan misi di PyroPad tetap materi Level 3.
 
-```python
-if ukuran_api == "besar":
-    semprot(3)
-```
+### Challenge 1 — Memadamkan Api di Habitat
 
-### Challenge 2 — If/Else
-
-```python
-if ukuran_api == "besar":
-    semprot(3)
-else:
-    semprot(1)
-```
-
-### Challenge 3 — Integrasi
+Di titik biru pompa, ambil 3 unit melalui `isi_air = 3`. Kapasitas tangki 6 unit.
+Datangi titik merah api di pulau tengah dan gunakan:
 
 ```python
-if ukuran_api == "besar":
-    jumlah_semprot = 3
-else:
-    jumlah_semprot = 1
-
+jumlah_semprot = 3
 for i in range(jumlah_semprot):
     semprot()
 ```
 
-### Evaluasi Akhir
+Setiap semprotan memakai satu unit air. Setelah 3 semprotan, sistem mengubah
+`api_padam` menjadi `True`. Semprotan kurang dapat dilanjutkan pada Run berikutnya.
+Semprotan berlebih ditolak sebelum aksi dijalankan.
 
-Pemain menggunakan:
+### Challenge 2 — Memeriksa Kondisi dengan if
 
-```text
-variabel
-+
-perulangan
-+
-percabangan
+Api dari C1 tetap padam. Dari penanda api, turun dua petak ke penanda bekantan.
+
+```python
+if api_padam:
+    status_bekantan = "aman"
 ```
 
-dengan bantuan minimal untuk menyelesaikan misi penyelamatan.
+HUD menampilkan `BEKANTAN: AMAN`. Jika kondisi False, blok if dilewati.
+
+### Challenge 3 — Dua Jalur dengan if/else
+
+Tetap di penanda bekantan dan tentukan tindakan untuk kedua keadaan:
+
+```python
+if api_padam:
+    status_bekantan = "selamat"
+else:
+    status_bekantan = "tunggu"
+```
+
+Kedua cabang divalidasi, tetapi hanya cabang sesuai kondisi aktual yang dijalankan.
+C1–C3 memakai habitat yang sama; api tidak dinyalakan ulang saat pindah challenge.
+
+### Evaluasi — Penyelamatan Lengkap
+
+Ikuti jembatan ke pompa di pulau tengah, lalu turun ke pulau bawah. Siapkan 4 unit
+air. Api terakhir membutuhkan 4 semprotan. Di titik merah evaluasi, tulis satu
+program dengan variabel `jumlah_semprot`, `for/range(jumlah_semprot)`, dan
+`if/else` setelah perulangan. Program yang berhasil menjalankan empat semprotan
+dan menghasilkan status `selamat`. Pemain kemudian turun satu petak ke FINISH.
+
+Jika semprotan kurang, percabangan membaca False dan menghasilkan `tunggu`.
+Gunakan Ulangi untuk memperbaiki program lengkap dari checkpoint evaluasi.
+Gerakan serta pengisian pompa boleh dijalankan terpisah. Selama evaluasi, materi,
+kamus, autocomplete, dan Hint tidak tersedia.
+
+## Checkpoint dan hasil
+
+- C1: posisi awal, tangki kosong, api habitat menyala.
+- C2: penanda api habitat, api padam, status tunggu.
+- C3: penanda bekantan, api padam, status aman.
+- Evaluasi: penanda pompa kedua, tangki kosong, api evaluasi menyala.
+
+Reset hanya mengulang challenge aktif. Akun menyimpan empat tahap secara
+berurutan; tiga bintang diberikan setelah evaluasi dan FINISH. Tamu tidak
+menyimpan progres. Level 3 terbuka setelah Level 2 selesai untuk akun dan selalu
+tersedia dalam mode tamu. Hasil akhir menampilkan penyelesaian ketiga level.

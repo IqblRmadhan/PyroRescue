@@ -93,6 +93,41 @@ export function createLevel2Suggestions(requiredCount, challengeNumber) {
     ];
 }
 
+export function createLevel3Suggestions(requiredCount, challengeNumber) {
+    if (challengeNumber === 4) return [];
+    const suggestions = createLevel2Suggestions(requiredCount, 3).map((suggestion) => ({ ...suggestion }));
+    suggestions[4] = {
+        label: 'isi_air = angka', value: 'isi_air = 3', selectionStart: 10, selectionLength: 1,
+        kind: 'Assignment variabel', description: 'Mengganti isi tangki di titik biru pompa. Tangki menampung maksimal 6 unit.',
+        example: 'isi_air = 3', parameter: 'angka', parameterDescription: 'Siapkan 3 unit air untuk api habitat.',
+    };
+    if (challengeNumber === 1) return suggestions;
+    return [
+        ...suggestions.slice(0, 4),
+        {
+            label: 'if api_padam:',
+            value: challengeNumber === 2 ? 'if api_padam:\n    status_bekantan = "aman"'
+                : 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"',
+            selectionStart: 3, selectionLength: 9,
+            kind: 'Percabangan Python',
+            description: 'Memeriksa Boolean dari game. True berarti api padam, False berarti masih menyala. else dijalankan hanya ketika kondisi if salah.',
+            example: 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"',
+            parameter: 'api_padam', parameterDescription: 'Nilai kondisi dibaca setelah aksi sebelumnya selesai. Jangan mengganti nilainya sendiri.',
+        },
+        {
+            label: 'status_bekantan = teks', value: `status_bekantan = "${challengeNumber === 2 ? 'aman' : 'selamat'}"`,
+            selectionStart: 19, selectionLength: challengeNumber === 2 ? 4 : 7,
+            kind: 'Assignment dalam percabangan', description: 'Simpan status di dalam blok if atau else dengan indentasi yang konsisten.',
+            example: '    status_bekantan = "aman"', parameter: 'teks', parameterDescription: 'aman untuk C2; selamat atau tunggu untuk C3.',
+        },
+        ...(challengeNumber === 3 ? [{
+            label: 'else:', value: 'else:\n    status_bekantan = "tunggu"', selectionStart: 0, selectionLength: 0,
+            kind: 'Cabang alternatif', description: 'Letakkan sejajar dengan if. Blok ini berjalan jika api_padam False.',
+            example: 'else:\n    status_bekantan = "tunggu"', parameter: 'tanpa kondisi', parameterDescription: 'else bukan kondisi baru.',
+        }] : []),
+    ];
+}
+
 // Ambil baris tempat kursor berada, tanpa menghapus spasi di awal baris.
 export function getCompletionContext(value, caretPosition) {
     const lineStart = value.lastIndexOf('\n', caretPosition - 1) + 1;

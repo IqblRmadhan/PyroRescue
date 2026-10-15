@@ -11,7 +11,7 @@ class PlayerProgress
         $records = $user?->userLevelProgress()->with('level')->get()->keyBy('level.level_number');
         $levels = [];
         $previousCompleted = true;
-        foreach ([1 => 3, 2 => 4, 3 => 3] as $number => $totalChallenges) {
+        foreach ([1 => 3, 2 => 4, 3 => 4] as $number => $totalChallenges) {
             $record = $records?->get($number);
             $completed = $record?->status === 'completed';
             $levels[$number] = [
@@ -20,7 +20,7 @@ class PlayerProgress
                 'challenges' => $completed ? $totalChallenges : ($record?->completed_challenges ?? 0),
                 'total_challenges' => $totalChallenges,
                 'stars' => $completed ? max(3, $record?->stars ?? 0) : 0,
-                'playable' => $number < 3,
+                'playable' => true,
             ];
             $previousCompleted = $previousCompleted && $completed;
         }

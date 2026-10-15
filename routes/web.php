@@ -30,5 +30,6 @@ Route::middleware('player')->group(function () {
     })->name('module.download');
     Route::get('/game/1', [GameController::class, 'play'])->defaults('number', 1)->name('game.level1');
     Route::get('/game/2', [GameController::class, 'play'])->defaults('number', 2)->name('game.level2');
+    Route::get('/game/3', [GameController::class, 'play'])->defaults('number', 3)->name('game.level3');
     Route::post('/progress/challenge', [ProgressController::class, 'store'])->name('progress.challenge');
 });

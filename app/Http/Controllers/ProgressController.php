@@ -14,7 +14,7 @@ class ProgressController extends Controller
     {
         // Tamu tidak membuat catatan progres, termasuk ketika endpoint dipanggil langsung.
         if (!$request->user()) return response()->json(['saved' => false, 'guest' => true]);
-        $data = $request->validate(['level' => ['required', 'integer', 'in:1,2'], 'challenge' => ['required', 'integer', 'min:1', 'max:4']]);
+        $data = $request->validate(['level' => ['required', 'integer', 'in:1,2,3'], 'challenge' => ['required', 'integer', 'min:1', 'max:4']]);
         $number = (int) $data['level'];
         $challenge = (int) $data['challenge'];
         abort_unless(PlayerProgress::canPlay($request->user(), $number), 403);

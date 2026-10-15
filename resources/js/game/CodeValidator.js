@@ -1,3 +1,5 @@
+import { validateLevel3 } from './Level3Validator.js';
+
 const reservedLoopNames = new Set((
     'False None True and as assert async await break class continue def del elif else except finally '
     + 'for from global if import in is lambda nonlocal not or pass raise return try while with yield '
@@ -5,6 +7,10 @@ const reservedLoopNames = new Set((
 ).split(' '));
 
 export default class CodeValidator {
+    validateConditional(code, requiredCount, challengeNumber = 1) {
+        return validateLevel3(code, requiredCount, challengeNumber);
+    }
+
     // Parser terbatas: gerakan, isi_air, jumlah_semprot, semprot(), dan satu tingkat for.
     // Kode pemain diterjemahkan menjadi data aksi, tidak pernah dieksekusi sebagai Python.
     validateLoop(code, requiredCount, challengeNumber = 1) {

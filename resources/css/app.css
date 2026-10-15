@@ -2346,6 +2346,15 @@
 .prototype-page.is-evaluation .game-guide-button,
 .prototype-page.is-evaluation .game-study,
 .prototype-page.is-evaluation #hint { display: none !important; }
+
+.game-prototype .hud-counter--condition,
+.game-prototype .hud-counter--bekantan {
+    grid-column: 1 / -1;
+    min-height: 30px;
+    padding: 5px 8px;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-size: 13px;
+}
 .game-prototype.game-workspace .game-study {
     display: grid;
     grid-column: 1 / -1;

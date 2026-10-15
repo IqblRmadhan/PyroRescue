@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import ProgressSync from './ProgressSync.js';
-import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions } from './CodeAutocomplete.js';
+import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions, createLevel3Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import Level1Learning from './Level1Learning.js';
@@ -11,17 +11,23 @@ import level2Challenges, {
 } from './Level2Challenges.js';
 import Level2Scene from './scenes/Level2Scene.js';
 import Level2Learning from './Level2Learning.js';
+import Level3Scene from './scenes/Level3Scene.js';
+import Level3Learning from './Level3Learning.js';
+import level3Challenges from './Level3Challenges.js';
 import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
 import { getOutcomeFeedback, shouldPlayTargetCue } from './GameFeedback.js';
 import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
-const isLevel2 = document.getElementById('game-container').dataset.level === '2';
-const challengeDefinitions = isLevel2 ? level2Challenges : level1Challenges;
-const createSuggestions = isLevel2 ? createLevel2Suggestions : createLevel1Suggestions;
+const levelNumber = Number(document.getElementById('game-container').dataset.level);
+const isLevel2 = levelNumber === 2;
+const isLevel3 = levelNumber === 3;
+const hasEvaluation = levelNumber > 1;
+const challengeDefinitions = isLevel3 ? level3Challenges : isLevel2 ? level2Challenges : level1Challenges;
+const createSuggestions = isLevel3 ? createLevel3Suggestions : isLevel2 ? createLevel2Suggestions : createLevel1Suggestions;
 const editor = document.getElementById('code-editor');
-const Learning = isLevel2 ? Level2Learning : Level1Learning;
+const Learning = isLevel3 ? Level3Learning : isLevel2 ? Level2Learning : Level1Learning;
 const learning = new Learning(document.getElementById('learning-panel'));
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
@@ -89,7 +95,7 @@ function showSaveStatus(state) {
 const progressSync = gameContainer.dataset.progressUrl ? new ProgressSync({
     url: gameContainer.dataset.progressUrl,
     token: document.querySelector('meta[name="csrf-token"]').content,
-    level: isLevel2 ? 2 : 1,
+    level: levelNumber,
     onStatus: showSaveStatus,
     onSaved(data) {
         for (const achievement of data.achievements) {
@@ -178,7 +184,7 @@ function renderGuide(showInstruction = false) {
     };
     guideTitle.textContent = titles[feedback.dataset.state];
     feedbackMessage.textContent = entry?.message ?? getGuideInstruction({
-        levelNumber: isLevel2 ? 2 : 1,
+        levelNumber,
         challengeNumber: currentChallenge,
         state: latestState,
     });
@@ -247,6 +253,18 @@ function hideHint() {
 
 // 2. Cocokkan keadaan game dengan target, lalu perbarui panel misi.
 function isTargetComplete(targetKey, state) {
+    if (isLevel3) {
+        switch (targetKey) {
+            case 'location': return state.atFire;
+            case 'water': return state.water >= challengeDefinitions[currentChallenge].requiredWater;
+            case 'fire': return state.fireOut;
+            case 'habitat': return state.atHabitat;
+            case 'safe': return state.conditionChecked && state.bekantanStatus === 'aman';
+            case 'rescued': return state.rescued;
+            case 'finish': return state.atFinish;
+            default: return false;
+        }
+    }
     if (isLevel2) {
         return targetKey === 'location' ? state.atFire
             : targetKey === 'water' ? isLevel2WaterTargetComplete(currentChallenge, state.water)
@@ -278,7 +296,7 @@ function renderMissionState(state = {}) {
         gameAudio.setFireNearby(persistentState.fireNearby);
     }
     latestState = { ...latestState, ...persistentState };
-    const markerStarterCode = !isLevel2
+    const markerStarterCode = levelNumber === 1
         ? getLevel1MarkerStarterCode({
             challengeNumber: currentChallenge,
             hasReachedMarker: completedTargets.has('location'),
@@ -296,6 +314,10 @@ function renderMissionState(state = {}) {
         document.getElementById('editor-action-status').textContent = 'Kode gerakan diganti dengan isian challenge.';
     }
 
+    if (isLevel3) {
+        document.getElementById('fire-condition').textContent = latestState.apiPadam ? 'True' : 'False';
+        document.getElementById('bekantan-status').textContent = (latestState.bekantanStatus ?? 'tunggu').toUpperCase();
+    }
     const counter = latestState.water;
     if (Number.isFinite(counter)) {
         waterCount.textContent = counter;
@@ -345,8 +367,8 @@ function configureChallenge({ updateScene = true } = {}) {
     hintIndex = 0;
     missionTitle.textContent = definition.title;
     guideDialogue.reset();
-    requiredWater.textContent = isLevel2 ? getLevel2WaterCapacity() : definition.requiredWater;
-    if (isLevel2) {
+    requiredWater.textContent = hasEvaluation ? getLevel2WaterCapacity() : definition.requiredWater;
+    if (hasEvaluation) {
         const capacity = getLevel2WaterCapacity();
         const waterHud = requiredWater.closest('.hud-counter');
         waterHud.title = `Isi tangki / kapasitas ${capacity} unit`;
@@ -354,7 +376,7 @@ function configureChallenge({ updateScene = true } = {}) {
     }
     hintText.textContent = defaultHint;
     hideHint();
-    const isEvaluation = isLevel2 && currentChallenge === 4;
+    const isEvaluation = hasEvaluation && currentChallenge === 4;
     prototypePage.classList.toggle('is-evaluation', isEvaluation);
     hintButton.hidden = isEvaluation;
     document.getElementById('code-suggestion-help').hidden = isEvaluation;
@@ -377,7 +399,7 @@ function advanceChallenge() {
     completedChallenges.add(currentChallenge);
     if (progressSync) void progressSync.save(currentChallenge);
 
-    if (currentChallenge === (isLevel2 ? 4 : 3)) {
+    if (currentChallenge === (hasEvaluation ? 4 : 3)) {
         gameAudio.play('levelComplete');
         levelCompleted = true;
         hideFeedback();
@@ -389,13 +411,13 @@ function advanceChallenge() {
         return;
     }
 
-    if (!isLevel2) gameAudio.play('challengeComplete');
+    if (!hasEvaluation) gameAudio.play('challengeComplete');
     currentChallenge += 1;
     configureChallenge();
 }
 
 // 3. Hubungkan panel HTML dengan scene Phaser dan bantuan penulisan kode.
-const Scene = isLevel2 ? Level2Scene : Level1Scene;
+const Scene = isLevel3 ? Level3Scene : isLevel2 ? Level2Scene : Level1Scene;
 const scene = new Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
     async onReady() {
@@ -427,11 +449,11 @@ async function runCode() {
     const submittedCode = editor.value;
     const initialWater = latestState.water ?? 0;
     const instructionBefore = getGuideInstruction({
-        levelNumber: isLevel2 ? 2 : 1,
+        levelNumber,
         challengeNumber: currentChallenge,
         state: latestState,
     });
-    const result = validator[isLevel2 ? 'validateLoop' : 'validateVariable'](
+    const result = validator[isLevel3 ? 'validateConditional' : isLevel2 ? 'validateLoop' : 'validateVariable'](
         submittedCode,
         definition.requiredWater,
         currentChallenge,
@@ -453,7 +475,7 @@ async function runCode() {
         const completedCommands = [];
         const outcome = await scene.runCommands(result.actions.commands, (command) => completedCommands.push(command));
         const messages = explainExecutedCommands({
-            levelNumber: isLevel2 ? 2 : 1,
+            levelNumber,
             challengeNumber: currentChallenge,
             commands: completedCommands,
             code: submittedCode,
@@ -469,7 +491,7 @@ async function runCode() {
         }, {
             instructionBefore,
             instructionAfter: getGuideInstruction({
-                levelNumber: isLevel2 ? 2 : 1,
+                levelNumber,
                 challengeNumber: currentChallenge,
                 state: latestState,
             }),
@@ -485,7 +507,7 @@ async function runCode() {
 }
 
 function toggleHint() {
-    if (isLevel2 && currentChallenge === 4) return;
+    if (hasEvaluation && currentChallenge === 4) return;
     if (!hintText.hidden) {
         gameAudio.play('uiClick');
         hideHint();

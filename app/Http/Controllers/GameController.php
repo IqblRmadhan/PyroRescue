@@ -9,7 +9,7 @@ class GameController extends Controller
 {
     public function play(Request $request, int $number)
     {
-        abort_unless(in_array($number, [1, 2]), 404);
+        abort_unless(in_array($number, [1, 2, 3]), 404);
         if ($request->user() && !PlayerProgress::canPlay($request->user(), $number)) {
             return redirect()->route('main-menu')->with('status', 'Selesaikan level sebelumnya untuk membuka misi ini.');
         }

@@ -94,30 +94,30 @@ validateLoop(code, requiredCount) {
 }
 ```
 
-## Validator conditional
+## Validator conditional Level 3
 
-```js
-validateConditional(code) {
-    const hasIf = code.includes('if ukuran_api == "besar":');
-    const hasElse = code.includes('else:');
+`CodeValidator.validateConditional()` memakai parser terbatas dalam
+`Level3Validator.js`, sesuai BAB III modul. Parser menerima gerakan, assignment
+`isi_air` / `jumlah_semprot`, `for ... in range(...)` berisi `semprot()`, dan:
 
-    if (!hasIf || !hasElse) {
-        return {
-            syntaxValid: false,
-            conceptValid: false,
-            missionSuccess: false,
-            message: 'Gunakan struktur if/else.'
-        };
-    }
-
-    return {
-        syntaxValid: true,
-        conceptValid: true,
-        missionSuccess: true,
-        message: 'Percabangan berhasil digunakan.'
-    };
-}
+```python
+if api_padam:
+    status_bekantan = "selamat"
+else:
+    status_bekantan = "tunggu"
 ```
+
+C2 menerima if tanpa else dengan status `aman`. C3 dan evaluasi membutuhkan dua
+cabang dengan `selamat` dan `tunggu`. Header dan indentasi diperiksa pada seluruh
+program, termasuk cabang yang tidak dijalankan. Assignment `api_padam`, fungsi
+bebas, import, nested block, dan ekspresi di luar subset ditolak. Maksimal 120
+baris dan 120 aksi per Run; ekspansi loop diperiksa sebelum alokasi aksi.
+
+Parser mengembalikan data aksi `conditional` dengan dua alternatif status.
+Scene memeriksa kondisi api pada urutan eksekusinya, setelah animasi semprotan
+sebelumnya selesai. Keberhasilan misi ditentukan dari keadaan scene, bukan hanya
+hasil parser. Evaluasi memerlukan loop variabel lalu percabangan dalam satu Run;
+kurang dari empat semprotan tetap memperlihatkan hasil cabang False.
 
 ## Keterbatasan
 

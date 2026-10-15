@@ -2,7 +2,7 @@
     $cards = [
         1 => ['title' => 'Tepi Sungai Terbakar', 'image' => 'level-1-island.webp', 'description' => 'Siapkan persediaan air dengan variabel Python.'],
         2 => ['title' => 'Hutan Gambut Berasap', 'image' => 'level-2-island.webp', 'description' => 'Pelajari perulangan untuk menghadapi titik api.'],
-        3 => ['title' => 'Suaka Bekantan', 'image' => 'level-3-island.webp', 'description' => 'Gunakan percabangan untuk membuka jalur penyelamatan.'],
+        3 => ['title' => 'Suaka Bekantan', 'image' => 'level-3-island.webp', 'description' => 'Periksa kondisi api dan selamatkan bekantan dengan if/else.'],
     ];
     $nextMission = null;
     foreach ($levels as $number => $level) {

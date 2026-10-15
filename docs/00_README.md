@@ -64,10 +64,10 @@ for i in range(3):
 ```
 
 ```python
-if ukuran_api == "besar":
-    semprot(3)
+if api_padam:
+    status_bekantan = "selamat"
 else:
-    semprot(1)
+    status_bekantan = "tunggu"
 ```
 
 Pendekatan ini lebih sederhana dan cukup untuk prototype PPL.

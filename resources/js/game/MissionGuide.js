@@ -3,6 +3,24 @@ import level2Challenges from './Level2Challenges.js';
 
 // Arahan memakai posisi terkini, bukan hanya checklist yang pernah dicentang.
 export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }) {
+    if (levelNumber === 3) {
+        if (challengeNumber === 4) {
+            return state.rescued ? 'Bekantan selamat! Pergi satu petak ke bawah menuju FINISH.'
+                : state.conditionChecked ? 'Evaluasi belum selesai. Gunakan Ulangi, lalu perbaiki program penyelamatan lengkapmu.'
+                    : 'Evaluasi mandiri: datangi pompa pulau tengah, siapkan 4 unit air, lalu pergi ke pulau bawah. Padamkan api dengan 4 semprotan dan tentukan status bekantan dalam satu program. Akhiri di FINISH.';
+        }
+        if (challengeNumber === 1) {
+            const remaining = 3 - (state.sprays ?? 0);
+            if ((state.water ?? 0) < remaining) return state.atPump
+                ? 'Kamu di pompa. Tulis isi_air = 3 untuk menyiapkan tiga semprotan.'
+                : 'Pergi ke titik biru pompa di kanan tempat awal. Siapkan 3 unit air sebelum menuju habitat di pulau tengah.';
+            return state.atFire ? `Simpan ${remaining} dalam jumlah_semprot, lalu gunakan for dan range(jumlah_semprot) untuk menyemprot. Api yang padam membuat api_padam menjadi True.`
+                : 'Ikuti jembatan ke kanan, lalu naik ke titik merah api habitat di pulau tengah.';
+        }
+        if (!state.atHabitat) return 'Api habitat sudah padam. Dari penanda api, turun dua petak ke penanda bekantan.';
+        return challengeNumber === 2 ? 'Periksa if api_padam: lalu isi status_bekantan = "aman" di dalam blok. True dan False adalah Boolean, tanpa tanda petik.'
+            : 'Gunakan if/else: jika api_padam True, status "selamat"; jika False, status "tunggu". else sejajar dengan if.';
+    }
     if (levelNumber === 1) {
         if (challengeNumber === 1) {
             return state.atPump
@@ -47,7 +65,7 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
 // commands hanya memuat aksi yang dilaporkan selesai oleh scene.
 // Kode asli disimpan sebelum editor bisa berubah saat mencapai penanda.
 export function explainExecutedCommands({ levelNumber, challengeNumber, commands, code = '', initialWater = 0 }) {
-    if (levelNumber === 2 && challengeNumber === 4) return [];
+    if (levelNumber > 1 && challengeNumber === 4) return [];
 
     const messages = [];
     const source = code.split(/\r?\n/).map((line) => line.split('#')[0]).join('\n');
@@ -60,6 +78,9 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
         } else if (command.type === 'setWater') {
             messages.push(`isi_air = ${command.amount} menyimpan nilai ${command.amount} ke variabel isi_air, mengganti nilai ${water} menjadi ${command.amount}. Tanda = menyimpan nilai, bukan menambahkannya. Di game, jumlah ini menjadi isi tangkimu.`);
             water = command.amount;
+        } else if (command.type === 'conditional') {
+            const branch = command.fireOut ? 'if' : command.whenFalse === null ? 'tidak ada blok' : 'else';
+            messages.push(`api_padam bernilai ${command.fireOut ? 'True' : 'False'}, sehingga ${branch} dijalankan. Status bekantan sekarang "${command.status}". if memeriksa kondisi; assignment di dalam blok menyimpan status.`);
         } else if (command.type === 'transferWater') {
             messages.push(`air_pos = isi_air menyalin nilai ${water} dari isi_air ke air_pos. Di game, Pos 2 menerima air dan tangkimu dikosongkan. Pengosongan tangki adalah aturan game; assignment Python biasa tidak mengosongkan variabel asal.`);
             water = 0;

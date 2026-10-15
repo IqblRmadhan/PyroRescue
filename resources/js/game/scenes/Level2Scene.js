@@ -33,8 +33,15 @@ export default class Level2Scene extends Phaser.Scene {
         onLoadError,
         onStateChange = () => {},
         onAudio = () => {},
-    }) {
-        super('Level2Scene');
+    }, settings = {}) {
+        super(settings.sceneKey ?? 'Level2Scene');
+        // Level 3 memakai kembali rendering, gerakan, pompa, dan animasi Level 2.
+        this.map = settings.map ?? level2Map;
+        this.definitions = settings.challenges ?? challenges;
+        this.assets = settings.assets ?? level2Assets;
+        this.mapImage = settings.mapImage ?? level2MapImage;
+        this.mapShadowImage = settings.mapShadowImage ?? level2MapShadowImage;
+        this.isWalkable = settings.isWalkable ?? isLevel2Walkable;
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
@@ -51,16 +58,16 @@ export default class Level2Scene extends Phaser.Scene {
             this.loadFailed = true;
             this.onLoadError();
         });
-        for (const [key, asset] of Object.entries(level2Assets)) {
+        for (const [key, asset] of Object.entries(this.assets)) {
             this.load.image(key, `${this.assetBaseUrl}/${asset.file}`);
         }
-        this.load.image('level2Map', `${this.assetBaseUrl}/${level2MapImage}`);
-        this.load.image('level2Shadow', `${this.assetBaseUrl}/${level2MapShadowImage}`);
+        this.load.image('level2Map', `${this.assetBaseUrl}/${this.mapImage}`);
+        this.load.image('level2Shadow', `${this.assetBaseUrl}/${this.mapShadowImage}`);
     }
 
     create() {
         if (this.loadFailed) return;
-        for (const [key, asset] of Object.entries(level2Assets)) {
+        for (const [key, asset] of Object.entries(this.assets)) {
             const texture = this.textures.get(key);
             for (const [name, bounds] of Object.entries(asset.frames)) {
                 const frame = texture.add(name, 0, ...bounds);
@@ -74,8 +81,8 @@ export default class Level2Scene extends Phaser.Scene {
         this.drawMap();
         this.drawMissionObjects();
         const camera = this.cameras.main;
-        camera.setBounds(0, 0, level2Map.width, level2Map.height).setZoom(1.15).setRoundPixels(true);
-        enableMapCameraControls(this, level2Map);
+        camera.setBounds(0, 0, this.map.width, this.map.height).setZoom(1.15).setRoundPixels(true);
+        enableMapCameraControls(this, this.map);
         this.resetChallenge(1).then(() => this.onReady());
     }
 
@@ -117,7 +124,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawMap() {
-        addLevel2MapShadow(this, level2Map.width, level2Map.height);
+        addLevel2MapShadow(this, this.map.width, this.map.height);
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
             .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
@@ -132,8 +139,8 @@ export default class Level2Scene extends Phaser.Scene {
         this.fires = {};
         this.fireLabels = {};
         this.fireMarkers = {};
-        for (const [number, fire] of Object.entries(level2Map.fires)) {
-            const texture = challenges[number].texture;
+        for (const [number, fire] of Object.entries(this.map.fires)) {
+            const texture = this.definitions[number].texture;
             this.fires[number] = this.add.sprite(fire.x, fire.y, texture, 'fire1')
                 .setOrigin(0.5, 1).setDisplaySize(fire.size, fire.size).setDepth(5)
                 .play(`${texture}-burn`);
@@ -154,7 +161,7 @@ export default class Level2Scene extends Phaser.Scene {
             this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, getMarkerTexture('fire'), 'pulse1')
                 .setDisplaySize(24, 24).setDepth(7).play('level2-marker');
         }
-        const finishTile = getLevel2FinishVisual(level2Map).tile;
+        const finishTile = getLevel2FinishVisual(this.map).tile;
         const finish = level2TileToWorld(finishTile.column, finishTile.row);
         this.playerShadow = this.add.ellipse(0, 0, 24, 6, 0x172b1b, 0.24).setDepth(8);
         this.player = this.add.sprite(0, 0, 'firefighterIdle', 'idle-east-1')
@@ -163,7 +170,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawPumpStation() {
-        const { x, y, spriteOffsetX = 0, action } = level2Map.pump;
+        const { x, y, spriteOffsetX = 0, action } = this.map.pump;
         this.pump = this.add.sprite(x + spriteOffsetX, y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
         this.pumpLabel = addPumpLabel(this, x, y);
@@ -174,7 +181,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawEvaluationPump() {
-        const { x, y, action } = level2Map.evaluationPump;
+        const { x, y, action } = this.map.evaluationPump;
         this.evaluationPump = this.add.sprite(x, y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
         this.evaluationPumpLabel = addPumpLabel(this, x, y);
@@ -197,7 +204,7 @@ export default class Level2Scene extends Phaser.Scene {
 
     setChallenge(challengeNumber) {
         this.challengeNumber = challengeNumber;
-        this.requiredWater = challenges[challengeNumber].requiredWater;
+        this.requiredWater = this.definitions[challengeNumber].requiredWater;
         this.sprays = 0;
         showChallengeMarker(this.pumpMarker, null, 1, challengeNumber, 'pump');
         showChallengeMarker(this.evaluationPumpMarker, null, 4, challengeNumber, 'pump');
@@ -209,7 +216,7 @@ export default class Level2Scene extends Phaser.Scene {
         for (const [number, sprite] of Object.entries(this.fires)) {
             const presentation = getFirePresentation(number, this.challengeNumber, this.sprays);
             if (presentation.completed) sprite.stop().setFrame('extinguished');
-            else sprite.play(`${challenges[number].texture}-burn`, true);
+            else sprite.play(`${this.definitions[number].texture}-burn`, true);
 
             const label = this.fireLabels[number].setText(presentation.label);
             label.container.setVisible(true);
@@ -233,12 +240,12 @@ export default class Level2Scene extends Phaser.Scene {
     publishState() {
         this.onStateChange({
             water: this.water,
-            atPump: this.isAt((this.challengeNumber === 4 ? level2Map.evaluationPump : level2Map.pump).action),
+            atPump: this.isAt((this.challengeNumber === 4 ? this.map.evaluationPump : this.map.pump).action),
             sprays: this.sprays,
             requiredWater: this.requiredWater,
-            atFire: this.isAt(level2Map.fires[this.challengeNumber].action),
+            atFire: this.isAt(this.map.fires[this.challengeNumber].action),
             fireOut: this.sprays === this.requiredWater,
-            atFinish: this.isAt(level2Map.finish) && this.sprays === this.requiredWater,
+            atFinish: this.isAt(this.map.finish) && this.sprays === this.requiredWater,
             fireNearby: isPlayerNearBurningFire({
                 column: this.playerColumn,
                 row: this.playerRow,
@@ -263,13 +270,13 @@ export default class Level2Scene extends Phaser.Scene {
                     return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan. Periksa urutan gerakanmu.' };
                 }
             } else if (command.type === 'setWater') {
-                const pump = this.challengeNumber === 4 ? level2Map.evaluationPump : level2Map.pump;
+                const pump = this.challengeNumber === 4 ? this.map.evaluationPump : this.map.pump;
                 if (!this.isAt(pump.action)) {
                     return { status: 'error', missionSuccess: false, message: 'Berdirilah tepat di petak bertanda merah di samping pompa.' };
                 }
                 await this.fillWater(command.amount, this.challengeNumber === 4 ? this.evaluationPump : this.pump);
             } else if (command.type === 'spray') {
-                if (!this.isAt(level2Map.fires[this.challengeNumber].action)) {
+                if (!this.isAt(this.map.fires[this.challengeNumber].action)) {
                     return { status: 'error', missionSuccess: false, message: 'Berdirilah di penanda merah dekat api sebelum menjalankan semprot().' };
                 }
                 if (this.water === 0) {
@@ -280,7 +287,7 @@ export default class Level2Scene extends Phaser.Scene {
             onCommandComplete(command);
         }
         const fireOut = this.sprays === this.requiredWater;
-        const missionSuccess = fireOut && (this.challengeNumber < 4 || this.isAt(level2Map.finish));
+        const missionSuccess = fireOut && (this.challengeNumber < 4 || this.isAt(this.map.finish));
         return {
             status: missionSuccess ? 'success' : 'progress',
             missionSuccess,
@@ -307,7 +314,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     async spray() {
-        const fire = level2Map.fires[this.challengeNumber];
+        const fire = this.map.fires[this.challengeNumber];
         const stream = this.add.graphics().setDepth(8);
         stream.lineStyle(5, 0x86deff, 0.85);
         stream.lineBetween(this.player.x, this.player.y - 22, fire.x, fire.y - fire.size * 0.4);
@@ -327,7 +334,7 @@ export default class Level2Scene extends Phaser.Scene {
         const column = this.playerColumn + dx;
         const row = this.playerRow + dy;
         this.direction = direction;
-        if (!isLevel2Walkable(column, row)) {
+        if (!this.isWalkable(column, row)) {
             this.onAudio('blocked');
             this.setPlayerIdle(direction);
             return false;
@@ -369,9 +376,9 @@ export default class Level2Scene extends Phaser.Scene {
 
     async resetChallenge(challengeNumber = this.challengeNumber, animateReset = false) {
         if (animateReset) await this.playPlayerAnimation('reset');
-        let checkpoint = level2Map.start;
-        if (challengeNumber === 4) checkpoint = level2Map.evaluationStart;
-        else if (challengeNumber > 1) checkpoint = level2Map.fires[challengeNumber - 1].action;
+        let checkpoint = this.map.start;
+        if (challengeNumber === 4) checkpoint = this.map.evaluationStart;
+        else if (challengeNumber > 1) checkpoint = this.map.fires[challengeNumber - 1].action;
         this.playerColumn = checkpoint.column;
         this.playerRow = checkpoint.row;
         this.water = { 1: 0, 2: 4, 3: 3, 4: 0 }[challengeNumber] ?? 0;

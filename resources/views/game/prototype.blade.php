@@ -1,8 +1,11 @@
 @php
     $levelNumber = $levelNumber ?? 1;
     $isLevel2 = $levelNumber === 2;
-    $levelTitle = $isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar';
-    $storyScenes = $isLevel2
+    $isLevel3 = $levelNumber === 3;
+    $hasEvaluation = $levelNumber > 1;
+    $levelTitle = $isLevel3 ? 'Suaka Bekantan' : ($isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar');
+    // Story Level 2 dipakai sementara untuk Level 3.
+    $storyScenes = $hasEvaluation
         ? [
             [
                 'image' => 'assets/story/level2/1.png',
@@ -108,21 +111,29 @@
 
             <div class="forest-message wood-sign">
                 <span class="forest-message__label">MODUL BELAJAR</span>
-                <strong>Python · {{ $isLevel2 ? 'Perulangan' : 'Variabel' }}</strong>
+                <strong>Python · {{ $isLevel3 ? 'If / Else' : ($isLevel2 ? 'Perulangan' : 'Variabel') }}</strong>
             </div>
         </header>
 
         <main class="game-layout">
             <section class="game-area wood-frame" aria-label="Area game Level {{ $levelNumber }}">
                 <div class="game-hud" aria-label="Status permainan">
-                    <div class="hud-counter" aria-label="{{ $isLevel2 ? 'Isi tangki dan kapasitas air' : 'Isi air dan target' }}" title="{{ $isLevel2 ? 'Isi tangki / kapasitas 6 unit' : 'Isi air / target' }}">
+                    <div class="hud-counter" aria-label="{{ $hasEvaluation ? 'Isi tangki dan kapasitas air' : 'Isi air dan target' }}" title="{{ $hasEvaluation ? 'Isi tangki / kapasitas 6 unit' : 'Isi air / target' }}">
                         <span class="asset-icon asset-icon--water" aria-hidden="true"></span>
-                        <strong><span id="water-count">0</span>/<span id="required-water">{{ $isLevel2 ? '6' : '3' }}</span></strong>
+                        <strong><span id="water-count">0</span>/<span id="required-water">{{ $hasEvaluation ? '6' : '3' }}</span></strong>
                     </div>
                     <div class="hud-counter">
                         <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
-                        <strong><span id="mission-stars">0</span>/<span id="mission-target-count">{{ $isLevel2 ? '3' : '2' }}</span></strong>
+                        <strong><span id="mission-stars">0</span>/<span id="mission-target-count">{{ $hasEvaluation ? '3' : '2' }}</span></strong>
                     </div>
+                    @if($isLevel3)
+                    <div class="hud-counter hud-counter--condition" aria-live="polite">
+                        <strong>api_padam = <span id="fire-condition">False</span></strong>
+                    </div>
+                    <div class="hud-counter hud-counter--bekantan" aria-live="polite">
+                        <strong>BEKANTAN: <span id="bekantan-status">TUNGGU</span></strong>
+                    </div>
+                    @endif
                 </div>
 
                 <div id="game-container" role="img"
@@ -160,7 +171,7 @@
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
-                        <h2 id="mission-title">{{ $isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air' }}</h2>
+                        <h2 id="mission-title">{{ $isLevel3 ? 'Challenge 1 - Memadamkan Api di Habitat' : ($isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air') }}</h2>
                     </div>
                 </section>
 
@@ -169,11 +180,11 @@
                     <div>
                         <h2 id="target-title">Misi</h2>
                         <ul id="target-list" class="target-list">
-                            <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel2 ? 'Ambil 6 unit air di pompa' : 'Pergi ke pompa air' }}</li>
-                            @if($isLevel2)
+                            <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel3 ? 'Siapkan 3 unit air di pompa' : ($isLevel2 ? 'Ambil 6 unit air di pompa' : 'Pergi ke pompa air') }}</li>
+                            @if($hasEvaluation)
                             <li><span class="target-check" aria-hidden="true"></span>Pergi ke penanda C1</li>
                             @endif
-                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>{{ $isLevel2 ? 'Padamkan api' : 'Ambil 3 air' }}</li>
+                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>{{ $hasEvaluation ? 'Padamkan api' : 'Ambil 3 air' }}</li>
                         </ul>
                     </div>
                 </section>
@@ -195,7 +206,8 @@
                     </div>
                     <p id="editor-help" class="sr-only">
                         Mulai ketik <code>atas(angka)</code>, <code>bawah(angka)</code>, <code>kanan(angka)</code>, <code>kiri(angka)</code>,
-                        @if($isLevel2) <code>isi_air = 6</code>, <code>semprot()</code>, <code>for</code>, atau <code>jumlah_semprot</code>.
+                        @if($isLevel3) <code>isi_air</code>, <code>jumlah_semprot</code>, <code>for</code>, <code>if api_padam:</code>, atau <code>else:</code>.
+                        @elseif($isLevel2) <code>isi_air = 6</code>, <code>semprot()</code>, <code>for</code>, atau <code>jumlah_semprot</code>.
                         @else <code>isi_air</code>, atau <code>air_pos</code>. @endif
                         Pilih dengan tombol panah dan Enter. Tekan Ctrl dan Space untuk melihat semua pilihan.
                     </p>
@@ -263,7 +275,10 @@
             <section id="learning-panel" class="learning-panel game-study" aria-label="Materi dan kamus perintah">
                 <section class="learning-card">
                     <span class="learning-eyebrow">BELAJAR SAMBIL MENYELAMATKAN</span>
-                    @if($isLevel2)
+                    @if($isLevel3)
+                    <h2>Boolean &amp; penyelamatan bekantan</h2>
+                    <p><code>api_padam</code> bernilai <code>True</code> jika api padam dan <code>False</code> jika masih menyala. Sistem memperbarui kondisi setelah penyemprotan. Gunakan <code>if</code> untuk memeriksanya dan <code>else</code> sebagai alternatif.</p>
+                    @elseif($isLevel2)
                     <h2>Semprotan &amp; perulangan</h2>
                     <p>Di pompa, <code>isi_air = 6</code> mengisi tangki untuk enam semprotan. Setiap <code>semprot()</code> memakai satu unit. Gunakan <code>for</code> dan <code>range()</code> untuk mengulang aksi sesuai kebutuhan api.</p>
                     @else
@@ -271,15 +286,15 @@
                     <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
                     @endif
                     <ol class="learning-steps" aria-label="Tahapan materi">
-                        <li data-lesson-step="1">1. {{ $isLevel2 ? 'Semprot' : 'Simpan' }}</li>
-                        <li data-lesson-step="2">2. {{ $isLevel2 ? 'Ulangi' : 'Ubah' }}</li>
-                        <li data-lesson-step="3">3. {{ $isLevel2 ? 'Variabel + for' : 'Gunakan' }}</li>
+                        <li data-lesson-step="1">1. {{ $isLevel3 ? 'Boolean' : ($isLevel2 ? 'Semprot' : 'Simpan') }}</li>
+                        <li data-lesson-step="2">2. {{ $isLevel3 ? 'if' : ($isLevel2 ? 'Ulangi' : 'Ubah') }}</li>
+                        <li data-lesson-step="3">3. {{ $isLevel3 ? 'if / else' : ($isLevel2 ? 'Variabel + for' : 'Gunakan') }}</li>
                     </ol>
                     <h3 id="lesson-title"></h3>
                     <code id="lesson-code" class="lesson-code"></code>
                     <p id="lesson-explanation"></p>
                     <p id="lesson-effect" class="lesson-effect"></p>
-                    <p class="learning-note">@if($isLevel2) Tanda <code>=</code> menyimpan nilai air; berkurangnya air saat <code>semprot()</code> adalah aturan game. Akhiri header <code>for</code> dengan <code>:</code> dan beri empat spasi sebelum <code>semprot()</code>. @else Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan. @endif</p>
+                    <p class="learning-note">@if($isLevel3) <code>True</code> dan <code>False</code> ditulis tanpa tanda petik. Header <code>if</code> dan <code>else</code> diakhiri <code>:</code>; bloknya menjorok dengan indentasi konsisten. Gunakan <code>status_bekantan = "aman"</code> pada C2, lalu <code>"selamat"</code> atau <code>"tunggu"</code> pada C3. @elseif($isLevel2) Tanda <code>=</code> menyimpan nilai air; berkurangnya air saat <code>semprot()</code> adalah aturan game. Akhiri header <code>for</code> dengan <code>:</code> dan beri empat spasi sebelum <code>semprot()</code>. @else Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan. @endif</p>
                 </section>
 
                 <section class="command-reference learning-card" aria-labelledby="command-reference-title">
@@ -317,17 +332,17 @@
         <div class="level-result__card">
             <span class="level-result__eyebrow">MISI SELESAI</span>
             <h2 id="result-title" tabindex="-1">Level {{ $levelNumber }} Berhasil!</h2>
-            <p class="level-result__subtitle">{{ $isLevel2 ? 'Ketiga api padam dan kamu mencapai petak FINISH.' : 'Air sampai di Pos 2 dan kamu mencapai petak FINISH.' }}</p>
+            <p class="level-result__subtitle">{{ $isLevel3 ? 'Api padam, bekantan selamat, dan kamu mencapai FINISH.' : ($isLevel2 ? 'Ketiga api padam dan kamu mencapai petak FINISH.' : 'Air sampai di Pos 2 dan kamu mencapai petak FINISH.') }}</p>
             <div class="level-result__stars" aria-hidden="true">
                 <span></span><span></span><span></span>
             </div>
             <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
-            <p class="level-result__recap">@if($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
+            <p class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> untuk memadamkan api serta menyelamatkan bekantan. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
             <p id="progress-sync-status" class="progress-sync-status" role="status">{{ ($saveProgress ?? false) ? 'Hasil akan tersimpan di akunmu.' : 'Mode tamu: hasil dan pencapaian tidak disimpan.' }}</p>
             <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>
             <div class="level-result__actions">
                 <button id="result-replay" type="button">Main Lagi</button>
-                @unless($isLevel2)<a href="{{ route('game.level2') }}" data-requires-save>Lanjut Level 2</a>@endunless
+                @if($levelNumber < 3)<a href="{{ route('game.level'.($levelNumber + 1)) }}" data-requires-save>Lanjut Level {{ $levelNumber + 1 }}</a>@endif
                 <a href="{{ route('main-menu') }}">Menu Utama</a>
             </div>
         </div>

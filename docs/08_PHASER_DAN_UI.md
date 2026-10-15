@@ -140,6 +140,28 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   Posisi langkah di dalam challenge tidak disimpan. Tamu mengulang dari awal
   ketika halaman dimuat ulang, tanpa penulisan progres ke database.
 
+## Implementasi Level 3
+
+- `/game/3` memakai layout PyroPad, dengan status `api_padam` dan bekantan di HUD.
+- `Level3Map.js` memisahkan jalur dan posisi objek dari gambar map sementara.
+  Grid 40 px mengikuti daratan dan jembatan; air tidak dapat dilalui.
+- `Level3Scene` memakai kembali rendering, gerakan, pompa, dan animasi
+  `Level2Scene` melalui konfigurasi map/aset. Keadaan misi, percabangan,
+  checkpoint, dan bekantan ditangani oleh scene Level 3.
+- Api latihan memakai sprite C3 Level 2 (3 semprotan); api evaluasi memakai
+  sprite EVAL Level 2 tetapi membutuhkan 4 semprotan sesuai modul.
+- `Level3Assets.js` membaca 10 frame bekantan saat runtime; PNG sumber tidak diubah.
+  Lima frame baris pertama berulang saat status `tunggu`, lalu lima frame baris kedua
+  berulang saat status `aman` atau `selamat`, dengan kecepatan 4 fps. Skala tetap memakai
+  acuan 56 px agar bekantan lebih kecil dari pemadam dan tidak berubah proporsi.
+- Story Level 2 digunakan sementara. Materi, autocomplete, hint, dan pemandu
+  memakai `Level3Challenges.js` sesuai BAB III PDF. Evaluasi menghilangkan bantuan.
+- C2 dan C3 mempertahankan api latihan yang telah padam. Kondisi diperiksa pada
+  saat command conditional dijalankan, sehingga loop di atasnya dapat mengubah
+  hasil kondisi dalam Run yang sama.
+- Akun menyimpan 4 tahap dan mendapat 3 bintang setelah FINISH. Tamu tidak
+  menyimpan progres. Hasil Level 2 menyediakan tombol menuju Level 3.
+
 ## Audio game
 
 - `GameAudio.js` memuat musik latar, ambience api berbasis jarak, dan efek

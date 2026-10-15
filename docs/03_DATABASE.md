@@ -84,8 +84,9 @@ Level 3:
 
 ```json
 {
-  "condition": "besar",
-  "must_use_if": true
+  "condition": "api_padam",
+  "must_use_if": true,
+  "must_use_else": true
 }
 ```
 
