@@ -5,42 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Belajar Python melalui petualangan penyelamatan hutan Kalimantan di PyroRescue.">
     <title>PyroRescue — Belajar Python, Selamatkan Hutan</title>
+    @include('partials.favicon')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="landing-page">
-    <header class="adventure-topbar home-topbar">
-        <a class="adventure-brand" href="#beranda" aria-label="PyroRescue, ke awal halaman">
-            <img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue">
-        </a>
-
-        <nav class="adventure-topbar__links" aria-label="Navigasi utama">
-            <a href="#tentang">Tentang</a>
-            <a href="#cara-main">Cara Bermain</a>
-        </nav>
-
-        <a class="home-login" href="{{ route('login') }}">Masuk <span aria-hidden="true">↗</span></a>
+<body class="splash-page">
+    <a class="splash-skip" href="#beranda">Lewati navigasi</a>
+    <header class="splash-nav">
+        <a href="#beranda" aria-label="PyroRescue, ke beranda"><img class="splash-brand" src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="220" height="62"></a>
+        <nav aria-label="Navigasi utama"><a href="#tentang">Tentang</a><a href="#materi">Materi</a></nav>
+        <a class="splash-login" href="{{ route('login') }}">Masuk <span aria-hidden="true">↗</span></a>
     </header>
-
     <main id="beranda">
-        <section class="home-stage" id="tentang" aria-labelledby="home-heading">
-            <div class="home-stage__inner">
-                <div class="home-copy">
-                    <span class="adventure-eyebrow">PETUALANGAN KODE DIMULAI DI SINI</span>
-                    <h1 id="home-heading">Belajar Python.<br><em>Selamatkan Hutan.</em></h1>
-                    <p>Jelajahi hutan Kalimantan, tulis kode untuk menyelesaikan misi, dan lihat setiap baris Python membawa perubahan.</p>
-                    <div class="home-actions">
-                        <a class="adventure-play home-start" href="{{ route('login') }}"><span aria-hidden="true">▶</span> Mulai Petualangan</a>
-                        <a class="home-secondary" href="#cara-main">Lihat cara bermain <span aria-hidden="true">↓</span></a>
-                    </div>
-                    <div class="home-highlights" aria-label="Isi petualangan">
-                        <span><strong>03</strong> Level</span>
-                        <span><strong>01</strong> Hutan Kalimantan</span>
-                        <span><strong>∞</strong> Rasa ingin tahu</span>
-                    </div>
+        <section class="splash-hero" aria-labelledby="hero-title">
+            <div class="splash-container splash-hero__grid">
+                <div class="splash-hero__copy">
+                    <span class="splash-kicker"><i aria-hidden="true"></i> MISI KECIL. PERUBAHAN BESAR.</span>
+                    <h1 id="hero-title">Belajar Python.<br><em>Jadi pahlawan<br>hutan.</em></h1>
+                    <p>Hutan Kalimantan membutuhkanmu. Jelajahi petanya, tulis kode pertamamu, dan bantu pemadam menyelesaikan misi penyelamatan.</p>
+                    <div class="splash-actions"><a class="splash-button" href="{{ route('login') }}"><span aria-hidden="true">▶</span> Mulai Petualangan</a><a class="splash-text-link" href="#tentang">Kenali PyroRescue ↓</a></div>
+                    <p class="splash-hero__note">Baru belajar coding? Mulai dari satu baris sederhana.</p>
+                    <div class="splash-hero__tags"><span>Python untuk pemula</span><span>Misi interaktif</span><span>Nuansa Kalimantan</span></div>
                 </div>
-
-                <div class="home-art" aria-label="Logo PyroRescue dan karakter pemadam hutan">
-                    <img class="home-art__logo" src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue">
+                <div class="splash-world home-art" aria-label="Logo PyroRescue dan karakter pemadam hutan">
+                    <img class="home-art__logo" src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="580" height="180" fetchpriority="high">
                     <div class="home-art__stage" aria-hidden="true">
                         <div class="home-art__forest"></div>
                         <div class="home-art__glow"></div>
@@ -53,36 +40,22 @@
                     <p class="home-art__caption"><strong>Penjaga Hutan</strong><span>Siap beraksi bersama kode buatanmu</span></p>
                 </div>
             </div>
-            <a class="home-scroll" href="#cara-main">Jelajahi cara bermain <span aria-hidden="true">↓</span></a>
+            <div class="splash-hero__bottom splash-container"><span>SEBUAH PETUALANGAN BELAJAR PYTHON</span><a href="#tentang">Kenali PyroRescue ↓</a></div>
         </section>
-
-        <section class="home-how" id="cara-main" aria-labelledby="how-heading">
-            <div class="home-how__heading">
-                <span class="adventure-eyebrow">BELAJAR SAMBIL BERPETUALANG</span>
-                <h2 id="how-heading">Kode kecil, dampak besar.</h2>
-                <p>Setiap tantangan mengubah kode Python menjadi aksi nyata di dalam game.</p>
-            </div>
-            <div class="home-steps">
-                <article>
-                    <span class="home-steps__number">01</span>
-                    <h3>Terima misi</h3>
-                    <p>Temukan masalah di hutan dan pahami apa yang perlu dilakukan.</p>
-                </article>
-                <article>
-                    <span class="home-steps__number">02</span>
-                    <h3>Tulis kode</h3>
-                    <p>Gunakan variabel, perulangan, dan percabangan Python.</p>
-                </article>
-                <article>
-                    <span class="home-steps__number">03</span>
-                    <h3>Lihat hasilnya</h3>
-                    <p>Jalankan kode dan saksikan perubahan di dunia PyroRescue.</p>
-                </article>
-            </div>
-            <a class="home-how__link" href="{{ route('login') }}">Siap menjelajah? Mulai sekarang <span aria-hidden="true">→</span></a>
+        <section class="splash-about splash-container" id="tentang" aria-labelledby="about-title">
+            <div><span class="splash-kicker">SELAMAT DATANG, PENJAGA HUTAN</span><h2 id="about-title">Kode yang kamu tulis.<br>Aksi yang kamu lihat.</h2></div>
+            <div><p>PyroRescue mengajakmu belajar dasar Python melalui misi penyelamatan hutan. Kamu mengarahkan pemadam dengan kode, mengumpulkan air, dan menghadapi titik api.</p><p>Pelajari materinya, coba solusimu, lalu lihat hasilnya langsung di peta. Belum berhasil? Baca feedback dan coba lagi.</p></div>
         </section>
+        <section class="splash-lessons splash-container" id="materi" aria-labelledby="lessons-title">
+            <div class="splash-section-head"><div><span class="splash-kicker">BEKAL UNTUK MENYELAMATKAN HUTAN</span><h2 id="lessons-title">Mulai sederhana. Terus berkembang.</h2></div><p>Kenali konsep Python<br>melalui tantangan di dalam game.</p></div>
+            <div class="splash-lessons__grid">
+                <article><img src="{{ asset('assets/ui/concept-variable.png') }}" alt="" loading="lazy" width="80" height="80"><span>01 / VARIABEL</span><h3>Simpan bekalmu</h3><p>Kenali cara menyimpan, mengubah, dan menggunakan nilai untuk mengatur persediaan air.</p><code>isi_air = 3</code></article>
+                <article><img src="{{ asset('assets/ui/concept-loop.png') }}" alt="" loading="lazy" width="80" height="80"><span>02 / PERULANGAN</span><h3>Ulangi aksimu</h3><p>Gunakan for dan range untuk menyemprot api beberapa kali dengan kode yang lebih ringkas.</p><code>for i in range(3):</code></article>
+                <article><img src="{{ asset('assets/ui/concept-conditional.png') }}" alt="" loading="lazy" width="80" height="80"><span>03 / PERCABANGAN · SEGERA HADIR</span><h3>Tentukan pilihanmu</h3><p>Kenali if dan else untuk memilih tindakan berdasarkan kondisi yang kamu temui.</p><code>if isi_air &gt; 0:</code></article>
+            </div>
+        </section>
+        <section class="splash-invite splash-container" aria-labelledby="invite-title"><div><span class="splash-kicker">GILIRANMU MENGAMBIL PERAN</span><h2 id="invite-title">Hutan menunggu pahlawan berikutnya.</h2><p>Mulai dari satu misi, satu baris kode, dan rasa ingin tahu.</p></div><a class="splash-button" href="{{ route('login') }}">Mulai Petualangan →</a></section>
     </main>
-
-    <footer class="adventure-footer">PyroRescue · Belajar Python, selamatkan hutan Kalimantan</footer>
+    <footer class="splash-footer splash-container"><a href="#beranda"><img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="155" height="44"></a><p>Belajar Python. Selamatkan hutan Kalimantan.</p><a href="#beranda">Kembali ke atas ↑</a></footer>
 </body>
 </html>

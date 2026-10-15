@@ -39,5 +39,5 @@ export function initLevelCarousel(root) {
         showLevel(currentIndex + (event.key === 'ArrowRight' ? 1 : -1));
     });
 
-    showLevel(0);
+    showLevel(Number(root.dataset.initialLevel ?? 1) - 1);
 }

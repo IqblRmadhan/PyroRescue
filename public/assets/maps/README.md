@@ -1,13 +1,10 @@
-# Map Level 1
+# Map permainan
 
-Simpan gambar map yang berukuran **1600 x 1200 piksel** dengan nama:
+`level1-map.png` dan `level2-map.png` adalah gambar sumber asli berukuran
+**1600 x 1200 piksel**. Game memuat `level1-map.webp` dan `level2-map.webp`,
+salinan WebP kualitas 100 dengan transparansi yang sama dan ukuran berkas
+lebih kecil. Simpan keduanya saat mengganti gambar peta agar browser tetap
+memuat map dengan cepat.
 
-```text
-level1-map.png
-```
-
-Area sungai yang berwarna putih pada gambar akan dibuat transparan oleh
-`Level1Scene`, lalu menampilkan tekstur air bergerak di bawahnya.
-
-Bayangan tepi tanah disimpan pada `shadow_level1.png` dan dirender di bawah
-tekstur air. Ukuran gambar akan disesuaikan otomatis ke ukuran map.
+Sungai transparan menampilkan tekstur air bergerak di bawah peta. Bayangan
+tepi tanah berada pada `shadow_level1.png` dan `shadow_level2.png`.

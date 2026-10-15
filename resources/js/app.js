@@ -1,4 +1,22 @@
 import './bootstrap';
+import '../css/splash.css';
+import '../css/page-loader.css';
+import '../css/auth-refresh.css';
+import '../css/menu-dashboard.css';
+import { initPageLoader } from './PageLoader.js';
+
+if (document.body.matches('.splash-page, .auth-page')) initPageLoader();
+if (document.body.matches('.auth-page')) {
+    import('./AuthPassword.js').then(({ initAuthPassword }) => initAuthPassword());
+}
+if (document.body.matches('.main-menu-page')) {
+    import('./game/MenuMusic.js').then(({ initMenuMusic }) => {
+        initMenuMusic(document.querySelector('[data-menu-music-toggle]'));
+    });
+    window.addEventListener('pageshow', event => {
+        if (event.persisted) location.reload();
+    });
+}
 
 const levelCarousel = document.querySelector('[data-level-carousel]');
 if (levelCarousel) {

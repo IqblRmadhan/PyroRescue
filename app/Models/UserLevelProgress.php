@@ -14,12 +14,20 @@ class UserLevelProgress extends Model
         'level_id',
         'status',
         'completed_at',
+        'completed_challenges',
+        'stars',
+        'completed_challenges',
+        'stars',
     ];
 
     protected function casts(): array
     {
         return [
             'completed_at' => 'datetime',
+            'completed_challenges' => 'integer',
+            'stars' => 'integer',
+            'completed_challenges' => 'integer',
+            'stars' => 'integer',
         ];
     }
 

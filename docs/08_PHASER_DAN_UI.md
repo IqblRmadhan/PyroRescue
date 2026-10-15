@@ -1,5 +1,42 @@
 # Phaser dan UI Sederhana
 
+## Splash / halaman awal
+
+- `welcome.blade.php` menampilkan logo dan karakter pemadam PyroRescue,
+  pengenalan game, materi, serta ajakan memulai petualangan. Navbar mengarah
+  ke Tentang dan Materi; tombol Masuk menuju portal login.
+- `splash.css` membatasi gaya pada kelas splash agar tampilan game tidak berubah.
+- `PageLoader.js` menampilkan karakter pemadam berlari selama perpindahan
+  halaman dari splash dan portal login/register. Aset animasi memakai frame
+  berjalan milik game. Pindah mode login/register tetap memakai animasi geser
+  di halaman yang sama.
+- Portal login/register mempertahankan palet dan animasi gesernya. Tombol
+  Lihat/Sembunyikan membantu pemeriksaan kata sandi tanpa mengubah data formulir.
+- Logo pada tab browser dipasang melalui partial `partials.favicon` pada splash,
+  portal, menu utama, dan halaman game.
+- Animasi karakter dan latar mengikuti preferensi `prefers-reduced-motion`.
+
+## Menu, progres, dan pencapaian
+
+- Navbar menu mengarah ke Petualangan, Progres, Pencapaian, dan Modul.
+  Carousel tetap memakai ketiga gambar pulau semula dan tombol panahnya;
+  navigasi angka di bawah carousel dihapus.
+- Akun baru memulai dari Level 1. Akses Level 2 dibuka setelah FINISH Level 1;
+  akses Level 3 dibuka setelah Level 2, dengan keterangan segera hadir karena
+  game Level 3 belum diimplementasikan. Tamu tidak memiliki kunci prasyarat.
+- `PlayerProgress` menghitung status level, bintang, dan empat pencapaian dari
+  `user_level_progress`. Kolom `completed_challenges` menyimpan checkpoint
+  terakhir dan `stars` menyimpan tiga bintang ketika level selesai.
+- `POST /progress/challenge` menerima nomor level dan challenge, memakai identitas
+  akun dari sesi, menolak lompatan urutan, dan tidak menulis data tamu. Penyimpanan
+  berulang tidak menurunkan progres atau menggandakan bintang.
+- `ProgressSync.js` mengantrekan penyimpanan setelah misi berhasil. Gagal menyimpan
+  ditampilkan pada layar hasil beserta tombol coba lagi; tautan level berikutnya
+  menunggu keberhasilan penyimpanan. Saat game dibuka kembali, checkpoint
+  challenge dimuat dari server. Level yang sudah selesai dapat dimainkan ulang.
+- Pencapaian Pasokan Pertama, Ahli Variabel, Aksi Berulang, dan Penjaga Hutan
+  mengikuti penyelesaian tugas terkait, tanpa tabel atau sistem inventori baru.
+
 ## Implementasi ruang belajar Level 1
 
 Halaman game memakai peta di kiri serta daftar Misi, PyroPad, dan tombol aksi
@@ -46,7 +83,8 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   mengaktifkan kembali kamera mengikuti pemain, dengan zoom pilihan pengguna.
 - Awan bergerak di atas map dengan bayangan yang tampak di tanah. Awan digambar
   di belakang karakter serta penanda misi agar tidak menutupinya.
-- Map Level 1 memakai `level1-map.png` berukuran 1600 × 1200.
+- Map Level 1 memakai `level1-map.webp` berukuran 1600 × 1200 di browser.
+  `level1-map.png` tetap disimpan sebagai gambar sumber asli.
   Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
 - Petak FINISH Level 1 memakai ubin kecil bermotif kotak-kotak di jalan tanpa
   label dan marker merah. Pemain menginjak ubin setelah menyerahkan air untuk
@@ -62,7 +100,8 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 
 - `/game/2` memakai layout PyroPad yang sama, dengan materi `semprot()` dan
   `for/range`. Level tersedia dari menu utama dan hasil Level 1.
-- `Level2Map.js` mengikuti jalan pada `level2-map.png` berukuran 1600 × 1200.
+- `Level2Map.js` mengikuti jalan pada `level2-map.webp` berukuran 1600 × 1200.
+  `level2-map.png` tetap disimpan sebagai gambar sumber asli.
   Tiga titik latihan berada di tengah, kanan atas, dan kanan bawah. Titik
   evaluasi berada dekat FINISH di bagian bawah peta.
 - Pompa Phaser ditempatkan di dekat jalan setelah jembatan tanpa bidang rumput
@@ -97,8 +136,9 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   diputar satu siklus untuk setiap unit air yang diambil.
 - Validator mendukung satu tingkat loop berisi `semprot()`, dengan maksimal
   120 aksi per Run. Python pemain tidak dieksekusi oleh server atau shell.
-- Progress masih mengikuti prototype Level 1: state berada dalam halaman,
-  belum disimpan ke database; memuat ulang halaman mengulang level.
+- Akun menyimpan checkpoint tiap challenge dan memuatnya kembali saat level dibuka.
+  Posisi langkah di dalam challenge tidak disimpan. Tamu mengulang dari awal
+  ketika halaman dimuat ulang, tanpa penulisan progres ke database.
 
 ## Audio game
 
@@ -106,6 +146,10 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   suara WAV dari `public/assets/audio` melalui Web Audio API. Musik dan efek
   sintetis dapat dibuat ulang dengan `npm run audio:generate`, sedangkan
   `fire.wav` merupakan hasil konversi `fire.mp3`.
+- Menu memakai lagu aksi pixel orisinal `menu-action-loop.wav` yang dibuat oleh
+  `node scripts/generate-menu-music.mjs`. Tombol Musik di navbar menu dapat
+  memutar atau menghentikannya. Browser mulai memainkan lagu setelah interaksi
+  pertama jika autoplay belum diizinkan.
 - Pada Level 2, `fire.wav` berulang hanya ketika pemain berada dalam area
   5 × 5 petak yang berpusat pada penanda interaksi api yang belum padam.
   Suara berhenti ketika pemain keluar dari area atau api tersebut padam.
@@ -114,9 +158,11 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Cue tersedia untuk cerita pembuka, tombol UI, gerakan, jalan buntu, pompa,
   pengisian air, semprotan, api padam, kesalahan kode, target, challenge,
   dan penyelesaian level.
-- Tombol **Suara/Bisu** tersedia di dalam game bersama Hint serta Ulangi, tetapi
-  tidak ditampilkan di cerita pembuka. Pilihan mute disimpan di `localStorage` dengan kunci
-  `pyrorescue.audioMuted` agar tetap berlaku saat halaman dimuat ulang.
+- Tombol **Musik** dan **SFX** tersedia terpisah di dalam game bersama Hint dan
+  Ulangi. SFX mencakup langkah, karakter, pompa, semprotan, api, dan UI.
+  Pilihan disimpan dengan kunci `pyrorescue.musicMuted` dan
+  `pyrorescue.effectsMuted`. Pilihan mute lama dibaca saat pertama kali
+  membuka versi baru agar pengaturan pemain sebelumnya tetap berlaku.
 - Scene hanya mengirim nama cue melalui callback `onAudio`; pembuatan dan
   pengaturan suara tetap menjadi tanggung jawab `GameAudio.js`.
 

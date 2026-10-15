@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import ProgressSync from './ProgressSync.js';
 import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
@@ -31,6 +32,9 @@ const hintButtonLabel = hintButton.querySelector('.hint-button__label');
 const audioButton = document.getElementById('audio-toggle');
 const audioButtonIcon = audioButton.querySelector('.hint-button__icon');
 const audioButtonLabel = audioButton.querySelector('.hint-button__label');
+const musicButton = document.getElementById('music-toggle');
+const musicButtonIcon = musicButton.querySelector('.hint-button__icon');
+const musicButtonLabel = musicButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
@@ -54,7 +58,8 @@ const resultStars = document.getElementById('result-stars');
 const resultReplay = document.getElementById('result-replay');
 const prototypePage = document.getElementById('prototype-page');
 const defaultHint = 'Susun instruksi dari atas ke bawah.';
-let currentChallenge = 1;
+const gameContainer = document.getElementById('game-container');
+let currentChallenge = Number(gameContainer.dataset.resumeChallenge ?? 1);
 let hintIndex = 0;
 let latestState = {};
 let completedTargets = new Set();
@@ -62,27 +67,80 @@ const completedChallenges = new Set();
 let levelCompleted = false;
 let sceneReady = false;
 let runningCode = false;
+const savedAchievements = new Set(JSON.parse(gameContainer.dataset.earnedAchievements ?? '[]'));
+const progressStatus = document.getElementById('progress-sync-status');
+const progressRetry = document.getElementById('progress-sync-retry');
+const saveWarning = document.getElementById('game-sync-warning');
+let savingState = 'saved';
+function showSaveStatus(state) {
+    savingState = state;
+    progressStatus.textContent = state === 'saving' ? 'Menyimpan progres dan pencapaian…'
+        : state === 'saved' ? 'Progres dan pencapaian tersimpan di akunmu.'
+            : 'Progres belum tersimpan. Periksa koneksi, lalu coba simpan lagi sebelum keluar.';
+    progressRetry.hidden = state !== 'error';
+    saveWarning.hidden = state !== 'error' || levelCompleted;
+    resultReplay.disabled = state === 'saving';
+    levelResult.querySelectorAll('.level-result__actions a').forEach(link => {
+        const disabled = state === 'saving' || (state === 'error' && link.hasAttribute('data-requires-save'));
+        link.classList.toggle('progress-sync-pending', disabled);
+        link.setAttribute('aria-disabled', String(disabled));
+    });
+}
+const progressSync = gameContainer.dataset.progressUrl ? new ProgressSync({
+    url: gameContainer.dataset.progressUrl,
+    token: document.querySelector('meta[name="csrf-token"]').content,
+    level: isLevel2 ? 2 : 1,
+    onStatus: showSaveStatus,
+    onSaved(data) {
+        for (const achievement of data.achievements) {
+            if (!achievement.earned || savedAchievements.has(achievement.key)) continue;
+            savedAchievements.add(achievement.key);
+            const toast = document.createElement('div');
+            toast.className = 'achievement-toast';
+            toast.setAttribute('role', 'status');
+            toast.textContent = `✦ Pencapaian diraih: ${achievement.title}`;
+            document.body.append(toast);
+            window.setTimeout(() => toast.remove(), 5000);
+        }
+    },
+}) : null;
+progressRetry.addEventListener('click', () => { void progressSync?.flush(); });
+saveWarning.addEventListener('click', () => { void progressSync?.flush(); });
+levelResult.addEventListener('click', event => {
+    if (event.target.closest('a[aria-disabled="true"]')) event.preventDefault();
+});
 
 function renderAudioButton() {
-    const presentation = getAudioButtonPresentation(gameAudio.isMuted());
+    const presentation = getAudioButtonPresentation('effects', gameAudio.isEffectsMuted());
     audioButtonIcon.textContent = presentation.icon;
     audioButtonLabel.textContent = presentation.label;
     audioButton.setAttribute('aria-label', presentation.ariaLabel);
     audioButton.setAttribute('aria-pressed', String(presentation.pressed));
+    const musicPresentation = getAudioButtonPresentation('music', gameAudio.isMusicMuted());
+    musicButtonIcon.textContent = musicPresentation.icon;
+    musicButtonLabel.textContent = musicPresentation.label;
+    musicButton.setAttribute('aria-label', musicPresentation.ariaLabel);
+    musicButton.setAttribute('aria-pressed', String(musicPresentation.pressed));
 }
 
 function toggleAudio() {
-    const wasMuted = gameAudio.isMuted();
+    const wasMuted = gameAudio.isEffectsMuted();
     if (!wasMuted) gameAudio.play('uiClick');
-    const isMuted = gameAudio.toggleMuted();
+    const isMuted = gameAudio.toggleEffectsMuted();
     renderAudioButton();
 
     if (!isMuted) {
-        void gameAudio.preload();
         void gameAudio.unlock().then((ready) => {
             if (ready) gameAudio.play('uiClick');
         });
     }
+}
+
+function toggleMusic() {
+    gameAudio.play('uiClick');
+    const isMuted = gameAudio.toggleMusicMuted();
+    renderAudioButton();
+    if (!isMuted) void gameAudio.unlock();
 }
 
 function updateLineNumbers() {
@@ -317,6 +375,7 @@ function configureChallenge({ updateScene = true } = {}) {
 
 function advanceChallenge() {
     completedChallenges.add(currentChallenge);
+    if (progressSync) void progressSync.save(currentChallenge);
 
     if (currentChallenge === (isLevel2 ? 4 : 3)) {
         gameAudio.play('levelComplete');
@@ -324,8 +383,9 @@ function advanceChallenge() {
         hideFeedback();
         resultStars.textContent = '3 / 3 bintang';
         levelResult.hidden = false;
+        if (progressSync) showSaveStatus(savingState);
         prototypePage.inert = true;
-        resultReplay.focus();
+        (resultReplay.disabled ? document.getElementById('result-title') : resultReplay).focus();
         return;
     }
 
@@ -338,7 +398,8 @@ function advanceChallenge() {
 const Scene = isLevel2 ? Level2Scene : Level1Scene;
 const scene = new Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
-    onReady() {
+    async onReady() {
+        if (currentChallenge > 1) await scene.resetChallenge(currentChallenge);
         sceneReady = true;
         configureChallenge();
         renderGuide(true);
@@ -479,6 +540,7 @@ resetButton.addEventListener('click', resetChallenge);
 clearButton.addEventListener('click', clearCode);
 hintButton.addEventListener('click', toggleHint);
 audioButton.addEventListener('click', toggleAudio);
+musicButton.addEventListener('click', toggleMusic);
 feedbackOkButton.addEventListener('click', nextGuideMessage);
 feedback.addEventListener('cancel', (event) => {
     event.preventDefault();
@@ -494,8 +556,9 @@ resultReplay.addEventListener('click', () => {
     gameAudio.play('uiClick');
     window.location.reload();
 });
-const resumeAudio = () => {
-    if (!gameAudio.isMuted()) void gameAudio.unlock();
+const resumeAudio = event => {
+    if (event.target?.closest?.('#music-toggle, #audio-toggle')) return;
+    if (!gameAudio.isMusicMuted() || !gameAudio.isEffectsMuted()) void gameAudio.unlock();
 };
 window.addEventListener('pointerdown', resumeAudio);
 window.addEventListener('keydown', resumeAudio);

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import * as Level1Assets from '../../resources/js/game/Level1Assets.js';
 import {
@@ -12,9 +12,11 @@ import {
 } from '../../resources/js/game/Level1Assets.js';
 
 test('Level 1 uses the final map filename without a version suffix', () => {
-    assert.equal(level1MapImage, 'maps/level1-map.png');
+    assert.equal(level1MapImage, 'maps/level1-map.webp');
+    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map.webp')), true);
     assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map.png')), true);
     assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map-v2.png')), false);
+    assert.ok(statSync(path.join(process.cwd(), 'public/assets/maps/level1-map.webp')).size < 2_000_000);
 });
 
 test('level map shadow uses the dedicated Level 1 image', () => {

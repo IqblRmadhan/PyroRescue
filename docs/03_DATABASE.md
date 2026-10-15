@@ -99,6 +99,8 @@ user_id
 level_id
 status
 completed_at
+completed_challenges
+stars
 created_at
 updated_at
 ```
@@ -110,6 +112,10 @@ locked
 unlocked
 completed
 ```
+
+`completed_challenges` menyimpan jumlah challenge yang selesai secara berurutan.
+`stars` bernilai 3 setelah level selesai dan tidak bertambah saat level diulang.
+Pencapaian menu dihitung dari progres tersebut. Mode tamu tidak menulis progres.
 
 ## `challenge_attempts`
 

@@ -1662,6 +1662,17 @@
     box-shadow: inset 0 0 0 3px #c9ffcb, 0 5px 0 #174832, 0 8px 18px #08171980;
 }
 
+.hint-button--music {
+    color: #fff1ff;
+    background: radial-gradient(circle at 38% 30%, #d2abff, #7250bb 58%, #3e336e);
+    box-shadow: inset 0 0 0 3px #e9d4ff, 0 5px 0 #30244b, 0 8px 18px #08171980;
+}
+
+.hint-button--music .hint-button__label { text-shadow: 1px 1px #30244b; }
+.hint-button[aria-pressed="false"] { filter: saturate(.58) brightness(.78); }
+.hint-button--music[aria-pressed="false"] .hint-button__icon { position: relative; }
+.hint-button--music[aria-pressed="false"] .hint-button__icon::after { position: absolute; top: 40%; left: 50%; width: 33px; height: 4px; content: ''; background: #f9a0a0; box-shadow: 0 1px 0 #512640; transform: translate(-50%, -50%) rotate(-35deg); }
+
 .hint-button--reset {
     color: #fff4ea;
     background: radial-gradient(circle at 38% 30%, #ff9b7e, #d64f42 58%, #84282d);
@@ -1982,14 +1993,16 @@
     .game-prototype.game-mobile .game-hud { grid-template-columns: repeat(2, 1fr); width: calc(100% - 20px); }
     .game-prototype.game-mobile .hud-counter { min-height: 48px; padding-inline: 4px; }
     .game-prototype.game-mobile .hud-counter .asset-icon { transform: scale(.7); }
-    .game-prototype.game-mobile .game-map-controls { top: 68px; right: 8px; }
+    .game-prototype.game-mobile .game-map-controls { display: grid; grid-template-columns: repeat(2, 44px); top: 68px; right: 8px; gap: 6px; }
     .game-prototype.game-mobile .game-map-controls .game-hint {
         right: auto;
-        flex-basis: 52px;
-        width: 52px;
-        height: 52px;
+        flex-basis: 44px;
+        width: 44px;
+        height: 44px;
     }
-    .game-prototype.game-mobile .hint-button { flex-basis: 52px; width: 52px; height: 52px; }
+    .game-prototype.game-mobile .hint-button { flex-basis: 44px; width: 44px; height: 44px; border-width: 3px; }
+    .game-prototype.game-mobile .hint-button__icon { font-size: 21px; }
+    .game-prototype.game-mobile .hint-button__label { font-size: 10px; }
     .game-prototype.game-mobile #hint-text { width: min(240px, 62vw); font-size: 13px; }
     .game-prototype.game-mobile #game-container {
         height: 100%;

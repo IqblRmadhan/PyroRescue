@@ -41,29 +41,26 @@ test('the game exposes every audio cue used by the interface and both levels', (
     ]);
 });
 
-test('mute state persists and changes the accessible audio button text', () => {
+test('music and effects preferences persist separately and label both controls', () => {
     const storage = createStorage();
     const audio = new GameAudio({ storage });
 
-    assert.equal(audio.isMuted(), false);
-    assert.deepEqual(getAudioButtonPresentation(false), {
-        icon: '🔊',
-        label: 'Suara',
-        ariaLabel: 'Suara game',
-        pressed: true,
-    });
+    assert.equal(audio.isMusicMuted(), false);
+    assert.equal(audio.isEffectsMuted(), false);
+    audio.setMusicMuted(true);
+    assert.equal(audio.isMusicMuted(), true);
+    assert.equal(audio.isEffectsMuted(), false);
+    assert.equal(storage.getItem('pyrorescue.musicMuted'), 'true');
+    assert.equal(getAudioButtonPresentation('music', true).ariaLabel, 'Nyalakan musik game');
+    audio.setEffectsMuted(true);
+    assert.equal(storage.getItem('pyrorescue.effectsMuted'), 'true');
+    assert.equal(getAudioButtonPresentation('effects', true).icon, '🔇');
+    assert.equal(new GameAudio({ storage }).isMusicMuted(), true);
+    assert.equal(new GameAudio({ storage }).isEffectsMuted(), true);
 
-    audio.setMuted(true);
-
-    assert.equal(audio.isMuted(), true);
-    assert.equal(storage.getItem('pyrorescue.audioMuted'), 'true');
-    assert.deepEqual(getAudioButtonPresentation(true), {
-        icon: '🔇',
-        label: 'Bisu',
-        ariaLabel: 'Suara game',
-        pressed: false,
-    });
-    assert.equal(new GameAudio({ storage }).isMuted(), true);
+    const legacy = new GameAudio({ storage: createStorage({ 'pyrorescue.audioMuted': 'true' }) });
+    assert.equal(legacy.isMusicMuted(), true);
+    assert.equal(legacy.isEffectsMuted(), true);
 });
 
 test('unlock safely reports an unavailable or rejected audio engine', async () => {
@@ -75,7 +72,7 @@ test('unlock safely reports an unavailable or rejected audio engine', async () =
     });
 
     assert.equal(await unavailableAudio.unlock(), false);
-    assert.equal(unavailableAudio.toggleMuted(), true);
+    assert.equal(unavailableAudio.toggleMusicMuted(), true);
 
     let attempts = 0;
     const recoveringAudio = new GameAudio({
@@ -87,7 +84,8 @@ test('unlock safely reports an unavailable or rejected audio engine', async () =
             },
             isRunning() { return attempts > 1; },
             startBackground() {},
-            setMuted() {},
+            setMusicMuted() {},
+            setEffectsMuted() {},
             playCue() {},
         }),
     });
@@ -107,7 +105,8 @@ test('concurrent unlock requests initialize the background only once', async () 
         },
         isRunning() { return true; },
         startBackground() { calls.push('background'); },
-        setMuted() { calls.push('muted'); },
+        setMusicMuted() { calls.push('music'); },
+        setEffectsMuted() { calls.push('effects'); },
         playCue() {},
     };
     const audio = new GameAudio({
@@ -120,7 +119,7 @@ test('concurrent unlock requests initialize the background only once', async () 
     finishResume();
 
     assert.deepEqual(await Promise.all([firstUnlock, secondUnlock]), [true, true]);
-    assert.deepEqual(calls, ['resume', 'muted', 'background']);
+    assert.deepEqual(calls, ['resume', 'music', 'effects', 'background']);
 });
 
 test('preload waits for user interaction before preparing audio assets', async () => {
@@ -131,7 +130,8 @@ test('preload waits for user interaction before preparing audio assets', async (
             async preload() { calls.push('preload'); },
             async resume() { calls.push('resume'); },
             startBackground() { calls.push('background'); },
-            setMuted() {},
+            setMusicMuted() {},
+            setEffectsMuted() {},
             playCue() {},
         }),
     });
@@ -152,7 +152,8 @@ test('fire proximity requested before unlock is applied when audio starts', asyn
         engineFactory: () => ({
             async resume() {},
             startBackground() {},
-            setMuted() {},
+            setMusicMuted() {},
+            setEffectsMuted() {},
             setFireNearby(nearby) { fireStates.push(nearby); },
             playCue() {},
         }),
@@ -175,7 +176,8 @@ test('later unlock interactions do not restart preload while audio is already ru
         async resume() {},
         isRunning() { return true; },
         startBackground() {},
-        setMuted() {},
+        setMusicMuted() {},
+        setEffectsMuted() {},
         playCue() {},
     };
     const audio = new GameAudio({
@@ -202,7 +204,8 @@ test('a cue requested while audio is suspended resumes without replaying a stale
         },
         isRunning() { return running; },
         startBackground() { calls.push('background'); },
-        setMuted() {},
+        setMusicMuted() {},
+        setEffectsMuted() {},
         playCue(name) { calls.push(`cue:${name}`); },
     };
     const audio = new GameAudio({
@@ -407,7 +410,8 @@ test('the full-volume mix boosts the master and plays every track at full source
 
     await engine.preload();
     await engine.resume();
-    engine.setMuted(false);
+    engine.setMusicMuted(false);
+    engine.setEffectsMuted(false);
     engine.startBackground();
     engine.setFireNearby(true);
     engine.playCue('run');
@@ -418,14 +422,23 @@ test('the full-volume mix boosts the master and plays every track at full source
         { fileName: 'fire.wav', loop: true, volume: 1 },
         { fileName: 'run.wav', loop: false, volume: 1 },
     ]);
+
+    engine.setMusicMuted(true);
+    assert.equal(gainNodes[1].gain.value, 0);
+    assert.equal(gainNodes[2].gain.value, 1);
+    engine.setEffectsMuted(true);
+    engine.setMusicMuted(false);
+    assert.equal(gainNodes[1].gain.value, 1);
+    assert.equal(gainNodes[2].gain.value, 0);
 });
 
-test('unlock starts the background once and mute suppresses sound effects', async () => {
+test('music mute leaves cues active and effects mute leaves music active', async () => {
     const calls = [];
     const engine = {
         async resume() { calls.push('resume'); },
         startBackground() { calls.push('background'); },
-        setMuted(muted) { calls.push(`muted:${muted}`); },
+        setMusicMuted(muted) { calls.push(`music:${muted}`); },
+        setEffectsMuted(muted) { calls.push(`effects:${muted}`); },
         playCue(name) { calls.push(`cue:${name}`); },
     };
     const audio = new GameAudio({
@@ -439,13 +452,20 @@ test('unlock starts the background once and mute suppresses sound effects', asyn
     assert.equal(audio.play('not-a-cue'), false);
     assert.deepEqual(calls, [
         'resume',
-        'muted:false',
+        'music:false',
+        'effects:false',
         'background',
         'cue:spray',
     ]);
 
-    audio.setMuted(true);
+    audio.setMusicMuted(true);
+    assert.equal(audio.play('step'), true);
+    assert.deepEqual(calls.slice(-2), ['music:true', 'cue:step']);
+
+    audio.setEffectsMuted(true);
 
     assert.equal(audio.play('step'), false);
-    assert.deepEqual(calls.slice(-1), ['muted:true']);
+    assert.deepEqual(calls.slice(-1), ['effects:true']);
+    assert.equal(audio.isMusicMuted(), true);
+    assert.equal(audio.isEffectsMuted(), true);
 });

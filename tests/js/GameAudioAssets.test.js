@@ -6,6 +6,7 @@ import * as gameAudioModule from '../../resources/js/game/GameAudio.js';
 
 const audioDirectory = resolve('public/assets/audio');
 const expectedAudioFiles = [
+    'menu-action-loop.wav',
     'music-loop.wav',
     'fire.wav',
     'ui-click.wav',

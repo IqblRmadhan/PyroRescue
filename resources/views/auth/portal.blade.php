@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $initialMode === 'register' ? 'Daftar Akun' : 'Masuk' }} — PyroRescue</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.favicon')
 </head>
 <body class="auth-page">
     <header class="adventure-topbar auth-topbar">
@@ -13,7 +14,7 @@
         </a>
         <nav class="adventure-topbar__links" aria-label="Navigasi utama">
             <a href="{{ route('home') }}">Beranda</a>
-            <a href="{{ route('home') }}#cara-main">Cara Bermain</a>
+            <a href="{{ route('home') }}#materi">Materi</a>
         </nav>
         <a class="home-login auth-topbar__switch" href="{{ $initialMode === 'register' ? route('login') : route('register') }}" data-auth-switch>
             <span class="auth-topbar__switch-label">{{ $initialMode === 'register' ? 'Masuk' : 'Daftar' }}</span> <span aria-hidden="true">↗</span>
@@ -26,7 +27,8 @@
                 <div class="auth-form-content">
                     <span class="auth-form-eyebrow">SELAMAT DATANG KEMBALI</span>
                     <h1 id="login-title" tabindex="-1">Masuk ke petualangan.</h1>
-                    <p class="auth-form-intro">Lanjutkan misi dan pelajaran Pythonmu.</p>
+                    <p class="auth-form-intro">Masuk untuk melanjutkan misi penyelamatan dan belajar Python dari progres terakhirmu.</p>
+                    <div class="auth-form-highlights" aria-label="Yang menantimu di PyroRescue"><span>✦ Misi hutan</span><span>✦ Kode Python</span></div>
 
                     @if (session('status'))
                         <p class="auth-notice" role="status">{{ session('status') }}</p>
@@ -41,7 +43,7 @@
                         </div>
                         <div class="auth-field">
                             <label for="login-password">Kata sandi</label>
-                            <input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" required>
+                            <div class="auth-password-control"><input id="login-password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan kata sandi" data-password-label="kata sandi" required><button type="button" data-password-toggle="login-password" aria-label="Lihat kata sandi" aria-pressed="false">Lihat</button></div>
                             @if ($initialMode === 'login') @error('password') <p class="auth-error" role="alert">{{ $message }}</p> @enderror @endif
                         </div>
                         <button class="auth-submit" type="submit">Masuk <span aria-hidden="true">→</span></button>
@@ -61,7 +63,8 @@
                 <div class="auth-form-content">
                     <span class="auth-form-eyebrow">JADI PENJAGA HUTAN</span>
                     <h1 id="register-title" tabindex="-1">Buat akun baru.</h1>
-                    <p class="auth-form-intro">Simpan progres belajarmu dan mulai misi penyelamatan.</p>
+                    <p class="auth-form-intro">Buat akun untuk menyimpan perjalanan belajarmu dan kembali ke misi kapan saja.</p>
+                    <div class="auth-form-highlights" aria-label="Keuntungan membuat akun"><span>✦ Simpan progres</span><span>✦ Lanjutkan misi</span></div>
 
                     <form method="POST" action="{{ route('register.store') }}" class="auth-fields">
                         @csrf
@@ -77,12 +80,12 @@
                         </div>
                         <div class="auth-field">
                             <label for="register-password">Kata sandi</label>
-                            <input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter" required>
+                            <div class="auth-password-control"><input id="register-password" name="password" type="password" autocomplete="new-password" placeholder="Minimal 8 karakter" data-password-label="kata sandi" minlength="8" required><button type="button" data-password-toggle="register-password" aria-label="Lihat kata sandi" aria-pressed="false">Lihat</button></div>
                             @if ($initialMode === 'register') @error('password') <p class="auth-error" role="alert">{{ $message }}</p> @enderror @endif
                         </div>
                         <div class="auth-field">
                             <label for="register-password-confirmation">Ulangi kata sandi</label>
-                            <input id="register-password-confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Ulangi kata sandimu" required>
+                            <div class="auth-password-control"><input id="register-password-confirmation" name="password_confirmation" type="password" autocomplete="new-password" placeholder="Ulangi kata sandimu" data-password-label="konfirmasi kata sandi" required><button type="button" data-password-toggle="register-password-confirmation" aria-label="Lihat konfirmasi kata sandi" aria-pressed="false">Lihat</button></div>
                         </div>
                         <button class="auth-submit" type="submit">Buat Akun <span aria-hidden="true">→</span></button>
                     </form>
@@ -93,6 +96,7 @@
             <section class="auth-scene" aria-label="Ilustrasi hutan dan rawa Kalimantan">
                 <div class="auth-scene__light" aria-hidden="true"></div>
                 <div class="auth-scene__mascot" aria-hidden="true"></div>
+                <div class="auth-scene__topics" aria-label="Materi petualangan"><span>01 · Variabel</span><span>02 · Perulangan</span></div>
                 <div class="auth-scene__copy auth-scene__copy--register" @if ($initialMode === 'login') aria-hidden="true" inert @endif>
                     <span class="auth-scene__eyebrow">PYRORESCUE</span>
                     <h2>Sudah siap kembali?</h2>

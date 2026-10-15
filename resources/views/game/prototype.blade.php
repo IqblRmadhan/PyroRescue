@@ -55,8 +55,10 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>PyroRescue - Level {{ $levelNumber }}: {{ $levelTitle }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @include('partials.favicon')
 </head>
 <body class="game-prototype game-workspace game-scale-80" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
     <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title"
@@ -125,12 +127,19 @@
 
                 <div id="game-container" role="img"
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
-                     data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"></div>
+                     data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"
+                     data-progress-url="{{ ($saveProgress ?? false) ? route('progress.challenge') : '' }}"
+                     data-resume-challenge="{{ $resumeChallenge ?? 1 }}"
+                     data-earned-achievements='@json($earnedAchievementKeys ?? [])'></div>
 
-                <div class="game-map-controls" aria-label="Kontrol suara, bantuan, dan pengulangan misi">
-                    <button id="audio-toggle" class="hint-button hint-button--audio" type="button" aria-label="Suara game" aria-pressed="true">
+                <div class="game-map-controls" aria-label="Kontrol musik, efek suara, bantuan, dan pengulangan misi">
+                    <button id="music-toggle" class="hint-button hint-button--music" type="button" aria-label="Matikan musik game" aria-pressed="true">
+                        <span class="hint-button__icon" aria-hidden="true">&#127925;</span>
+                        <span class="hint-button__label">Musik</span>
+                    </button>
+                    <button id="audio-toggle" class="hint-button hint-button--audio" type="button" aria-label="Matikan efek suara dan karakter" aria-pressed="true">
                         <span class="hint-button__icon" aria-hidden="true">&#128266;</span>
-                        <span class="hint-button__label">Suara</span>
+                        <span class="hint-button__label">SFX</span>
                     </button>
                     <button id="reset" class="hint-button hint-button--reset" type="button" aria-label="Ulangi challenge saat ini" disabled>
                         <span class="hint-button__icon" aria-hidden="true">&#8635;</span>
@@ -303,19 +312,22 @@
         </div>
     </section>
 
+    <button id="game-sync-warning" class="game-sync-warning" type="button" hidden>Progres belum tersimpan. Klik untuk mencoba lagi.</button>
     <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div class="level-result__card">
             <span class="level-result__eyebrow">MISI SELESAI</span>
-            <h2 id="result-title">Level {{ $levelNumber }} Berhasil!</h2>
+            <h2 id="result-title" tabindex="-1">Level {{ $levelNumber }} Berhasil!</h2>
             <p class="level-result__subtitle">{{ $isLevel2 ? 'Ketiga api padam dan kamu mencapai petak FINISH.' : 'Air sampai di Pos 2 dan kamu mencapai petak FINISH.' }}</p>
             <div class="level-result__stars" aria-hidden="true">
                 <span></span><span></span><span></span>
             </div>
             <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
             <p class="level-result__recap">@if($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
+            <p id="progress-sync-status" class="progress-sync-status" role="status">{{ ($saveProgress ?? false) ? 'Hasil akan tersimpan di akunmu.' : 'Mode tamu: hasil dan pencapaian tidak disimpan.' }}</p>
+            <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>
             <div class="level-result__actions">
                 <button id="result-replay" type="button">Main Lagi</button>
-                @unless($isLevel2)<a href="{{ route('game.level2') }}">Lanjut Level 2</a>@endunless
+                @unless($isLevel2)<a href="{{ route('game.level2') }}" data-requires-save>Lanjut Level 2</a>@endunless
                 <a href="{{ route('main-menu') }}">Menu Utama</a>
             </div>
         </div>

@@ -255,8 +255,8 @@ export const level1Assets = {
     },
 };
 
-// Simpan map final 1600 x 1200 pada lokasi ini.
-export const level1MapImage = 'maps/level1-map.png';
+// Gambar asli tetap di level1-map.png; versi WebP lebih cepat dimuat browser.
+export const level1MapImage = 'maps/level1-map.webp';
 export const level1MapShadowImage = 'maps/shadow_level1.png';
 
 export function addLevel1MapShadow(scene, width, height) {

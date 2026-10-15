@@ -40,6 +40,7 @@ class LoginController extends Controller
 
     public function guest(Request $request): RedirectResponse
     {
+        Auth::logout();
         $request->session()->regenerate();
         $request->session()->put('guest_player', true);
 
@@ -63,6 +64,7 @@ class LoginController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->forget('guest_player');
 
         return redirect()->route('main-menu');
     }

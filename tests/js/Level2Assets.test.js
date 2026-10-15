@@ -1,15 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { existsSync } from 'node:fs';
+import { existsSync, statSync } from 'node:fs';
 import path from 'node:path';
 import * as Level2Assets from '../../resources/js/game/Level2Assets.js';
 import { level2Assets } from '../../resources/js/game/Level2Assets.js';
 
 test('Level 2 uses final map filenames without a version suffix', () => {
-    assert.equal(Level2Assets.level2MapImage, 'maps/level2-map.png');
+    assert.equal(Level2Assets.level2MapImage, 'maps/level2-map.webp');
     assert.equal(Level2Assets.level2MapShadowImage, 'maps/shadow_level2.png');
+    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level2-map.webp')), true);
     assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level2-map.png')), true);
     assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level2-map-v2.png')), false);
+    assert.ok(statSync(path.join(process.cwd(), 'public/assets/maps/level2-map.webp')).size < 2_000_000);
 });
 
 test('Level 2 map shadow fills the map and adds a darker overlay', () => {

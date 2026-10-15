@@ -1,0 +1,96 @@
+.splash-page { margin: 0; min-width: 320px; background: #0e2438; color: #f6f4e9; font-family: 'Trebuchet MS', Arial, sans-serif; }
+.splash-page * { box-sizing: border-box; }
+.splash-page a { text-decoration: none; }
+.splash-page button { font: inherit; cursor: pointer; }
+.splash-page :is(a, button):focus-visible { outline: 3px solid #ffce78; outline-offset: 5px; }
+.splash-page section, .splash-page main { scroll-margin-top: 110px; }
+.splash-container { width: min(1280px, calc(100% - 96px)); margin-inline: auto; }
+.splash-skip { position: fixed; top: -80px; z-index: 100; padding: 14px; background: #fff1c9; color: #173047; }
+.splash-skip:focus { top: 8px; }
+.splash-nav { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 88px; padding: 12px max(32px, calc((100vw - 1280px) / 2)); border-bottom: 1px solid #9cc6da2b; background: #121f30f2; backdrop-filter: blur(18px); }
+.splash-brand { width: 194px; height: auto; }
+.splash-nav nav { display: flex; gap: 34px; }
+.splash-nav nav a { color: #c9d8d4; font-size: 14px; padding: 12px 0; }
+.splash-nav nav a:hover, .splash-text-link:hover { color: #ffcf7a; }
+.splash-login { padding: 11px 22px; border: 1px solid #9bb4c46b; border-radius: 8px; color: #f5f4e4; font-weight: 700; font-size: 14px; }
+.splash-login:hover { background: #36566f; }
+.splash-login span { margin-left: 16px; color: #ffd17a; }
+.splash-hero { position: relative; overflow: hidden; background: radial-gradient(ellipse at 70% 38%, #2874956b, transparent 55%), linear-gradient(105deg, #173f54, #0c3852); }
+.splash-hero::before { position: absolute; content: ''; inset: 0; background: linear-gradient(90deg, #0d344bd9, #0d344baa), url('/assets/tiles/game_bg.webp') center / cover; opacity: .3; pointer-events: none; }
+.splash-hero__grid { position: relative; display: grid; grid-template-columns: 1fr 1.05fr; gap: 22px; align-items: center; min-height: 650px; padding-block: 48px 34px; }
+.splash-kicker { color: #e8bf70; font-size: 10px; font-weight: 800; letter-spacing: 2.3px; line-height: 1.8; display: inline-flex; align-items: center; gap: 9px; }
+.splash-kicker i { width: 6px; height: 6px; display: inline-block; border-radius: 50%; background: #ffd179; box-shadow: 0 0 12px #ffd17990; }
+.splash-hero h1 { margin: 22px 0; font-family: 'PixelFont', monospace; font-size: clamp(42px, 4.6vw, 66px); font-weight: 400; line-height: 1.12; letter-spacing: -1.8px; text-shadow: 0 5px #082328; }
+.splash-hero h1 em { font-style: normal; color: #ffd184; }
+.splash-hero__copy > p { max-width: 480px; color: #b9ceca; font-size: 16px; line-height: 1.85; }
+.splash-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; margin-top: 30px; }
+.splash-button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; padding: 17px 23px; border: 1px solid #ffe0a4; border-radius: 8px; background: #f3b859; color: #192b39; box-shadow: 0 4px 0 #a36a2d, 0 12px 30px #071e2630; font-weight: 800; font-size: 15px; transition: background .2s, transform .2s; }
+.splash-button:hover { background: #ffd385; transform: translateY(-2px); }
+.splash-text-link { color: #e6e9dc; font-size: 13px; border-bottom: 1px solid #739790; padding-block: 9px; }
+.splash-hero__copy > .splash-hero__note { font-size: 11px; margin-top: 20px; color: #9dbbb1; }
+.splash-hero__tags { display: flex; flex-wrap: wrap; gap: 17px; margin-top: 32px; color: #c8d6c4; font-size: 11px; }
+.splash-hero__tags span::before { content: '✦'; color: #d7b573; margin-right: 7px; }
+.splash-world { position: relative; min-width: 0; padding-block: 15px; }
+.splash-world .home-art__stage { height: 330px; }
+.splash-world .home-art__caption { position: relative; z-index: 2; margin-top: 4px; }
+.splash-hero__bottom { position: relative; display: flex; justify-content: space-between; padding-block: 22px; border-top: 1px solid #c8dfad22; font-size: 9px; letter-spacing: 1.8px; color: #99b5aa; }
+.splash-hero__bottom a { color: #d3ddcd; letter-spacing: .3px; font-size: 11px; }
+.splash-about { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; padding-block: 80px; }
+.splash-page h2 { margin: 13px 0 0; font-size: clamp(26px, 2.8vw, 36px); letter-spacing: -1px; line-height: 1.25; font-weight: 700; color: #f4f0de; }
+.splash-about p { margin: 0 0 16px; color: #aec5bd; font-size: 14px; line-height: 1.9; }
+.splash-section-head { display: flex; justify-content: space-between; align-items: end; gap: 30px; margin-bottom: 36px; }
+.splash-section-head > p { margin: 0; font-size: 13px; color: #acc6be; line-height: 1.8; }
+.splash-lessons { padding-block: 80px; }
+.splash-lessons__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.splash-lessons article { position: relative; padding: 26px; border: 1px solid #8aaac03d; border-radius: 12px; background: linear-gradient(150deg, #23475e, #122c43); }
+.splash-lessons article > img { display: block; object-fit: contain; margin-bottom: 20px; }
+.splash-lessons article > span { display: block; font-size: 9px; letter-spacing: 1.3px; color: #c0bf8c; }
+.splash-lessons h3 { font-size: 23px; margin: 14px 0 10px; font-weight: 700; }
+.splash-lessons article p { color: #b0c6bb; font-size: 13px; line-height: 1.8; min-height: 72px; }
+.splash-lessons article code { display: block; border-top: 1px solid #9bbdcc38; padding-top: 20px; margin-top: 24px; font-size: 14px; color: #b6e0ee; }
+.splash-invite { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 42px; border: 1px solid #f3c98155; border-radius: 14px; background: radial-gradient(ellipse at right, #6088a255, transparent), #173a53; }
+.splash-invite h2 { font-size: 28px; max-width: 580px; }
+.splash-invite p { margin: 14px 0 0; color: #b9ceba; font-size: 13px; }
+.splash-invite .splash-button { flex-shrink: 0; }
+.splash-footer { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 40px; }
+.splash-footer img { height: auto; }
+.splash-footer p, .splash-footer > a { color: #9ab4aa; font-size: 11px; }
+@media (min-width: 1600px) { .splash-hero__grid { min-height: 730px; } }
+@media (max-width: 1050px) {
+    .splash-container { width: calc(100% - 48px); }
+    .splash-nav { padding-inline: 24px; }
+    .splash-hero h1 { font-size: 45px; }
+    .splash-world .home-art__stage { height: 315px; }
+    .splash-section-head { align-items: start; }
+    .splash-section-head > p { max-width: 240px; }
+}
+@media (max-width: 760px) {
+    .splash-nav { flex-wrap: wrap; gap: 10px; padding: 12px 20px 8px; }
+    .splash-brand { width: 155px; }
+    .splash-nav nav { order: 3; justify-content: center; width: 100%; gap: 32px; }
+    .splash-nav nav a { padding: 8px 0; font-size: 12px; }
+    .splash-login { padding: 8px 15px; font-size: 12px; }
+    .splash-container { width: calc(100% - 40px); }
+    .splash-hero__grid { grid-template-columns: 1fr; padding-top: 38px; gap: 20px; }
+    .splash-hero__copy { max-width: 540px; }
+    .splash-hero h1 { font-size: clamp(36px, 8.5vw, 55px); }
+    .splash-hero__copy > p { font-size: 14px; }
+    .splash-hero__tags { gap: 12px; margin-top: 24px; font-size: 10px; }
+    .splash-world { width: min(100%, 500px); margin: auto; padding-top: 20px; }
+    .splash-world .home-art__stage { height: 300px; }
+    .splash-world .home-art__logo { width: 100%; }
+    .splash-hero__bottom { font-size: 8px; gap: 18px; line-height: 1.8; }
+    .splash-about { grid-template-columns: 1fr; gap: 24px; padding-block: 52px; }
+    .splash-section-head { display: block; }
+    .splash-section-head > p { margin-top: 18px; max-width: none; }
+    .splash-lessons { padding-block: 52px; }
+    .splash-lessons__grid { grid-template-columns: 1fr; }
+    .splash-lessons article p { min-height: 0; }
+    .splash-invite { display: block; padding: 28px; }
+    .splash-invite .splash-button { margin-top: 25px; }
+    .splash-footer { flex-wrap: wrap; gap: 18px; }
+    .splash-footer p { order: 3; margin: 0; width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .splash-page *, .splash-page *::before, .splash-page *::after { animation: none !important; transition: none !important; }
+}

@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MainMenuController;
+use App\Http\Controllers\GameController;
+use App\Http\Controllers\ProgressController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,6 +28,7 @@ Route::middleware('player')->group(function () {
             'Modul-PyroRescue.pdf'
         );
     })->name('module.download');
-    Route::view('/game/1', 'game.prototype')->name('game.level1');
-    Route::view('/game/2', 'game.prototype', ['levelNumber' => 2])->name('game.level2');
+    Route::get('/game/1', [GameController::class, 'play'])->defaults('number', 1)->name('game.level1');
+    Route::get('/game/2', [GameController::class, 'play'])->defaults('number', 2)->name('game.level2');
+    Route::post('/progress/challenge', [ProgressController::class, 'store'])->name('progress.challenge');
 });

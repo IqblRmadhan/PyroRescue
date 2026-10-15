@@ -33,7 +33,8 @@ class Level1PageTest extends TestCase
             ->assertSee('Mobil Tim PyroRescue berhenti di sebuah pos kecil dekat sungai.')
             ->assertSee('LEWATI CERITA')
             ->assertDontSee('id="story-audio-toggle"', false)
-            ->assertSee('aria-label="Suara game"', false)
+            ->assertSee('aria-label="Matikan musik game"', false)
+            ->assertSee('aria-label="Matikan efek suara dan karakter"', false)
             ->assertSee('id="game-container"', false)
             ->assertSee('id="code-editor"', false)
             ->assertSee('id="code-line-numbers-content"', false)
@@ -51,6 +52,7 @@ class Level1PageTest extends TestCase
                 'id="material-dialog"',
             ], false)
             ->assertSee('Hint')
+            ->assertSee('id="music-toggle"', false)
             ->assertSee('id="audio-toggle"', false)
             ->assertSee('aria-pressed="true"', false)
             ->assertSee('id="reset"', false)
@@ -63,6 +65,7 @@ class Level1PageTest extends TestCase
             ->assertDontSee('id="study-tips-title"', false)
             ->assertSeeInOrder([
                 'class="game-map-controls"',
+                'id="music-toggle" class="hint-button hint-button--music"',
                 'id="audio-toggle" class="hint-button hint-button--audio"',
                 'id="reset" class="hint-button hint-button--reset"',
                 'id="hint" class="hint-button hint-button--help"',

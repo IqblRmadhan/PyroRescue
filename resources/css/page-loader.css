@@ -1,0 +1,19 @@
+.page-loader[hidden] { display: none !important; }
+.page-loader { position: fixed; z-index: 10000; inset: 0; display: grid; place-items: center; padding: 24px; color: #fff5dd; background: radial-gradient(ellipse at 50% 40%, #24607a, #0b3048 62%, #0a2236); text-align: center; animation: page-loader-in .2s ease-out both; }
+.page-loader::before { position: absolute; inset: 0; content: ''; opacity: .24; background: url('/assets/tiles/game_bg_bottom.webp') center bottom / auto 160px repeat-x; pointer-events: none; }
+.page-loader__content { position: relative; display: grid; justify-items: center; width: min(390px, 100%); }
+.page-loader__content > img { display: block; width: 210px; height: auto; margin-bottom: 13px; filter: drop-shadow(0 5px 4px #061b2d); }
+.page-loader__track { position: relative; width: min(250px, 100%); height: 190px; border-bottom: 3px solid #f6ca78; }
+.page-loader__track::after { position: absolute; right: 0; bottom: -5px; left: 0; height: 14px; content: ''; background: radial-gradient(ellipse, #041b2d9c, transparent 70%); }
+.page-loader__runner { position: absolute; z-index: 1; bottom: 0; left: 50%; width: 120px; height: 173px; background: url('/assets/characters/firefighter-walk.png') 0 -302px / 720px 960px no-repeat; image-rendering: pixelated; filter: drop-shadow(0 5px 3px #041b2dbc); transform: translateX(-50%); animation: page-loader-run .65s steps(6) infinite; }
+.page-loader strong { margin-top: 25px; font-family: 'PixelFont', monospace; font-size: clamp(20px, 4vw, 27px); font-weight: 400; line-height: 1.3; }
+.page-loader__hint { margin-top: 8px; color: #c7dbe3; font-size: 13px; }
+.page-loader__progress { width: min(220px, 80%); height: 5px; margin-top: 22px; overflow: hidden; border-radius: 5px; background: #8ab3c45b; }
+.page-loader__progress span { display: block; width: 35%; height: 100%; border-radius: inherit; background: #f6ca78; animation: page-loader-progress 1.1s ease-in-out infinite alternate; }
+.is-page-loading { overflow: hidden !important; }
+@keyframes page-loader-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes page-loader-run { to { background-position-x: -720px; } }
+@keyframes page-loader-progress { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
+@media (prefers-reduced-motion: reduce) {
+    .page-loader, .page-loader__runner, .page-loader__progress span { animation: none; }
+}

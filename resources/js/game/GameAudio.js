@@ -1,4 +1,11 @@
-const storageKey = 'pyrorescue.audioMuted';
+import {
+    effectsMutedKey,
+    getAudioStorage,
+    musicMutedKey,
+    readAudioPreference,
+    saveAudioPreference,
+} from './AudioPreferences.js';
+
 const masterVolume = 1.35;
 const sourceVolume = 1;
 
@@ -36,18 +43,15 @@ export function getAudioFileName(cueName) {
     return audioCueFiles[cueName] ?? null;
 }
 
-export function getAudioButtonPresentation(muted) {
-    return muted
-        ? { icon: '🔇', label: 'Bisu', ariaLabel: 'Suara game', pressed: false }
-        : { icon: '🔊', label: 'Suara', ariaLabel: 'Suara game', pressed: true };
-}
-
-function getBrowserStorage() {
-    try {
-        return globalThis.window?.localStorage ?? null;
-    } catch {
-        return null;
+export function getAudioButtonPresentation(channel, muted) {
+    if (channel === 'music') {
+        return muted
+            ? { icon: '🎵', label: 'Musik', ariaLabel: 'Nyalakan musik game', pressed: false }
+            : { icon: '🎵', label: 'Musik', ariaLabel: 'Matikan musik game', pressed: true };
     }
+    return muted
+        ? { icon: '🔇', label: 'SFX', ariaLabel: 'Nyalakan efek suara dan karakter', pressed: false }
+        : { icon: '🔊', label: 'SFX', ariaLabel: 'Matikan efek suara dan karakter', pressed: true };
 }
 
 function getAudioBaseUrl() {
@@ -67,6 +71,12 @@ export function createWebAudioEngine({
     const masterGain = context.createGain();
     masterGain.gain.value = masterVolume;
     masterGain.connect(context.destination);
+    const musicGain = context.createGain();
+    musicGain.connect(masterGain);
+    const effectsGain = context.createGain();
+    effectsGain.connect(masterGain);
+    let musicInitialized = false;
+    let effectsInitialized = false;
 
     const buffers = new Map();
     const backgroundSources = [];
@@ -124,7 +134,7 @@ export function createWebAudioEngine({
         return results.every(Boolean);
     }
 
-    function playBuffer(key, { loop = false, volume = 1 } = {}) {
+    function playBuffer(key, { loop = false, volume = 1, channel = 'effects' } = {}) {
         const buffer = buffers.get(key);
         if (!buffer || context.state === 'closed') return null;
 
@@ -134,14 +144,14 @@ export function createWebAudioEngine({
         source.loop = loop;
         gain.gain.value = volume;
         source.connect(gain);
-        gain.connect(masterGain);
+        gain.connect(channel === 'music' ? musicGain : effectsGain);
         source.start();
         return source;
     }
 
     function startBackgroundTrack(key, volume) {
         if (startedBackgroundTracks.has(key)) return;
-        const source = playBuffer(key, { loop: true, volume });
+        const source = playBuffer(key, { loop: true, volume, channel: 'music' });
         if (!source) return;
         startedBackgroundTracks.add(key);
         backgroundSources.push(source);
@@ -186,8 +196,21 @@ export function createWebAudioEngine({
             fireNearbyRequested = Boolean(nearby);
             syncFireTrack();
         },
-        setMuted(muted) {
-            masterGain.gain.setTargetAtTime(muted ? 0 : masterVolume, context.currentTime, 0.025);
+        setMusicMuted(muted) {
+            if (!musicInitialized) {
+                musicGain.gain.value = muted ? 0 : 1;
+                musicInitialized = true;
+            } else {
+                musicGain.gain.setTargetAtTime(muted ? 0 : 1, context.currentTime, 0.025);
+            }
+        },
+        setEffectsMuted(muted) {
+            if (!effectsInitialized) {
+                effectsGain.gain.value = muted ? 0 : 1;
+                effectsInitialized = true;
+            } else {
+                effectsGain.gain.setTargetAtTime(muted ? 0 : 1, context.currentTime, 0.025);
+            }
         },
         playCue(name) {
             return Boolean(playBuffer(name, { volume: sourceVolume }));
@@ -213,24 +236,23 @@ export function createWebAudioEngine({
 }
 
 export class GameAudio {
-    constructor({ storage = getBrowserStorage(), engineFactory = createWebAudioEngine } = {}) {
+    constructor({ storage = getAudioStorage(), engineFactory = createWebAudioEngine } = {}) {
         this.storage = storage;
         this.engineFactory = engineFactory;
         this.engine = null;
         this.unlocked = false;
         this.unlockPromise = null;
-        this.muted = false;
+        this.musicMuted = readAudioPreference(storage, musicMutedKey);
+        this.effectsMuted = readAudioPreference(storage, effectsMutedKey);
         this.fireNearby = false;
-
-        try {
-            this.muted = this.storage?.getItem(storageKey) === 'true';
-        } catch {
-            this.muted = false;
-        }
     }
 
-    isMuted() {
-        return this.muted;
+    isMusicMuted() {
+        return this.musicMuted;
+    }
+
+    isEffectsMuted() {
+        return this.effectsMuted;
     }
 
     async preload() {
@@ -267,7 +289,8 @@ export class GameAudio {
 
             await this.engine.resume();
             if (!this.unlocked) {
-                this.engine.setMuted(this.muted);
+                this.engine.setMusicMuted(this.musicMuted);
+                this.engine.setEffectsMuted(this.effectsMuted);
                 this.engine.startBackground();
                 this.engine.setFireNearby?.(this.fireNearby);
                 this.unlocked = true;
@@ -281,7 +304,7 @@ export class GameAudio {
     }
 
     play(name) {
-        if (!audioCueSet.has(name) || this.muted) return false;
+        if (!audioCueSet.has(name) || this.effectsMuted) return false;
 
         const engineIsRunning = this.engine?.isRunning?.() ?? true;
         if (!this.unlocked || !engineIsRunning) {
@@ -310,23 +333,34 @@ export class GameAudio {
         return this.fireNearby;
     }
 
-    setMuted(muted) {
-        this.muted = Boolean(muted);
+    setMusicMuted(muted) {
+        this.musicMuted = Boolean(muted);
+        saveAudioPreference(this.storage, musicMutedKey, this.musicMuted);
         try {
-            this.storage?.setItem(storageKey, String(this.muted));
-        } catch {
-            // Penyimpanan browser dapat ditolak pada mode privasi tertentu.
-        }
-        try {
-            this.engine?.setMuted(this.muted);
+            this.engine?.setMusicMuted(this.musicMuted);
         } catch {
             // AudioContext dapat berhenti ketika tab ditutup atau perangkat berubah.
         }
-        return this.muted;
+        return this.musicMuted;
     }
 
-    toggleMuted() {
-        return this.setMuted(!this.muted);
+    setEffectsMuted(muted) {
+        this.effectsMuted = Boolean(muted);
+        saveAudioPreference(this.storage, effectsMutedKey, this.effectsMuted);
+        try {
+            this.engine?.setEffectsMuted(this.effectsMuted);
+        } catch {
+            // AudioContext dapat berhenti ketika tab ditutup atau perangkat berubah.
+        }
+        return this.effectsMuted;
+    }
+
+    toggleMusicMuted() {
+        return this.setMusicMuted(!this.musicMuted);
+    }
+
+    toggleEffectsMuted() {
+        return this.setEffectsMuted(!this.effectsMuted);
     }
 }
 

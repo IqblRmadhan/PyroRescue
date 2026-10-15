@@ -22,7 +22,7 @@ export const level2Assets = {
     fireEval: { file: 'objects/LEVEL2-EVAL.png', frames: fireFrames },
 };
 
-export const level2MapImage = 'maps/level2-map.png';
+export const level2MapImage = 'maps/level2-map.webp';
 export const level2MapShadowImage = 'maps/shadow_level2.png';
 
 export function addLevel2MapShadow(scene, width, height) {

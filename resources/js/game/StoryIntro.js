@@ -142,7 +142,7 @@ export default class StoryIntro {
     }
 
     resumeAudio() {
-        if (!gameAudio.isMuted()) void gameAudio.unlock();
+        if (!gameAudio.isMusicMuted() || !gameAudio.isEffectsMuted()) void gameAudio.unlock();
     }
 
     showSlide(index) {
