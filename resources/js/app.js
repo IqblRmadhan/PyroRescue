@@ -3,6 +3,7 @@ import '../css/splash.css';
 import '../css/page-loader.css';
 import '../css/auth-refresh.css';
 import '../css/menu-dashboard.css';
+import '../css/level1-tutorial.css';
 import { initPageLoader } from './PageLoader.js';
 
 if (document.body.matches('.splash-page, .auth-page')) initPageLoader();

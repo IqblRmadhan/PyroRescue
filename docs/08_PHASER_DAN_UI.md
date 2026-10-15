@@ -162,6 +162,16 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Akun menyimpan 4 tahap dan mendapat 3 bintang setelah FINISH. Tamu tidak
   menyimpan progres. Hasil Level 2 menyediakan tombol menuju Level 3.
 
+## Tutorial Level 1
+
+Sesudah cerita pembuka dan peta siap, kunjungan pertama ke Challenge 1 dalam
+satu sesi browser menampilkan tur enam langkah. Tur menyorot peta, PyroPad,
+tombol Run Code, daftar target, penulisan `isi_air = 3`, dan tombol bantuan.
+Pemain bisa maju, kembali, atau melewati tur. Tombol **Cara Bermain** pada
+panel misi membuka tur lagi kapan saja selama game aktif. Setelah tur awal
+selesai atau dilewati, pemandu misi menampilkan arahan sesuai posisi pemain.
+Tur tidak mengubah kondisi challenge maupun progres akun.
+
 ## Audio game
 
 - `GameAudio.js` memuat musik latar, ambience api berbasis jarak, dan efek

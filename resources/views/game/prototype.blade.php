@@ -172,6 +172,9 @@
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
                         <h2 id="mission-title">{{ $isLevel3 ? 'Challenge 1 - Memadamkan Api di Habitat' : ($isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air') }}</h2>
+                        @if($levelNumber === 1)
+                            <button id="tutorial-open" class="game-tutorial-open" type="button" aria-controls="level1-tutorial">? Cara Bermain</button>
+                        @endif
                     </div>
                 </section>
 
@@ -234,6 +237,20 @@
 
         <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
     </div>
+
+    @if($levelNumber === 1)
+    <div id="level1-tutorial" class="level1-tutorial" role="dialog" aria-modal="true" aria-labelledby="level1-tutorial-title" hidden>
+        <div class="level1-tutorial__spotlight" aria-hidden="true"></div>
+        <div class="level1-tutorial__card">
+            <div class="level1-tutorial__topline"><span>BUKU LAPANGAN · LEVEL 01</span><button type="button" data-tutorial-skip aria-label="Lewati tutorial">Lewati ×</button></div>
+            <div class="level1-tutorial__heading"><span class="level1-tutorial__mascot" aria-hidden="true"></span><div><span data-tutorial-eyebrow></span><h2 id="level1-tutorial-title" data-tutorial-title></h2></div></div>
+            <p data-tutorial-text></p>
+            <pre data-tutorial-code hidden></pre>
+            <div class="level1-tutorial__note"><span aria-hidden="true">✦</span><span data-tutorial-note></span></div>
+            <div class="level1-tutorial__footer"><span data-tutorial-progress></span><div><button type="button" data-tutorial-back>Sebelumnya</button><button type="button" data-tutorial-next>Lanjut</button></div></div>
+        </div>
+    </div>
+    @endif
 
     <dialog id="feedback" class="mission-guide" data-state="instruction"
             aria-labelledby="guide-title" aria-describedby="feedback-message">

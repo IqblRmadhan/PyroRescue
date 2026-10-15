@@ -17,6 +17,7 @@ import level3Challenges from './Level3Challenges.js';
 import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
 import { getOutcomeFeedback, shouldPlayTargetCue } from './GameFeedback.js';
 import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
+import { Level1Tutorial, shouldShowLevel1Tutorial } from './Level1Tutorial.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -63,6 +64,8 @@ const levelResult = document.getElementById('level-result');
 const resultStars = document.getElementById('result-stars');
 const resultReplay = document.getElementById('result-replay');
 const prototypePage = document.getElementById('prototype-page');
+const level1Tutorial = levelNumber === 1
+    ? new Level1Tutorial(document.getElementById('level1-tutorial')) : null;
 const defaultHint = 'Susun instruksi dari atas ke bawah.';
 const gameContainer = document.getElementById('game-container');
 let currentChallenge = Number(gameContainer.dataset.resumeChallenge ?? 1);
@@ -424,7 +427,12 @@ const scene = new Scene({
         if (currentChallenge > 1) await scene.resetChallenge(currentChallenge);
         sceneReady = true;
         configureChallenge();
-        renderGuide(true);
+        if (level1Tutorial && currentChallenge === 1 && shouldShowLevel1Tutorial()) {
+            setControlsDisabled(true);
+            level1Tutorial.open(() => renderGuide(true));
+        } else {
+            renderGuide(true);
+        }
     },
     onLoadError() {
         gameAudio.play('commandError');
@@ -432,6 +440,12 @@ const scene = new Scene({
     },
     onStateChange: renderMissionState,
     onAudio: (cue) => gameAudio.play(cue),
+});
+document.getElementById('tutorial-open')?.addEventListener('click', () => {
+    if (!sceneReady || feedback.open || runningCode || levelCompleted) return;
+    gameAudio.play('uiClick');
+    setControlsDisabled(true);
+    level1Tutorial.open(() => setControlsDisabled(false));
 });
 const autocomplete = new CodeAutocomplete(
     editor,

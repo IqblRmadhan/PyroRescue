@@ -1,0 +1,167 @@
+.game-tutorial-open {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 5px 9px;
+    border: 1px solid #bc8740;
+    border-radius: 5px;
+    background: #fff0c7;
+    color: #31515c;
+    font: 700 11px 'Trebuchet MS', sans-serif;
+    cursor: pointer;
+}
+.game-tutorial-open:hover { background: #ffe1a0; }
+.game-tutorial-open:focus-visible { outline: 3px solid #106d8a; outline-offset: 3px; }
+
+.level1-tutorial-is-open { overflow: hidden; }
+.level1-tutorial[hidden], .level1-tutorial__card pre[hidden], .level1-tutorial__footer button[hidden] { display: none; }
+.level1-tutorial {
+    position: fixed;
+    z-index: 210;
+    inset: 0;
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+}
+.level1-tutorial__spotlight {
+    position: absolute;
+    border: 3px solid #ffd36f;
+    border-radius: 9px;
+    box-shadow: 0 0 0 9999px #061824b9, 0 0 0 7px #ffd36f55, 0 0 28px 10px #ffd36f55;
+    pointer-events: none;
+    transition: left .22s ease, top .22s ease, width .22s ease, height .22s ease;
+}
+.level1-tutorial__card {
+    position: absolute;
+    z-index: 1;
+    right: 22px;
+    bottom: 20px;
+    width: min(440px, calc(100vw - 32px));
+    max-height: min(630px, calc(100dvh - 32px));
+    overflow-y: auto;
+    border: 3px solid #d8ae68;
+    border-radius: 12px;
+    background: #f6eed9;
+    box-shadow: 0 7px 0 #3c2c21, 0 18px 50px #071b29c0;
+    color: #233a48;
+}
+.level1-tutorial__card--left { right: auto; left: 22px; }
+.level1-tutorial__topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 15px;
+    background: #133a48;
+    color: #ffce72;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .13em;
+}
+.level1-tutorial__topline button {
+    flex: 0 0 auto;
+    padding: 3px;
+    border: 0;
+    background: transparent;
+    color: #d7e6df;
+    font: 700 11px 'Trebuchet MS', sans-serif;
+    cursor: pointer;
+}
+.level1-tutorial__heading {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 20px 0;
+}
+.level1-tutorial__mascot {
+    flex: 0 0 50px;
+    width: 50px;
+    height: 73px;
+    background: url('/assets/characters/firefighter-idle.png') 0 -52px / 300px 400px no-repeat;
+    image-rendering: pixelated;
+}
+.level1-tutorial__heading [data-tutorial-eyebrow] {
+    color: #ab642f;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .14em;
+}
+.level1-tutorial__heading h2 {
+    margin: 5px 0 0;
+    color: #15394a;
+    font: 22px/1.2 'PixelFont', 'Trebuchet MS', sans-serif;
+}
+.level1-tutorial__card > p {
+    margin: 10px 20px 14px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+.level1-tutorial__card pre {
+    margin: 0 20px 14px;
+    padding: 12px 15px;
+    border-left: 4px solid #f4b650;
+    border-radius: 5px;
+    background: #112d3e;
+    color: #c7eeea;
+    font: 700 16px/1.55 Consolas, monospace;
+}
+.level1-tutorial__note {
+    display: flex;
+    gap: 9px;
+    margin: 0 20px 15px;
+    padding: 10px 12px;
+    border-radius: 6px;
+    background: #e9dfc4;
+    color: #48605c;
+    font-size: 12px;
+    line-height: 1.45;
+}
+.level1-tutorial__note > span:first-child { color: #ad7134; }
+.level1-tutorial__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 18px;
+    border-top: 1px solid #d8c8aa;
+}
+.level1-tutorial__footer > span { color: #65716d; font: 700 12px Consolas, monospace; }
+.level1-tutorial__footer > div { display: flex; gap: 7px; }
+.level1-tutorial__footer button {
+    padding: 8px 10px;
+    border: 1px solid #72919a;
+    border-radius: 5px;
+    background: #fff9e9;
+    color: #234454;
+    font: 800 12px 'Trebuchet MS', sans-serif;
+    cursor: pointer;
+}
+.level1-tutorial__footer [data-tutorial-next] {
+    border-color: #ad6530;
+    background: #e89939;
+    color: #152c36;
+    box-shadow: 0 3px 0 #80502b;
+}
+.level1-tutorial button:hover { filter: brightness(1.08); }
+.level1-tutorial button:focus-visible { outline: 3px solid #1682a3; outline-offset: 3px; }
+
+@media (max-width: 700px) {
+    .level1-tutorial__card, .level1-tutorial__card--left {
+        right: 10px;
+        left: 10px;
+        bottom: 10px;
+        width: auto;
+        max-height: 52dvh;
+    }
+    .level1-tutorial__card--top, .level1-tutorial__card--left.level1-tutorial__card--top {
+        top: 10px;
+        bottom: auto;
+    }
+    .level1-tutorial__heading { padding: 10px 15px 0; }
+    .level1-tutorial__heading h2 { font-size: 19px; }
+    .level1-tutorial__card > p { margin: 7px 15px 10px; font-size: 12px; }
+    .level1-tutorial__card pre, .level1-tutorial__note { margin-right: 15px; margin-left: 15px; }
+    .level1-tutorial__note { font-size: 11px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .level1-tutorial__spotlight { transition: none; }
+}
