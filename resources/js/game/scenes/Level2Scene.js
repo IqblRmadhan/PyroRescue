@@ -24,7 +24,7 @@ import challenges, {
 
 const playerScale = 0.245;
 // Air sedikit tembus pandang agar bayangan tepi sungai di bawahnya tetap terlihat.
-const waterLayerAlpha = 0.72;
+const waterLayerAlpha = 0.84;
 
 export default class Level2Scene extends Phaser.Scene {
     constructor({

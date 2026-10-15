@@ -26,16 +26,8 @@ export const level2MapImage = 'maps/level2-map.webp';
 export const level2MapShadowImage = 'maps/shadow_level2.png';
 
 export function addLevel2MapShadow(scene, width, height) {
-    const shadow = scene.add.image(0, 0, 'level2Shadow')
+    return scene.add.image(0, 0, 'level2Shadow')
         .setOrigin(0)
         .setDisplaySize(width, height)
         .setDepth(0);
-
-    scene.add.image(0, 0, 'level2Shadow')
-        .setOrigin(0)
-        .setDisplaySize(width, height)
-        .setDepth(0)
-        .setAlpha(0.8);
-
-    return shadow;
 }

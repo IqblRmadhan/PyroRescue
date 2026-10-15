@@ -14,7 +14,7 @@ test('Level 2 uses final map filenames without a version suffix', () => {
     assert.ok(statSync(path.join(process.cwd(), 'public/assets/maps/level2-map.webp')).size < 2_000_000);
 });
 
-test('Level 2 map shadow fills the map and adds a darker overlay', () => {
+test('Level 2 map shadow fills the map with one layer like Level 1', () => {
     const layers = [];
     const scene = {
         add: {
@@ -56,16 +56,6 @@ test('Level 2 map shadow fills the map and adds a darker overlay', () => {
             width: 1600,
             height: 1200,
             depth: 0,
-        },
-        {
-            x: 0,
-            y: 0,
-            texture: 'level2Shadow',
-            origin: 0,
-            width: 1600,
-            height: 1200,
-            depth: 0,
-            alpha: 0.8,
         },
     ]);
 });
