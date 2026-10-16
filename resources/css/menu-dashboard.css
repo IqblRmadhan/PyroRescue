@@ -69,16 +69,17 @@
 @keyframes journey-signal { 50% { box-shadow: 0 0 0 7px #83e1a00b, 0 0 18px #83e1a0; } }
 @keyframes journey-idle { to { background-position-x: -660px; } }
 .menu-achievements { margin-top: 65px; }
-.menu-achievement-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
-.menu-achievement { position: relative; display: flex; align-items: center; flex-direction: column; padding: 27px 19px 23px; border: 1px solid #7897a84d; border-radius: 12px; background: #153247; text-align: center; }
-.menu-achievement__medal { display: grid; place-items: center; width: 82px; height: 90px; margin-bottom: 19px; color: #90a8b6; background: linear-gradient(145deg, #355468, #1a3549); border: 2px solid #7f98a27a; border-radius: 22px 22px 35px 35px; box-shadow: inset 0 0 0 5px #102b3f66, 0 6px 0 #082133; }
-.menu-achievement__medal svg { width: 43px; height: 43px; }
-.menu-achievement__state { font-size: 8px; font-weight: 800; letter-spacing: 1.5px; color: #8eafbd; }
+.menu-achievement-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.menu-achievement { position: relative; display: flex; align-items: center; flex-direction: column; padding: 26px 16px 24px; border: 1px solid #7897a84d; border-radius: 14px; background: radial-gradient(ellipse at 50% 15%, #48758130, transparent 65%), #153247; text-align: center; }
+.menu-achievement__number { position: absolute; top: 13px; left: 15px; color: #8aa6ae; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.menu-achievement__medal { width: 112px; margin-bottom: 18px; }
+.menu-achievement__state { padding: 5px 9px; border: 1px solid #809eab40; border-radius: 20px; background: #0c263750; font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #a1bec8; }
 .menu-achievement h3 { margin: 11px 0 8px; color: #e5e6db; font-size: 16px; font-weight: 700; }
 .menu-achievement p { margin: 0; max-width: 27ch; color: #abc1cd; font-size: 12px; line-height: 1.75; }
-.menu-achievement.is-earned { border-color: #e2b866a3; background: radial-gradient(ellipse at top, #90732c24, transparent 75%), #173348; }
-.menu-achievement.is-earned .menu-achievement__medal { color: #ffe1a0; border-color: #f0c777; background: linear-gradient(145deg, #b98535, #70451e); box-shadow: inset 0 0 0 5px #57391c66, 0 6px 0 #082133, 0 0 30px #eeb34d1c; }
-.menu-achievement.is-earned .menu-achievement__state { color: #ffda86; }
+.menu-achievement.is-earned { border-color: var(--badge-edge); background: radial-gradient(ellipse at top, #e6c37e20, transparent 75%), #173348; }
+.menu-achievement.is-earned .menu-achievement__medal { filter: drop-shadow(0 0 18px #f3d28b26); }
+.menu-achievement.is-earned .menu-achievement__state { color: #b4e9cd; border-color: #86c6a655; background: #2c77542b; }
+.menu-achievement__tier { margin: 0 0 10px; color: var(--badge-color); font-size: 12px; }
 .menu-guest-banner, .menu-resources { display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 28px; border: 1px solid #d0b16a66; border-radius: 12px; background: linear-gradient(115deg, #24475d, #17364c); }
 .menu-guest-banner strong { font-size: 21px; color: #f5e5b9; }
 .menu-guest-banner__art { flex: 0 0 110px; }
@@ -98,7 +99,7 @@
 .game-sync-warning[hidden] { display: none; }
 .game-sync-warning { position: fixed; z-index: 190; right: 20px; top: 20px; max-width: calc(100% - 40px); padding: 12px 18px; color: #4f3516; border: 2px solid #e0b25b; border-radius: 8px; background: #ffedb7; font: 700 13px/1.5 'Trebuchet MS', sans-serif; box-shadow: 0 5px 20px #071d3e88; cursor: pointer; }
 .achievement-toast { position: fixed; z-index: 200; top: 20px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); padding: 15px 23px; border: 2px solid #f0ca78; border-radius: 10px; background: #143c52; color: #ffe6a6; box-shadow: 0 8px 25px #04192588; font: 700 14px/1.5 'Trebuchet MS', sans-serif; text-align: center; }
-@media (max-width: 1050px) { .menu-achievement-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 1100px) { .menu-achievement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 1000px) {
     .journey-board__top { grid-template-columns: minmax(0, 1fr) 110px; }
     .journey-board__metrics { grid-column: 1 / -1; grid-row: 2; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0 0 16px; padding: 0; border-top: 1px solid #88b8b64d; border-left: 0; }
@@ -109,7 +110,7 @@
     .menu-dashboard { padding: 40px 20px; }
     .menu-section-heading, .menu-guest-banner, .menu-resources { flex-direction: column; align-items: flex-start; }
     .menu-section-heading h2 { font-size: 25px; }
-    .menu-achievement-grid { gap: 10px; }
+    .menu-achievement-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
     .menu-achievement { padding: 22px 12px; }
     .menu-achievement h3 { font-size: 14px; }
     .menu-achievement p { font-size: 11px; }

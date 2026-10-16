@@ -145,7 +145,8 @@ Reset hanya:
 3. menghapus feedback aktif.
 
 Pada Level 1, editor otomatis mengganti kode gerakan dengan placeholder assignment
-satu kali saat pemain pertama kali mencapai penanda merah challenge aktif.
+satu kali setelah seluruh gerakan dalam Run selesai dan pemain berhenti tepat
+di penanda biru atau merah challenge aktif. Melewati penanda tidak mengganti kode.
 
 Tidak perlu reload seluruh halaman.
 
@@ -159,10 +160,13 @@ AND evaluasi selesai
 ```
 
 Pada Level 1, evaluasi akhir dimulai setelah air sampai di Pos 2. Pemain menuju
-FINISH untuk memeriksa hasil tiga challenge. Pemain boleh mencapai FINISH lebih
-awal, tetapi hasilnya nol bintang dan level berikutnya tetap terkunci.
-Nilai awal 100%; kode tidak valid atau aksi salah mengurangi 5%, tabrakan dengan
-petak tak dapat dilalui mengurangi 10%. Hasil 70–84% memberi satu bintang,
-85–99% dua bintang, dan 100% tiga bintang. Nilai di bawah 70% memberi nol
-bintang. Level berikutnya dibuka hanya setelah evaluasi selesai dan pemain
-memperoleh sedikitnya satu bintang.
+FINISH untuk memeriksa hasil tiga challenge. Jika challenge atau evaluasi belum
+selesai, pemandu meminta pemain menyelesaikan semua misi; permainan tetap aktif.
+HP awal 100; kode tidak valid atau aksi salah mengurangi 5, tabrakan mengurangi 10.
+Keduanya membuat karakter memerah, kamera bergetar, dan tepi peta memerah singkat.
+Saat HP habis, level aktif diulang dari Challenge 1 dengan HP 100; pencapaian
+terbaik akun tetap tersimpan. Tombol Ulangi tetap mengulang challenge aktif.
+Seluruh challenge dan evaluasi wajib terpenuhi untuk menyelesaikan level dan
+membuka level berikutnya. Persentase hanya menentukan kualitas badge:
+Tuntas di bawah 70%, Perunggu 70–84%, Perak 85–99%, dan Emas 100%.
+Badge penyelesaian muncul dari kanan layar, termasuk pada mode tamu tanpa simpan.

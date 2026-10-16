@@ -9,9 +9,9 @@ export const level1TutorialSteps = [
     {
         target: '.game-hud',
         eyebrow: '02 / STATUS',
-        title: 'Pantau air dan bintang',
-        text: 'Angka di samping tetes air menunjukkan isi tangki. Bintang kecil menunjukkan target misi yang sudah selesai. Nilai persentase dimulai dari 100%.',
-        note: 'Kode salah mengurangi 5%, tabrakan mengurangi 10%. Daftar Misi di kanan merinci target aktif.',
+        title: 'Pantau air dan HP',
+        text: 'Angka di samping tetes air menunjukkan isi tangki. Bar HP dimulai dari 100 dan menentukan kualitas badge. Checklist di bawah judul challenge menunjukkan target yang harus diselesaikan.',
+        note: 'Kode salah mengurangi 5 HP, tabrakan mengurangi 10 HP, disertai efek merah dan getaran. Jika HP habis, level diulang dari Challenge 1 dengan HP penuh.',
     },
     {
         target: '#code-editor',
@@ -38,7 +38,7 @@ export const level1TutorialSteps = [
         target: '#material-open',
         eyebrow: '06 / BELAJAR',
         title: 'Buka materi saat perlu',
-        text: 'Baca Materi membuka penjelasan Python dan kamus perintah. Lihat juga daftar Misi di atas PyroPad; kotaknya tercentang otomatis ketika target selesai.',
+        text: 'Baca Materi membuka penjelasan Python dan kamus perintah. Lihat juga checklist di bawah judul challenge; kotaknya tercentang otomatis ketika target selesai.',
         note: 'Cara Bermain bisa kamu buka kembali melalui tombol di bagian bawah halaman.',
     },
     {
@@ -62,7 +62,7 @@ export const level1TutorialSteps = [
         mapFocus: 'finish',
         eyebrow: '09 / FINISH',
         title: 'Akhiri misi di FINISH',
-        text: 'Kamera menuju petak FINISH di ujung jalan. Kamu boleh mencapainya kapan saja, tetapi Level 2 baru terbuka setelah tiga challenge dan evaluasi selesai dengan nilai minimal 70% (satu bintang).',
+        text: 'Selesaikan ketiga challenge dan evaluasi sebelum menuju FINISH. Semua misi yang tuntas membuka level berikutnya, berapa pun sisa HP. Persentase hanya menentukan kualitas badge yang muncul dari kanan layar.',
         note: 'Kode salah dan tabrakan mengurangi nilai. Kamera kembali ke pemadam setelah Cara Bermain ditutup.',
     },
 ];

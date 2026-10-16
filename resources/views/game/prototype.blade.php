@@ -122,13 +122,13 @@
                         <span class="asset-icon asset-icon--water" aria-hidden="true"></span>
                         <strong><span id="water-count">0</span>/<span id="required-water">{{ $hasEvaluation ? '6' : '3' }}</span></strong>
                     </div>
-                    <div class="hud-counter">
-                        <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
-                        <strong><span id="mission-stars">0</span>/<span id="mission-target-count">{{ $hasEvaluation ? '3' : '2' }}</span></strong>
-                    </div>
-                    <div class="hud-counter hud-counter--score" aria-label="Nilai permainan" title="Kode salah: -5%. Tabrakan: -10%." aria-live="polite">
-                        <span aria-hidden="true">%</span>
-                        <strong><span id="score-value">100</span>%</strong>
+                    <div class="hud-health" title="HP menentukan kualitas badge. Kode salah: -5 HP. Tabrakan: -10 HP.">
+                        <span class="hud-health__icon" aria-hidden="true">&#9829;</span>
+                        <div id="health-bar" class="hud-health__track" role="progressbar" aria-label="HP / nilai permainan"
+                             aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                            <span id="health-fill" class="hud-health__fill"></span>
+                            <strong class="hud-health__value" aria-hidden="true"><span id="score-value">100</span> / 100</strong>
+                        </div>
                     </div>
                     @if($isLevel3)
                     <div class="hud-counter hud-counter--condition" aria-live="polite">
@@ -146,6 +146,8 @@
                      data-progress-url="{{ ($saveProgress ?? false) ? route('progress.challenge') : '' }}"
                      data-resume-challenge="{{ $resumeChallenge ?? 1 }}"
                      data-earned-achievements='@json($earnedAchievementKeys ?? [])'></div>
+
+                <div id="damage-overlay" class="game-damage-overlay" aria-hidden="true"></div>
 
                 <div class="game-map-controls" aria-label="Kontrol musik, efek suara, bantuan, dan pengulangan misi">
                     <button id="music-toggle" class="hint-button hint-button--music" type="button" aria-label="Matikan musik game" aria-pressed="true">
@@ -171,19 +173,12 @@
 
             </section>
 
-            <aside class="game-panel wood-frame" aria-label="Misi dan editor PyroPad">
+            <aside class="game-panel wood-frame" aria-label="Challenge dan editor PyroPad">
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
                         <h2 id="mission-title">{{ $isLevel3 ? 'Challenge 1 - Memadamkan Api di Habitat' : ($isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air') }}</h2>
-                    </div>
-                </section>
-
-                <section class="mission-card mission-card--targets" aria-labelledby="target-title">
-                    <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
-                    <div>
-                        <h2 id="target-title">Misi</h2>
-                        <ul id="target-list" class="target-list">
+                        <ul id="target-list" class="target-list" aria-label="Target challenge">
                             <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel3 ? 'Siapkan 3 unit air di pompa' : ($isLevel2 ? 'Ambil 6 unit air di pompa' : 'Pergi ke pompa air') }}</li>
                             @if($hasEvaluation)
                             <li><span class="target-check" aria-hidden="true"></span>Pergi ke penanda C1</li>
@@ -231,6 +226,7 @@
                         <span aria-hidden="true">&#128214;</span>
                         Baca Materi
                     </button>
+                    <p id="code-error" class="code-error" role="alert" hidden></p>
                     <p id="editor-action-status" class="sr-only" role="status"></p>
                 </div>
             </aside>
@@ -238,7 +234,6 @@
 
         @if($levelNumber === 1)
         <footer class="game-tutorial-footer">
-            <span>Perlu melihat kembali fungsi kontrol dan penanda di peta?</span>
             <button id="tutorial-open" class="game-tutorial-open" type="button" aria-controls="level1-tutorial">
                 <span aria-hidden="true">?</span> Cara Bermain
             </button>
@@ -252,7 +247,7 @@
     <div id="level1-tutorial" class="level1-tutorial" role="dialog" aria-modal="true" aria-labelledby="level1-tutorial-title" hidden>
         <div class="level1-tutorial__spotlight" aria-hidden="true"></div>
         <div class="level1-tutorial__card">
-            <div class="level1-tutorial__topline"><span>CARA BERMAIN · LEVEL 01</span><button type="button" data-tutorial-skip aria-label="Lewati cara bermain">Lewati ×</button></div>
+            <div class="level1-tutorial__topline"><span>CARA BERMAIN</span><button type="button" data-tutorial-skip aria-label="Lewati cara bermain">Lewati ×</button></div>
             <div class="level1-tutorial__heading"><span class="level1-tutorial__mascot" aria-hidden="true"></span><div><span data-tutorial-eyebrow></span><h2 id="level1-tutorial-title" data-tutorial-title></h2></div></div>
             <p data-tutorial-text></p>
             <div class="level1-tutorial__note"><span aria-hidden="true">✦</span><span data-tutorial-note></span></div>
@@ -359,11 +354,19 @@
             <span id="result-eyebrow" class="level-result__eyebrow">HASIL PERMAINAN</span>
             <h2 id="result-title" tabindex="-1">Level {{ $levelNumber }} Berhasil!</h2>
             <p id="result-subtitle" class="level-result__subtitle">Hasil evaluasi penyelamatanmu.</p>
-            <div class="level-result__stars" aria-hidden="true">
-                <span></span><span></span><span></span>
+            <div id="result-stars" class="level-result__stars" role="img" aria-label="0 dari 3 bintang">
+                <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
             </div>
-            <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
+            <div class="level-result__score"><span>NILAI MISI</span><strong id="result-score">100%</strong><span id="result-star-count">3 / 3 bintang</span></div>
+            <div class="level-result__reward">
+                <div id="result-badge" class="level-result__badge">
+                    @include('game.partials.achievement-badge', ['kind' => [1 => 'supply', 2 => 'shield', 3 => 'rescue'][$levelNumber]])
+                </div>
+                <div><span class="level-result__reward-label">BADGE DIRAIH</span><strong id="result-rating"></strong><span id="result-tier" class="level-result__tier"></span></div>
+            </div>
+            <details class="level-result__learning"><summary>Bekal yang kamu kuasai</summary>
             <p id="result-recap" class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> untuk memadamkan api serta menyelamatkan bekantan. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
+            </details>
             <p id="progress-sync-status" class="progress-sync-status" role="status">{{ ($saveProgress ?? false) ? 'Hasil akan tersimpan di akunmu.' : 'Mode tamu: hasil dan pencapaian tidak disimpan.' }}</p>
             <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>
             <div class="level-result__actions">

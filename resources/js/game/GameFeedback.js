@@ -4,8 +4,8 @@ export function getOutcomeFeedback(outcome = {}) {
 
     return {
         state: isError ? 'error' : 'info',
-        playErrorCue: isError,
-        visible: isError,
+        playErrorCue: isError && !outcome.collision,
+        visible: isError && !outcome.collision,
     };
 }
 

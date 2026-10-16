@@ -384,6 +384,10 @@ export default class Level1Scene extends Phaser.Scene {
         this.publishState();
     }
 
+    markChallengeComplete() {
+        if (this.challengeNumber > 1) this.actionMarkers[this.challengeNumber]?.setVisible(false);
+    }
+
     async runCommands(commands, onCommandComplete = () => {}) {
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         this.setPlayerIdle(this.direction);

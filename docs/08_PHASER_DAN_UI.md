@@ -21,12 +21,13 @@
 - Navbar menu mengarah ke Petualangan, Progres, Pencapaian, dan Modul.
   Carousel tetap memakai ketiga gambar pulau semula dan tombol panahnya;
   navigasi angka di bawah carousel dihapus.
-- Akun baru memulai dari Level 1. Akses Level 2 dibuka setelah evaluasi di FINISH Level 1 dengan minimal satu bintang;
-  akses Level 3 dibuka setelah Level 2, dengan keterangan segera hadir karena
-  game Level 3 belum diimplementasikan. Tamu tidak memiliki kunci prasyarat.
-- `PlayerProgress` menghitung status level, bintang, dan empat pencapaian dari
+- Akun baru memulai dari Level 1. Level berikutnya terbuka setelah seluruh
+  challenge dan evaluasi level sebelumnya selesai, tanpa syarat nilai minimum.
+  Tamu tidak memiliki kunci prasyarat.
+- `PlayerProgress` menghitung status level, bintang, dan lima pencapaian dari
   `user_level_progress`. Kolom `completed_challenges` menyimpan checkpoint
-  terakhir; `score` menyimpan nilai terbaik dan `stars` menyimpan 1–3 bintang ketika level lulus.
+  terakhir; `score` menyimpan nilai terbaik dan `stars` menyimpan rating 0–3
+  untuk kualitas badge, bukan syarat kelulusan.
 - `POST /progress/challenge` menerima nomor level dan challenge, memakai identitas
   akun dari sesi, menolak lompatan urutan, dan tidak menulis data tamu. Penyimpanan
   berulang tidak menurunkan progres atau menggandakan bintang.
@@ -47,8 +48,10 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 
 - `Level1Learning.js` mengganti materi sesuai challenge: membuat variabel,
   mengganti nilai, lalu memakai nilainya.
-- Saat pemain pertama kali mencapai penanda merah challenge Level 1, kode gerakan
+- Setelah Run gerakan selesai tepat di penanda challenge Level 1, kode gerakan
   diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
+  Melewati penanda biru atau merah tidak mengganti kode. Isian juga tidak menimpa
+  kode baru yang sedang diketik pemain selama gerakan berjalan.
 - Kamus perintah tersedia di popup Baca Materi. Klik tombol
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
@@ -88,13 +91,13 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
 - Petak FINISH Level 1 memakai ubin kecil bermotif kotak-kotak di jalan tanpa
   label dan marker merah. Pemain menginjak ubin setelah menyerahkan air untuk
-  membuka hasil nilai dan tautan Level 2 jika memperoleh minimal satu bintang.
+  membuka hasil nilai, badge, dan tautan Level 2 setelah seluruh misi selesai.
 - Label pompa, pos, dan kebakaran memakai bentuk papan, panah,
   tipografi, dan aturan zoom yang sama. Warna dibedakan berdasarkan fungsi.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
   yang sedang aktif tampil lebih terang agar arah perjalanan mudah dikenali.
-  Titik biru di pompa serta titik merah di Pos 1 dan Pos 2 tetap terlihat pada
-  setiap challenge tanpa garis kotak kuning di sekeliling petak.
+  Titik biru di pompa tetap terlihat untuk isi ulang. Titik merah challenge yang
+  selesai menghilang; titik challenge aktif dan berikutnya tetap terlihat.
 
 ## Implementasi Level 2
 
@@ -119,8 +122,7 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Setiap pompa memiliki titik biru, sedangkan api memiliki titik merah pada
   petak interaksinya. FINISH Level 2 memakai ubin kotak-kotak yang sama dengan
   Level 1 tanpa label dan marker merah.
-  Semua titik tetap terlihat dengan tingkat terang berbeda tanpa garis kotak
-  kuning di sekeliling petak.
+  Titik merah yang selesai menghilang, sedangkan titik biru pompa tetap tersedia.
   Label status berada di atas api dan menampilkan kebutuhan, sisa semprotan,
   atau status padam.
 - `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. Pompa
@@ -162,10 +164,34 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Akun menyimpan 4 tahap dan mendapat 1–3 bintang sesuai nilai setelah FINISH. Tamu tidak
   menyimpan progres. Hasil Level 2 menyediakan tombol menuju Level 3.
 
+## Umpan balik tabrakan dan bar HP
+
+- HUD memakai bar HP 0–100 sebagai tampilan nilai permainan. Kode atau aksi
+  salah mengurangi 5 HP; tabrakan dengan petak terlarang atau batas peta
+  mengurangi 10 HP satu kali, lalu menghentikan Run pada petak terakhir yang valid.
+- Saat tabrakan atau kode salah, karakter memerah selama 360 ms, kamera bergetar ringan selama
+  220 ms, dan tepi peta memerah singkat. Dialog pemandu tidak dibuka.
+  Preferensi reduced motion mematikan getaran dan mengurangi efek merah.
+- Kesalahan kode dan aksi selain tabrakan ditampilkan sebagai pesan kecil di
+  bawah editor, tanpa dialog dan tanpa mengulang nilai dalam pesan.
+- HP nol mengulang level aktif dari Challenge 1 dengan HP penuh. Ulangi challenge
+  tidak memulihkan HP. Pencapaian terbaik akun tetap tersimpan.
+- FINISH yang dicapai sebelum seluruh misi selesai menampilkan pengingat tanpa
+  mengakhiri permainan. Kelulusan tidak bergantung pada persentase.
+- HUD bintang dihapus. Setiap level selesai memberikan badge yang masuk dari
+  kanan layar; kualitasnya Tuntas (<70), Perunggu (70–84), Perak (85–99),
+  atau Emas (100). Badge Level 3 adalah Sahabat Bekantan. Tamu melihat badge
+  sesi ini tanpa menulis progres ke database.
+- Layar kemenangan tetap menampilkan tiga slot bintang: 100% mendapat 3,
+  85–99% mendapat 2, 70–84% mendapat 1, dan di bawah 70% mendapat 0.
+  Badge menggunakan lambang SVG yang sama pada hasil, notifikasi kanan,
+  dan koleksi menu; warna bingkai mengikuti peringkat. Ringkasan belajar
+  dapat dibuka lewat "Bekal yang kamu kuasai".
+
 ## Tutorial Level 1
 
-Sesudah cerita pembuka dan peta siap, Level 1 langsung menampilkan tur
-**Cara Bermain**. Tur menjelaskan peta, status air dan bintang, PyroPad,
+Sesudah cerita pembuka dan peta siap, awal Challenge 1 Level 1 menampilkan tur
+**Cara Bermain**. Tur menjelaskan peta, status air dan HP, PyroPad,
 tombol Run Code dan Hapus, kontrol suara, Ulangi, Hint, serta Baca Materi.
 Kamera kemudian bergeser ke penanda biru di pompa, penanda merah di Pos 1,
 dan FINISH, masing-masing dengan lingkaran penunjuk. Penanda biru adalah petak

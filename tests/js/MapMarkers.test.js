@@ -4,14 +4,15 @@ import * as MapMarkers from '../../resources/js/game/MapMarkers.js';
 
 const { getChallengeMarkerStyle, getMarkerTexture } = MapMarkers;
 
-test('every challenge keeps a red location marker without a yellow tile outline', () => {
+test('completed red markers disappear while current and upcoming markers remain visible', () => {
     const active = getChallengeMarkerStyle(2, 2);
     const next = getChallengeMarkerStyle(3, 2);
     const completed = getChallengeMarkerStyle(1, 2);
 
     assert.equal(active.visible, true);
     assert.equal(next.visible, true);
-    assert.equal(completed.visible, true);
+    assert.equal(completed.visible, false);
+    assert.equal(getChallengeMarkerStyle(1, 2, 'pump').visible, true);
     assert.equal(active.outline, false);
     assert.equal(next.outline, false);
     assert.ok(active.alpha > next.alpha);

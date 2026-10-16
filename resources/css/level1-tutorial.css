@@ -1,7 +1,7 @@
 .game-tutorial-footer {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 16px;
     margin: 18px 0 8px;
     padding: 13px 18px;
@@ -159,7 +159,7 @@
 .level1-tutorial button:focus-visible { outline: 3px solid #1682a3; outline-offset: 3px; }
 
 @media (max-width: 700px) {
-    .game-tutorial-footer { flex-direction: column; align-items: stretch; text-align: center; }
+    .game-tutorial-footer { text-align: center; }
     .level1-tutorial__card, .level1-tutorial__card--left {
         right: 10px;
         left: 10px;

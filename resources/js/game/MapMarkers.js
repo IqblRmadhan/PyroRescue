@@ -1,4 +1,4 @@
-// Semua lokasi tetap terlihat; lokasi challenge aktif lebih mudah ditemukan.
+// Titik merah yang selesai disembunyikan; pompa biru tetap tersedia untuk isi ulang.
 export function getMarkerTexture(markerType) {
     return markerType === 'pump' ? 'waterPumpAction' : 'actionMarker';
 }
@@ -12,7 +12,7 @@ export function getChallengeMarkerStyle(markerChallenge, currentChallenge, marke
     }
 
     if (markerChallenge < currentChallenge) {
-        return { visible: true, alpha: 0.45, size: scaledSize(18), outline: false };
+        return { visible: markerType === 'pump', alpha: 0.45, size: scaledSize(18), outline: false };
     }
 
     return { visible: true, alpha: 0.68, size: scaledSize(20), outline: false };

@@ -6,10 +6,10 @@ const markerStarterCodes = {
 
 export function getLevel1MarkerStarterCode({
     challengeNumber,
-    hasReachedMarker = false,
+    hasShownStarterCode = false,
     isAtMarker = false,
 }) {
-    if (hasReachedMarker || !isAtMarker) return null;
+    if (hasShownStarterCode || !isAtMarker) return null;
     return markerStarterCodes[challengeNumber] ?? null;
 }
 
@@ -24,7 +24,7 @@ export default {
             { key: 'water', label: 'Ambil 3 unit air' },
         ],
         hints: [
-            'Cara menyelesaikan Challenge 1:\n1. Tulis atas(3) untuk menuju pompa.\n2. Tulis isi_air = 3 untuk mengambil air.\n3. Tekan Run Code.',
+            'Cara menyelesaikan Challenge 1:\n1. Dari posisi awal, tulis atas(3), kanan(2), lalu atas(4) untuk menuju pompa.\n2. Tulis isi_air = 3 untuk mengambil air.\n3. Tekan Run Code.',
         ],
         nextMessage: 'Kamu membawa 3 unit air. Pos 1 menyediakan 2 unit lagi, jadi jumlah akhirnya 3 + 2 = 5 unit.',
     },
@@ -37,7 +37,7 @@ export default {
             { key: 'water', label: 'Simpan jumlah akhir: isi_air = 5' },
         ],
         hints: [
-            'Cara menyelesaikan Challenge 2:\n1. Tulis kanan(2), atas(6), kanan(8), lalu bawah(1).\n2. Kamu membawa 3 unit; Pos 1 memberi 2 unit. Jumlah akhir 3 + 2 = 5.\n3. Tulis isi_air = 5 di penanda Pos 1, lalu tekan Run Code. Angka 5 menggantikan nilai lama 3.',
+            'Cara menyelesaikan Challenge 2:\n1. Dari pompa, tulis atas(2), kanan(8), lalu bawah(1).\n2. Kamu membawa 3 unit; Pos 1 memberi 2 unit. Jumlah akhir 3 + 2 = 5.\n3. Tulis isi_air = 5 di penanda Pos 1, lalu tekan Run Code. Angka 5 menggantikan nilai lama 3.',
         ],
         nextMessage: 'Muatan 5 unit sudah siap. Antar seluruhnya kepada penjaga Pos 2.',
     },

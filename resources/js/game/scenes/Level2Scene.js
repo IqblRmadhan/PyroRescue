@@ -228,6 +228,7 @@ export default class Level2Scene extends Phaser.Scene {
                 label.setTheme(isActive ? 'fire' : 'fireInactive');
             }
             showChallengeMarker(marker, null, Number(number), this.challengeNumber);
+            if (presentation.completed) marker.setVisible(false);
         }
         const finishedFire = this.challengeNumber === 4 && this.sprays === this.requiredWater;
         this.finishTile.setAlpha(finishedFire ? 1 : this.challengeNumber === 4 ? 0.9 : 0.7);
@@ -253,6 +254,10 @@ export default class Level2Scene extends Phaser.Scene {
                 sprays: this.sprays,
             }),
         });
+    }
+
+    markChallengeComplete() {
+        this.fireMarkers[this.challengeNumber]?.setVisible(false);
     }
 
     async runCommands(commands, onCommandComplete = () => {}) {

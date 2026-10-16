@@ -75,6 +75,9 @@ export default class Level3Scene extends Level2Scene {
             this.fireLabels[number].setText(completed ? `${title} • PADAM` : `${title} • ${remaining}× SEMPROT`)
                 .setTheme(completed ? 'completed' : active ? 'fire' : 'fireInactive');
             showChallengeMarker(this.fireMarkers[number], null, fireNumber, this.challengeNumber);
+            if ((fireNumber === 1 && completed) || (fireNumber === 4 && this.evaluationProgramComplete)) {
+                this.fireMarkers[number].setVisible(false);
+            }
         }
         showChallengeMarker(this.habitatMarker, null, this.challengeNumber === 3 ? 3 : 2, this.challengeNumber);
         this.updateBekantan();
@@ -117,6 +120,11 @@ export default class Level3Scene extends Level2Scene {
             atFinish: this.isAt(this.map.finish),
             fireNearby,
         });
+    }
+
+    markChallengeComplete() {
+        if (this.challengeNumber === 2 || this.challengeNumber === 3) this.habitatMarker.setVisible(false);
+        else super.markChallengeComplete();
     }
 
     async runCommands(commands, onCommandComplete = () => {}) {

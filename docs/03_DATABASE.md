@@ -118,7 +118,9 @@ completed
 `completed_challenges` menyimpan tiga challenge dan tahap evaluasi secara berurutan.
 `score` menyimpan nilai terbaik (0–100) saat evaluasi mencapai FINISH.
 `stars` bernilai 1 untuk 70–84%, 2 untuk 85–99%, dan 3 untuk 100%.
-Di bawah 70% tidak membuka level berikutnya. Hasil terbaik tidak turun saat level diulang.
+Nilai hanya menentukan kualitas badge: Tuntas di bawah 70%, Perunggu 70–84%,
+Perak 85–99%, dan Emas 100%. Seluruh challenge dan evaluasi yang selesai membuka
+level berikutnya tanpa syarat bintang. Hasil terbaik tidak turun saat level diulang.
 Pencapaian menu dihitung dari progres tersebut. Mode tamu tidak menulis progres.
 
 ## `challenge_attempts`

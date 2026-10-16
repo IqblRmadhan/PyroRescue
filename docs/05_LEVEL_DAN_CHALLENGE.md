@@ -70,7 +70,8 @@ Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain me
 
 Pemain kemudian mengikuti jalan ke kanan sampai petak **FINISH** di ujung map.
 Ini menjadi tahap evaluasi akhir setelah ketiga challenge selesai. Hasil
-ditentukan oleh persentase permainan dan minimal satu bintang membuka Level 2.
+badge ditentukan oleh persentase permainan. Semua challenge dan evaluasi yang
+selesai membuka Level 2 tanpa batas nilai minimum.
 Pengosongan `isi_air` adalah aturan game saat air
 diserahkan; assignment Python biasa hanya menyalin nilai.
 

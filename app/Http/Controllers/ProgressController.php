@@ -39,7 +39,7 @@ class ProgressController extends Controller
                 $earnedStars = $score < 70 ? 0 : ($score < 85 ? 1 : ($score < 100 ? 2 : 3));
                 $progress->stars = max($progress->stars ?? 0, $earnedStars);
             }
-            $finished = $progress->completed_challenges === $totalChallenges && $progress->stars >= 1;
+            $finished = $progress->completed_challenges === $totalChallenges;
             $progress->status = $finished ? 'completed' : 'unlocked';
             if ($finished) $progress->completed_at ??= now();
             $progress->save();

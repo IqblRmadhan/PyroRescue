@@ -1209,7 +1209,7 @@
     top: 10px;
     left: 12px;
     display: grid;
-    grid-template-columns: repeat(2, minmax(105px, 1fr));
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 8px;
     width: min(38%, 370px);
     pointer-events: none;
@@ -1234,13 +1234,72 @@
     transform: scale(.9);
 }
 
-.hud-counter--score {
-    grid-column: 1 / -1;
-    gap: 10px;
-    min-height: 34px !important;
-    font-size: 19px !important;
+.hud-health {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 2px solid #90b9a4;
+    border-radius: 8px;
+    background: #102e3ded;
+    box-shadow: 0 3px 0 #061b26;
 }
-.hud-counter--score > span { color: #ffd36f; font-weight: 900; }
+.game-hud > .hud-counter:first-child { grid-column: 1; justify-self: start; }
+.hud-health__icon { color: #ff6969; font-size: 26px; line-height: 1; text-shadow: 0 2px #8b252c; }
+.hud-health__track {
+    position: relative;
+    flex: 1;
+    height: 23px;
+    overflow: hidden;
+    border: 2px solid #071e28;
+    border-radius: 4px;
+    background: #381d28;
+    box-shadow: inset 0 2px 4px #0008;
+}
+.hud-health__fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(#8dea86 0 25%, #42b95e 25% 75%, #248941 75%);
+    transition: width 350ms ease-out;
+}
+.hud-health__track.is-warning .hud-health__fill { background: linear-gradient(#ffe390 0 25%, #edaa39 25% 75%, #b97823 75%); }
+.hud-health__track.is-critical .hud-health__fill { background: linear-gradient(#ff9b8a 0 25%, #e5574c 25% 75%, #a52e38 75%); }
+.hud-health__value {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    grid-auto-flow: column;
+    gap: 4px;
+    color: #fff;
+    font: 800 12px/1 'Trebuchet MS', sans-serif;
+    text-shadow: 1px 1px 2px #071e28, -1px -1px 2px #071e28;
+}
+.game-damage-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    background: radial-gradient(ellipse, transparent 30%, #e1383855 65%, #c71919bb 100%);
+    box-shadow: inset 0 0 35px #ed343466;
+}
+.code-error {
+    margin: 0;
+    padding: 10px 12px;
+    border: 1px solid #ef9b83;
+    border-radius: 6px;
+    color: #ffe5dc;
+    background: #512c30;
+    font: 600 14px/1.5 'Trebuchet MS', sans-serif;
+}
+@media (prefers-reduced-motion: reduce) {
+    .hud-health__fill { transition: none; }
+}
 
 #game-container {
     width: 100%;
@@ -1307,10 +1366,6 @@
     font-size: clamp(13px, 1.05vw, 18px);
     font-weight: 600;
     line-height: 1.3;
-}
-
-.mission-card--targets {
-    padding-block: 9px;
 }
 
 .target-list {
@@ -1998,7 +2053,7 @@
         min-height: 0;
         aspect-ratio: 8 / 5;
     }
-    .game-prototype.game-mobile .game-hud { grid-template-columns: repeat(2, 1fr); width: calc(100% - 20px); }
+    .game-prototype.game-mobile .game-hud { grid-template-columns: auto minmax(0, 1fr); width: calc(100% - 20px); }
     .game-prototype.game-mobile .hud-counter { min-height: 48px; padding-inline: 4px; }
     .game-prototype.game-mobile .hud-counter .asset-icon { transform: scale(.7); }
     .game-prototype.game-mobile .game-map-controls { display: grid; grid-template-columns: repeat(2, 44px); top: 68px; right: 8px; gap: 6px; }
@@ -2613,14 +2668,14 @@
     #feedback.mission-guide #feedback-ok { transition: none; }
 }
 
-/* Hasil tiga challenge setelah pemain mencapai petak akhir Level 1. */
+/* Hasil misi dan lencana yang dipakai bersama oleh game dan menu. */
 .level-result[hidden] { display: none; }
 .level-result {
     position: fixed;
     z-index: 100;
     inset: 0;
     display: grid;
-    place-items: center;
+    place-items: safe center;
     padding: 20px;
     overflow-y: auto;
     background: radial-gradient(circle at 50% 30%, #235063a8, #061923ed 70%);
@@ -2628,7 +2683,7 @@
 }
 .level-result__card {
     width: min(100%, 530px);
-    padding: clamp(25px, 5vw, 42px);
+    padding: clamp(22px, 4vw, 32px);
     border: 3px solid #f3c978;
     border-radius: 20px;
     background: linear-gradient(160deg, #fff9e9, #f5e6c3);
@@ -2640,7 +2695,7 @@
 .level-result__eyebrow { color: #176c5b; font-size: 12px; font-weight: 900; letter-spacing: .18em; }
 .level-result__card h2 { margin: 10px 0 8px; font-size: clamp(27px, 5vw, 40px); line-height: 1.15; }
 .level-result__subtitle { margin: 0 auto; max-width: 400px; font-size: 16px; line-height: 1.55; }
-.level-result__stars { display: flex; justify-content: center; align-items: center; gap: 7px; margin: 24px 0 6px; }
+.level-result__stars { display: flex; justify-content: center; align-items: center; gap: 10px; margin: 22px 0 12px; }
 .level-result__stars span {
     width: clamp(56px, 15vw, 84px);
     aspect-ratio: 1;
@@ -2651,30 +2706,90 @@
 .level-result__stars span:nth-child(2) { width: clamp(68px, 18vw, 100px); animation-delay: .18s; }
 .level-result__stars span:nth-child(3) { animation-delay: .36s; }
 .level-result__stars span.is-unearned { filter: grayscale(1); opacity: .25; }
-.level-result__score { display: block; color: #8a4c1a; font-size: 19px; }
-.level-result__recap { margin: 22px 0; padding: 16px; border-radius: 10px; background: #e8f1dc; font-size: 15px; line-height: 1.65; text-align: left; }
+.level-result__score { display: flex; align-items: center; justify-content: center; gap: 12px; color: #72512d; }
+.level-result__score > span { font-size: 11px; font-weight: 700; }
+.level-result__score > span:first-child { letter-spacing: .1em; }
+.level-result__score strong { font-size: 28px; line-height: 1; color: #173e49; }
+.level-result__score > span:last-child { padding-left: 12px; border-left: 1px solid #bdae8b; }
+.level-result__reward { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 22px 0 16px; padding: 14px 18px; border: 1px solid #c2d2c0; border-radius: 12px; background: linear-gradient(120deg, #e1ecdc, #f0f2df); text-align: left; }
+.level-result__badge { width: 84px; flex: 0 0 84px; }
+.level-result__reward-label { display: block; margin-bottom: 5px; color: #3b715f; font-size: 10px; font-weight: 800; letter-spacing: .14em; }
+#result-rating { display: block; font-size: 20px; line-height: 1.3; }
+.level-result__tier { display: inline-block; margin-top: 7px; color: #745020; font-size: 13px; font-weight: 700; }
+.badge--complete { --badge-color: #c4e2d7; --badge-edge: #578b7d; }
+.badge--bronze { --badge-color: #e4b58d; --badge-edge: #a86a37; }
+.badge--silver { --badge-color: #e1ebf3; --badge-edge: #8a9fb4; }
+.badge--gold { --badge-color: #ffe396; --badge-edge: #c08a29; }
+.achievement-badge { position: relative; display: block; width: 100%; aspect-ratio: 120 / 140; filter: drop-shadow(0 5px 2px #041c3040); }
+.achievement-badge--water { --badge-face: #176583; --badge-ribbon: #2d8ab1; }
+.achievement-badge--supply { --badge-face: #245e69; --badge-ribbon: #238278; }
+.achievement-badge--loop { --badge-face: #63518b; --badge-ribbon: #8472a6; }
+.achievement-badge--shield { --badge-face: #36664d; --badge-ribbon: #4c956b; }
+.achievement-badge--rescue { --badge-face: #8b542e; --badge-ribbon: #c87b3f; }
+.achievement-badge__frame { display: block; width: 100%; height: 100%; }
+.achievement-badge__symbol { position: absolute; inset: 28% 30% auto; color: #fff0c5; }
+.achievement-badge__symbol svg { display: block; width: 100%; height: auto; }
+.achievement-badge__rank { position: absolute; top: 62%; left: 0; width: 100%; color: #fff0c5; font: 900 9px/1 'Trebuchet MS', sans-serif; letter-spacing: .1em; text-align: center; }
+.achievement-badge.is-locked { filter: saturate(.35) opacity(.7) drop-shadow(0 4px 1px #041c3066); }
+.level-badge-toast {
+    position: fixed;
+    z-index: 1000;
+    top: 22px;
+    right: 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: min(350px, calc(100vw - 36px));
+    padding: 16px;
+    border: 2px solid var(--badge-edge);
+    border-radius: 12px;
+    background: #123647;
+    color: #fff4d6;
+    box-shadow: 0 8px 28px #0006;
+    font: 14px/1.5 'Trebuchet MS', sans-serif;
+    animation: badge-slide-in 450ms ease-out;
+    pointer-events: none;
+}
+.level-badge-toast__medal { width: 64px; flex: 0 0 64px; }
+.level-badge-toast p { margin: 4px 0 0; color: #c6dedb; font-size: 12px; }
+@keyframes badge-slide-in { from { transform: translateX(calc(100% + 20px)); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .level-badge-toast { animation: none; } }
+.level-result__learning { margin: 14px 0; text-align: left; font-size: 13px; }
+.level-result__learning summary { padding: 10px 0; color: #396357; font-weight: 700; cursor: pointer; }
+.level-result__learning summary:focus-visible { outline: 2px solid #196cb4; outline-offset: 2px; }
+.level-result__recap { margin: 0; padding: 12px; border-radius: 8px; background: #e8f1dc; font-size: 14px; line-height: 1.65; text-align: left; }
 .level-result__recap code { color: #145976; font-weight: 700; }
-.level-result__actions { display: flex; justify-content: center; gap: 12px; }
+.level-result__actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
 .level-result__actions button, .level-result__actions a {
-    min-width: 140px;
-    padding: 12px 17px;
-    border: 2px solid #1b453d;
+    min-width: 0;
+    padding: 12px 10px;
+    border: 1px solid #b6a47e;
     border-radius: 8px;
-    background: #188561;
-    box-shadow: 0 4px #0a3b34;
-    color: #fffdf3;
+    background: #fff6df;
+    box-shadow: 0 3px #c6b48f;
+    color: #36564f;
     font: inherit;
     font-weight: 800;
+    font-size: 14px;
     text-align: center;
     text-decoration: none;
     cursor: pointer;
 }
-.level-result__actions a { border-color: #75613e; background: #9a7142; box-shadow: 0 4px #594025; }
+.level-result__actions #next-level-link { grid-column: 1 / -1; grid-row: 1; border-color: #17594a; background: #188561; box-shadow: 0 4px #0a3b34; color: #fffdf3; }
 .level-result__actions button:hover, .level-result__actions a:hover { filter: brightness(1.12); }
 .level-result__actions button:focus-visible, .level-result__actions a:focus-visible { outline: 3px solid #196cb4; outline-offset: 3px; }
 @keyframes level-result-enter { from { opacity: 0; transform: translateY(30px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes level-result-star { from { opacity: 0; transform: translateY(20px) scale(.4) rotate(-15deg); } to { opacity: 1; transform: translateY(0) scale(1) rotate(0); } }
-@media (max-width: 460px) { .level-result__actions { flex-direction: column; } .level-result__actions button, .level-result__actions a { width: 100%; } }
+@media (max-width: 460px) {
+    .level-result { padding: 120px 14px 24px; }
+    .level-badge-toast { top: 10px; right: 14px; width: calc(100vw - 28px); padding: 10px; }
+    .level-result__card { padding: 24px 18px; }
+    .level-result__subtitle { font-size: 14px; }
+    .level-result__reward { gap: 12px; padding: 12px; }
+    #result-rating { font-size: 18px; }
+    .level-result__score { gap: 8px; }
+    .level-result__score > span { font-size: 9px; }
+}
 @media (prefers-reduced-motion: reduce) { .level-result__card, .level-result__stars span { animation: none; } }
 
 /* Peta petualangan pada menu utama. */

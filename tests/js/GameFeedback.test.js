@@ -24,3 +24,9 @@ test('dedicated completion sounds replace overlapping generic target cues', () =
     assert.equal(shouldPlayTargetCue({ targetKey: 'water', suppressTargetAudio: true }), false);
     assert.equal(shouldPlayTargetCue({ targetKey: 'location' }), true);
 });
+
+test('collision uses visual damage and the blocked sound without error dialogue', () => {
+    assert.deepEqual(getOutcomeFeedback({ status: 'error', collision: true }), {
+        state: 'error', playErrorCue: false, visible: false,
+    });
+});
