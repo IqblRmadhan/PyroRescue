@@ -69,8 +69,9 @@ Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain me
 ```
 
 Pemain kemudian mengikuti jalan ke kanan sampai petak **FINISH** di ujung map.
-Setelah ketiga challenge selesai dan petak itu dicapai, layar hasil Level 1
-menampilkan tiga bintang. Pengosongan `isi_air` adalah aturan game saat air
+Ini menjadi tahap evaluasi akhir setelah ketiga challenge selesai. Hasil
+ditentukan oleh persentase permainan dan minimal satu bintang membuka Level 2.
+Pengosongan `isi_air` adalah aturan game saat air
 diserahkan; assignment Python biasa hanya menyalin nilai.
 
 ---
@@ -131,7 +132,7 @@ Di sana tersedia pompa kedua dan satu api terakhir dengan sprite
 tetap memakai kapasitas tangki enam unit. Pemain mengambil minimal 3 unit air,
 memakai variabel `jumlah_semprot` bersama `for/range()` untuk memadamkannya,
 lalu menuju petak FINISH. Panel materi, kamus, autocomplete, dan tombol Hint
-disembunyikan selama evaluasi. Hasil tiga bintang muncul setelah FINISH dicapai.
+disembunyikan selama evaluasi. Nilai dan bintang dihitung setelah FINISH dicapai.
 
 Nomor file sprite mengikuti urutan challenge: C1 di tengah = 2 semprotan,
 C2 di kanan atas = 1 semprotan, C3 di kanan bawah = 3 semprotan, dan
@@ -227,6 +228,6 @@ kamus, autocomplete, dan Hint tidak tersedia.
 - Evaluasi: penanda pompa kedua, tangki kosong, api evaluasi menyala.
 
 Reset hanya mengulang challenge aktif. Akun menyimpan empat tahap secara
-berurutan; tiga bintang diberikan setelah evaluasi dan FINISH. Tamu tidak
+berurutan; bintang diberikan menurut nilai setelah evaluasi dan FINISH. Tamu tidak
 menyimpan progres. Level 3 terbuka setelah Level 2 selesai untuk akun dan selalu
 tersedia dalam mode tamu. Hasil akhir menampilkan penyelesaian ketiga level.

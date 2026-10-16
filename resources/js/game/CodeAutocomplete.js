@@ -18,6 +18,8 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
         parameterDescription: 'Jumlah petak, berupa bilangan bulat minimal 1.',
     }));
 
+    if (challengeNumber === 4) return movementSuggestions;
+
     if (challengeNumber === 3) {
         return [
             ...movementSuggestions,

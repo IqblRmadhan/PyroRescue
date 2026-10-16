@@ -35,9 +35,12 @@ class Level3PageTest extends TestCase
         $this->actingAs(User::factory()->create());
         $this->get('/game/3')->assertRedirect(route('main-menu'));
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 1])->assertForbidden();
-        foreach ([1 => 3, 2 => 4] as $level => $total) {
+        foreach ([1 => 4, 2 => 4] as $level => $total) {
             for ($challenge = 1; $challenge <= $total; $challenge++) {
-                $this->postJson('/progress/challenge', compact('level', 'challenge'))->assertOk();
+                $this->postJson('/progress/challenge', [
+                    'level' => $level, 'challenge' => $challenge,
+                    ...($challenge === 4 ? ['score' => 100] : []),
+                ])->assertOk();
             }
         }
         $this->get('/game/2')->assertSee('Lanjut Level 3');
@@ -49,9 +52,9 @@ class Level3PageTest extends TestCase
             $next = $challenge + 1;
             $this->get('/game/3')->assertSee('data-resume-challenge="'.$next.'"', false);
         }
-        $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4])->assertOk()
+        $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4, 'score' => 100])->assertOk()
             ->assertJsonPath('levels.3.completed', true)->assertJsonPath('totalStars', 9)->assertJsonPath('completedLevels', 3);
-        $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4])->assertOk()->assertJsonPath('totalStars', 9);
+        $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4, 'score' => 100])->assertOk()->assertJsonPath('totalStars', 9);
         $this->get('/game/3')->assertSee('data-resume-challenge="1"', false);
     }
 }

@@ -245,7 +245,7 @@ export default class Level2Scene extends Phaser.Scene {
             requiredWater: this.requiredWater,
             atFire: this.isAt(this.map.fires[this.challengeNumber].action),
             fireOut: this.sprays === this.requiredWater,
-            atFinish: this.isAt(this.map.finish) && this.sprays === this.requiredWater,
+            atFinish: this.isAt(this.map.finish),
             fireNearby: isPlayerNearBurningFire({
                 column: this.playerColumn,
                 row: this.playerRow,
@@ -267,8 +267,16 @@ export default class Level2Scene extends Phaser.Scene {
         for (const command of commands) {
             if (command.type === 'move') {
                 if (!await this.move(command.direction)) {
-                    return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan. Periksa urutan gerakanmu.' };
+                    return { status: 'error', collision: true, missionSuccess: false, message: 'Petak di depan bukan jalan. Periksa urutan gerakanmu.' };
                 }
+                onCommandComplete(command);
+                if (this.isAt(this.map.finish)) {
+                    const missionSuccess = this.challengeNumber === 4 && this.sprays === this.requiredWater;
+                    return { status: 'finish', reachedFinish: true, missionSuccess,
+                        message: missionSuccess ? 'FINISH tercapai. Evaluasi selesai.'
+                            : 'FINISH tercapai, tetapi tiga challenge dan evaluasi belum selesai.' };
+                }
+                continue;
             } else if (command.type === 'setWater') {
                 const pump = this.challengeNumber === 4 ? this.map.evaluationPump : this.map.pump;
                 if (!this.isAt(pump.action)) {

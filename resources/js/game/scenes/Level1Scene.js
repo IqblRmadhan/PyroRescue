@@ -326,6 +326,45 @@ export default class Level1Scene extends Phaser.Scene {
         enableMapCameraControls(this, level1Map);
     }
 
+    focusTutorialMarker(kind) {
+        this.clearTutorialMarkerRing();
+        const tile = kind === 'water' ? level1Map.waterAction
+            : kind === 'finish' ? level1Map.finish : level1Map.post1Action;
+        const position = tileToWorld(tile.column, tile.row);
+        const color = kind === 'water' ? 0x5ac8ff : kind === 'finish' ? 0xffd36f : 0xff806b;
+        this.tutorialMarkerRing = this.add.circle(position.x, position.y, 19)
+            .setStrokeStyle(3, color).setDepth(12);
+        this.tweens.add({
+            targets: this.tutorialMarkerRing,
+            scale: 1.35,
+            alpha: 0.45,
+            duration: 850,
+            yoyo: true,
+            repeat: -1,
+        });
+
+        const camera = this.cameras.main;
+        camera.stopFollow();
+        camera.pan(position.x, position.y,
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 650,
+            'Sine.easeInOut', true);
+    }
+
+    clearTutorialMarkerRing() {
+        if (!this.tutorialMarkerRing) return;
+        this.tweens.killTweensOf(this.tutorialMarkerRing);
+        this.tutorialMarkerRing.destroy();
+        this.tutorialMarkerRing = null;
+    }
+
+    restoreTutorialCamera() {
+        this.clearTutorialMarkerRing();
+        const camera = this.cameras.main;
+        camera.panEffect.reset();
+        camera.startFollow(this.player, true, 0.09, 0.09);
+        camera.centerOn(this.player.x, this.player.y);
+    }
+
     setWater(amount, { suppressTargetAudio = false } = {}) {
         this.water = amount;
         this.publishState({ suppressTargetAudio });
@@ -341,7 +380,7 @@ export default class Level1Scene extends Phaser.Scene {
         }
         this.post1Sign.container.setAlpha(challengeNumber === 2 ? 1 : 0.78);
         this.post2Sign.container.setAlpha(challengeNumber === 3 ? 1 : 0.78);
-        this.finishTile.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber === 3 ? 0.95 : 0.85);
+        this.finishTile.setAlpha(this.hasDeliveredWater ? 1 : challengeNumber >= 3 ? 0.95 : 0.85);
         this.publishState();
     }
 
@@ -353,9 +392,15 @@ export default class Level1Scene extends Phaser.Scene {
             if (command.type === 'move') {
                 const moved = await this.move(command.direction);
                 if (!moved) {
-                    return { status: 'error', missionSuccess: false, message: 'Petak di depan bukan jalan tanah. Periksa sequence gerakanmu.' };
+                    return { status: 'error', collision: true, missionSuccess: false, message: 'Petak di depan bukan jalan tanah. Periksa sequence gerakanmu.' };
                 }
                 onCommandComplete(command);
+                if (isOnTile(this.playerColumn, this.playerRow, level1Map.finish)) {
+                    const missionSuccess = this.challengeNumber >= 3 && this.hasDeliveredWater;
+                    return { status: 'finish', reachedFinish: true, missionSuccess,
+                        message: missionSuccess ? 'FINISH tercapai. Evaluasi misi selesai.'
+                            : 'FINISH tercapai, tetapi tiga challenge dan evaluasi belum selesai.' };
+                }
                 continue;
             }
 
@@ -397,13 +442,17 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
-        if (this.challengeNumber === 3 && this.postWater === this.requiredWater
-            && isOnTile(this.playerColumn, this.playerRow, level1Map.finish)) {
+        if (this.challengeNumber === 3 && this.postWater === this.requiredWater) {
             return {
                 status: 'success',
                 missionSuccess: true,
-                message: `Berhasil! Pos 2 menerima ${this.postWater} unit air dan kamu mencapai FINISH.`,
+                message: `Berhasil! Pos 2 menerima ${this.postWater} unit air. Lanjutkan ke evaluasi di FINISH.`,
             };
+        }
+
+        if (this.challengeNumber === 4 && isOnTile(this.playerColumn, this.playerRow, level1Map.finish)) {
+            return { status: 'finish', reachedFinish: true, missionSuccess: this.hasDeliveredWater,
+                message: 'FINISH tercapai. Evaluasi misi selesai.' };
         }
 
         return {
@@ -414,6 +463,9 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     getIncompleteChallengeMessage() {
+        if (this.challengeNumber === 4) {
+            return 'Ikuti jalan ke kanan hingga petak FINISH untuk menilai hasil misi.';
+        }
         if (this.challengeNumber === 1) {
             return `Tangki berisi ${this.water} unit. Isi isi_air dengan tepat ${this.requiredWater} unit di pompa.`;
         }
@@ -426,10 +478,6 @@ export default class Level1Scene extends Phaser.Scene {
             return `Bawa ${this.water} unit air ke Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.`;
         }
 
-        if (this.postWater === this.requiredWater) {
-            return 'Air sudah diterima Pos 2. Ikuti jalan ke kanan sampai petak FINISH untuk menuntaskan Level 1.';
-        }
-
         return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos = isi_air.';
     }
 
@@ -437,7 +485,7 @@ export default class Level1Scene extends Phaser.Scene {
         if (!isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction)) {
             return {
                 success: false,
-                message: 'Untuk mengisi isi_air, berdirilah tepat di penanda merah dekat pompa.',
+                message: 'Untuk mengisi isi_air, berdirilah tepat di penanda biru dekat pompa.',
             };
         }
 
@@ -607,8 +655,7 @@ export default class Level1Scene extends Phaser.Scene {
             atPump: isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction),
             atPost1: isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action),
             atPost2: isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action),
-            atFinish: isOnTile(this.playerColumn, this.playerRow, level1Map.finish)
-                && this.postWater === this.requiredWater,
+            atFinish: isOnTile(this.playerColumn, this.playerRow, level1Map.finish),
             ...extraState,
         });
     }
@@ -670,6 +717,7 @@ export default class Level1Scene extends Phaser.Scene {
             1: { ...level1Map.start, water: 0 },
             2: { ...level1Map.waterAction, direction: 'north', water: 3 },
             3: { ...level1Map.post1Action, direction: 'east', water: 5 },
+            4: { ...level1Map.post2Action, direction: 'east', water: 0, postWater: 5 },
         };
         const checkpoint = checkpoints[challengeNumber] ?? checkpoints[1];
         const checkpointPosition = tileToWorld(checkpoint.column, checkpoint.row);
@@ -680,8 +728,8 @@ export default class Level1Scene extends Phaser.Scene {
             .stop().setTexture('firefighterIdle', `idle-${this.direction}-1`).setScale(playerScale);
         this.syncPlayerShadow();
         this.water = checkpoint.water;
-        this.postWater = 0;
-        this.hasDeliveredWater = false;
+        this.postWater = checkpoint.postWater ?? 0;
+        this.hasDeliveredWater = challengeNumber === 4;
         this.setChallenge(challengeNumber);
         this.pump.stop().setFrame('idle');
         this.npcPost1.play('npc-post1-idle', true);

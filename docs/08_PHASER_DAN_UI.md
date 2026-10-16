@@ -21,12 +21,12 @@
 - Navbar menu mengarah ke Petualangan, Progres, Pencapaian, dan Modul.
   Carousel tetap memakai ketiga gambar pulau semula dan tombol panahnya;
   navigasi angka di bawah carousel dihapus.
-- Akun baru memulai dari Level 1. Akses Level 2 dibuka setelah FINISH Level 1;
+- Akun baru memulai dari Level 1. Akses Level 2 dibuka setelah evaluasi di FINISH Level 1 dengan minimal satu bintang;
   akses Level 3 dibuka setelah Level 2, dengan keterangan segera hadir karena
   game Level 3 belum diimplementasikan. Tamu tidak memiliki kunci prasyarat.
 - `PlayerProgress` menghitung status level, bintang, dan empat pencapaian dari
   `user_level_progress`. Kolom `completed_challenges` menyimpan checkpoint
-  terakhir dan `stars` menyimpan tiga bintang ketika level selesai.
+  terakhir; `score` menyimpan nilai terbaik dan `stars` menyimpan 1–3 bintang ketika level lulus.
 - `POST /progress/challenge` menerima nomor level dan challenge, memakai identitas
   akun dari sesi, menolak lompatan urutan, dan tidak menulis data tamu. Penyimpanan
   berulang tidak menurunkan progres atau menggandakan bintang.
@@ -88,7 +88,7 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
 - Petak FINISH Level 1 memakai ubin kecil bermotif kotak-kotak di jalan tanpa
   label dan marker merah. Pemain menginjak ubin setelah menyerahkan air untuk
-  membuka hasil tiga bintang dan tautan Level 2.
+  membuka hasil nilai dan tautan Level 2 jika memperoleh minimal satu bintang.
 - Label pompa, pos, dan kebakaran memakai bentuk papan, panah,
   tipografi, dan aturan zoom yang sama. Warna dibedakan berdasarkan fungsi.
 - Tanda POS 1 dan POS 2 berada di atas tenda pada map. Tanda tujuan challenge
@@ -159,18 +159,21 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - C2 dan C3 mempertahankan api latihan yang telah padam. Kondisi diperiksa pada
   saat command conditional dijalankan, sehingga loop di atasnya dapat mengubah
   hasil kondisi dalam Run yang sama.
-- Akun menyimpan 4 tahap dan mendapat 3 bintang setelah FINISH. Tamu tidak
+- Akun menyimpan 4 tahap dan mendapat 1–3 bintang sesuai nilai setelah FINISH. Tamu tidak
   menyimpan progres. Hasil Level 2 menyediakan tombol menuju Level 3.
 
 ## Tutorial Level 1
 
-Sesudah cerita pembuka dan peta siap, kunjungan pertama ke Challenge 1 dalam
-satu sesi browser menampilkan tur enam langkah. Tur menyorot peta, PyroPad,
-tombol Run Code, daftar target, penulisan `isi_air = 3`, dan tombol bantuan.
-Pemain bisa maju, kembali, atau melewati tur. Tombol **Cara Bermain** pada
-panel misi membuka tur lagi kapan saja selama game aktif. Setelah tur awal
-selesai atau dilewati, pemandu misi menampilkan arahan sesuai posisi pemain.
-Tur tidak mengubah kondisi challenge maupun progres akun.
+Sesudah cerita pembuka dan peta siap, Level 1 langsung menampilkan tur
+**Cara Bermain**. Tur menjelaskan peta, status air dan bintang, PyroPad,
+tombol Run Code dan Hapus, kontrol suara, Ulangi, Hint, serta Baca Materi.
+Kamera kemudian bergeser ke penanda biru di pompa, penanda merah di Pos 1,
+dan FINISH, masing-masing dengan lingkaran penunjuk. Penanda biru adalah petak
+mengambil air; penanda merah adalah petak menjalankan kode untuk challenge.
+Tur tidak memberi jawaban kode. Pemain bisa maju, kembali, atau melewatinya.
+Tombol **Cara Bermain** di footer game membuka tur lagi selama game aktif.
+Ketika tur ditutup, kamera kembali mengikuti pemadam dan pemandu misi memberi
+arahan sesuai posisi pemain. Tur tidak mengubah challenge atau progres akun.
 
 ## Audio game
 

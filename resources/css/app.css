@@ -1234,6 +1234,14 @@
     transform: scale(.9);
 }
 
+.hud-counter--score {
+    grid-column: 1 / -1;
+    gap: 10px;
+    min-height: 34px !important;
+    font-size: 19px !important;
+}
+.hud-counter--score > span { color: #ffd36f; font-weight: 900; }
+
 #game-container {
     width: 100%;
     height: 100%;
@@ -2642,6 +2650,7 @@
 }
 .level-result__stars span:nth-child(2) { width: clamp(68px, 18vw, 100px); animation-delay: .18s; }
 .level-result__stars span:nth-child(3) { animation-delay: .36s; }
+.level-result__stars span.is-unearned { filter: grayscale(1); opacity: .25; }
 .level-result__score { display: block; color: #8a4c1a; font-size: 19px; }
 .level-result__recap { margin: 22px 0; padding: 16px; border-radius: 10px; background: #e8f1dc; font-size: 15px; line-height: 1.65; text-align: left; }
 .level-result__recap code { color: #145976; font-weight: 700; }

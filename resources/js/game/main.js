@@ -17,7 +17,8 @@ import level3Challenges from './Level3Challenges.js';
 import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
 import { getOutcomeFeedback, shouldPlayTargetCue } from './GameFeedback.js';
 import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
-import { Level1Tutorial, shouldShowLevel1Tutorial } from './Level1Tutorial.js';
+import { Level1Tutorial } from './Level1Tutorial.js';
+import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore } from './GameScore.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -57,11 +58,17 @@ const hintText = document.getElementById('hint-text');
 const waterCount = document.getElementById('water-count');
 const requiredWater = document.getElementById('required-water');
 const missionStars = document.getElementById('mission-stars');
+const scoreValue = document.getElementById('score-value');
 const missionTargetCount = document.getElementById('mission-target-count');
 const missionTitle = document.getElementById('mission-title');
 const targetList = document.getElementById('target-list');
 const levelResult = document.getElementById('level-result');
 const resultStars = document.getElementById('result-stars');
+const resultTitle = document.getElementById('result-title');
+const resultEyebrow = document.getElementById('result-eyebrow');
+const resultSubtitle = document.getElementById('result-subtitle');
+const resultRecap = document.getElementById('result-recap');
+const nextLevelLink = document.getElementById('next-level-link');
 const resultReplay = document.getElementById('result-replay');
 const prototypePage = document.getElementById('prototype-page');
 const level1Tutorial = levelNumber === 1
@@ -74,6 +81,8 @@ let latestState = {};
 let completedTargets = new Set();
 const completedChallenges = new Set();
 let levelCompleted = false;
+let score = 100;
+let resultCanAdvance = false;
 let sceneReady = false;
 let runningCode = false;
 const savedAchievements = new Set(JSON.parse(gameContainer.dataset.earnedAchievements ?? '[]'));
@@ -90,7 +99,8 @@ function showSaveStatus(state) {
     saveWarning.hidden = state !== 'error' || levelCompleted;
     resultReplay.disabled = state === 'saving';
     levelResult.querySelectorAll('.level-result__actions a').forEach(link => {
-        const disabled = state === 'saving' || (state === 'error' && link.hasAttribute('data-requires-save'));
+        const disabled = !resultCanAdvance && link === nextLevelLink
+            || state === 'saving' || (state === 'error' && link.hasAttribute('data-requires-save'));
         link.classList.toggle('progress-sync-pending', disabled);
         link.setAttribute('aria-disabled', String(disabled));
     });
@@ -247,6 +257,11 @@ function setControlsDisabled(disabled) {
     clearButton.disabled = locked;
 }
 
+function reduceScore(penalty) {
+    score = deductScore(score, penalty);
+    scoreValue.textContent = score;
+}
+
 function hideHint() {
     hintText.hidden = true;
     hintButton.setAttribute('aria-expanded', 'false');
@@ -321,7 +336,8 @@ function renderMissionState(state = {}) {
         document.getElementById('fire-condition').textContent = latestState.apiPadam ? 'True' : 'False';
         document.getElementById('bekantan-status').textContent = (latestState.bekantanStatus ?? 'tunggu').toUpperCase();
     }
-    const counter = latestState.water;
+    const counter = levelNumber === 1 && currentChallenge === 4
+        ? latestState.postWater : latestState.water;
     if (Number.isFinite(counter)) {
         waterCount.textContent = counter;
     }
@@ -371,6 +387,12 @@ function configureChallenge({ updateScene = true } = {}) {
     missionTitle.textContent = definition.title;
     guideDialogue.reset();
     requiredWater.textContent = hasEvaluation ? getLevel2WaterCapacity() : definition.requiredWater;
+    if (levelNumber === 1) {
+        const waterHud = requiredWater.closest('.hud-counter');
+        waterHud.title = currentChallenge === 4 ? 'Air telah diterima Pos 2' : 'Isi air / target';
+        waterHud.setAttribute('aria-label', currentChallenge === 4
+            ? 'Air yang diterima Pos 2' : 'Isi air dan target');
+    }
     if (hasEvaluation) {
         const capacity = getLevel2WaterCapacity();
         const waterHud = requiredWater.closest('.hud-counter');
@@ -398,19 +420,40 @@ function configureChallenge({ updateScene = true } = {}) {
     }
 }
 
+function showLevelResult(evaluationComplete) {
+    const stars = starsForScore(score, evaluationComplete);
+    resultCanAdvance = stars >= 1;
+    levelCompleted = true;
+    hideFeedback();
+    resultEyebrow.textContent = evaluationComplete && stars > 0 ? 'MISI SELESAI' : 'FINISH DICAPAI';
+    resultTitle.textContent = evaluationComplete && stars > 0
+        ? `Level ${levelNumber} berhasil!` : 'FINISH tercapai';
+    resultSubtitle.textContent = !evaluationComplete
+        ? 'Tiga challenge dan evaluasi belum selesai. Kamu boleh mencoba lagi dari awal.'
+        : stars === 0 ? 'Evaluasi selesai, tetapi nilai di bawah 70%. Coba lagi untuk membuka level berikutnya.'
+            : levelNumber < 3 ? `Nilai ${score}% membuka Level ${levelNumber + 1}.`
+                : `Nilai akhir penyelamatan: ${score}%.`;
+    if (!evaluationComplete || stars === 0) {
+        resultRecap.textContent = 'Kode salah mengurangi 5%, tabrakan mengurangi 10%. Minimal 70% dan satu bintang diperlukan untuk lanjut.';
+    }
+    resultStars.textContent = `${score}% · ${stars} / 3 bintang`;
+    levelResult.querySelectorAll('.level-result__stars span').forEach((star, index) => {
+        star.classList.toggle('is-unearned', index >= stars);
+    });
+    if (nextLevelLink) nextLevelLink.hidden = !resultCanAdvance;
+    levelResult.hidden = false;
+    if (progressSync) showSaveStatus(savingState);
+    prototypePage.inert = true;
+    (resultReplay.disabled ? resultTitle : resultReplay).focus();
+}
+
 function advanceChallenge() {
     completedChallenges.add(currentChallenge);
-    if (progressSync) void progressSync.save(currentChallenge);
+    if (progressSync) void progressSync.save(currentChallenge, currentChallenge === 4 ? score : null);
 
-    if (currentChallenge === (hasEvaluation ? 4 : 3)) {
+    if (currentChallenge === 4) {
         gameAudio.play('levelComplete');
-        levelCompleted = true;
-        hideFeedback();
-        resultStars.textContent = '3 / 3 bintang';
-        levelResult.hidden = false;
-        if (progressSync) showSaveStatus(savingState);
-        prototypePage.inert = true;
-        (resultReplay.disabled ? document.getElementById('result-title') : resultReplay).focus();
+        showLevelResult(true);
         return;
     }
 
@@ -427,7 +470,7 @@ const scene = new Scene({
         if (currentChallenge > 1) await scene.resetChallenge(currentChallenge);
         sceneReady = true;
         configureChallenge();
-        if (level1Tutorial && currentChallenge === 1 && shouldShowLevel1Tutorial()) {
+        if (level1Tutorial) {
             setControlsDisabled(true);
             level1Tutorial.open(() => renderGuide(true));
         } else {
@@ -441,6 +484,7 @@ const scene = new Scene({
     onStateChange: renderMissionState,
     onAudio: (cue) => gameAudio.play(cue),
 });
+level1Tutorial?.setMapScene(scene);
 document.getElementById('tutorial-open')?.addEventListener('click', () => {
     if (!sceneReady || feedback.open || runningCode || levelCompleted) return;
     gameAudio.play('uiClick');
@@ -474,8 +518,9 @@ async function runCode() {
     );
 
     if (!result.syntaxValid || !result.conceptValid) {
+        reduceScore(CODE_ERROR_PENALTY);
         gameAudio.play('commandError');
-        showFeedback(result.message, 'error');
+        showFeedback(`${result.message} Nilai sekarang ${score}%.`, 'error');
         return;
     }
 
@@ -488,6 +533,7 @@ async function runCode() {
     try {
         const completedCommands = [];
         const outcome = await scene.runCommands(result.actions.commands, (command) => completedCommands.push(command));
+        if (outcome.status === 'error') reduceScore(outcome.collision ? COLLISION_PENALTY : CODE_ERROR_PENALTY);
         const messages = explainExecutedCommands({
             levelNumber,
             challengeNumber: currentChallenge,
@@ -497,11 +543,17 @@ async function runCode() {
         }).map((message) => ({ message, state: 'info' }));
         const outcomeFeedback = getOutcomeFeedback(outcome);
         if (outcomeFeedback.playErrorCue) gameAudio.play('commandError');
-        if (outcomeFeedback.visible || outcome.missionSuccess) {
-            messages.push({ message: outcome.message, state: outcome.missionSuccess ? 'success' : outcomeFeedback.state });
+        if (outcomeFeedback.visible || outcome.missionSuccess || outcome.reachedFinish) {
+            const penaltyMessage = outcome.status === 'error' ? ` Nilai sekarang ${score}%.` : '';
+            messages.push({ message: outcome.message + penaltyMessage,
+                state: outcome.missionSuccess ? 'success' : outcome.reachedFinish ? 'info' : outcomeFeedback.state });
         }
         const shouldOpenGuide = guideDialogue.start(messages, () => {
             if (outcome.missionSuccess) advanceChallenge();
+            if (outcome.reachedFinish && !levelCompleted) {
+                if (levelNumber === 1 && currentChallenge === 4 && outcome.missionSuccess) advanceChallenge();
+                else showLevelResult(false);
+            }
         }, {
             instructionBefore,
             instructionAfter: getGuideInstruction({
@@ -590,7 +642,9 @@ feedback.addEventListener('keydown', (event) => {
 });
 resultReplay.addEventListener('click', () => {
     gameAudio.play('uiClick');
-    window.location.reload();
+    const url = new URL(window.location.href);
+    url.searchParams.set('replay', '1');
+    window.location.assign(url);
 });
 const resumeAudio = event => {
     if (event.target?.closest?.('#music-toggle, #audio-toggle')) return;

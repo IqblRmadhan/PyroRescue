@@ -114,13 +114,13 @@ export default class Level3Scene extends Level2Scene {
             conditionChecked: this.conditionChecked,
             rescued: this.bekantanStatus === 'selamat' && this.conditionChecked
                 && (this.challengeNumber !== 4 || this.evaluationProgramComplete),
-            atFinish: this.isAt(this.map.finish) && this.evaluationProgramComplete,
+            atFinish: this.isAt(this.map.finish),
             fireNearby,
         });
     }
 
     async runCommands(commands, onCommandComplete = () => {}) {
-        const error = (message) => ({ status: 'error', missionSuccess: false, message });
+        const error = (message, collision = false) => ({ status: 'error', collision, missionSuccess: false, message });
         const requested = commands.filter((command) => command.type === 'spray').length;
         if (requested > this.requiredWater - this.sprays) {
             return error(this.challengeNumber === 4
@@ -130,7 +130,15 @@ export default class Level3Scene extends Level2Scene {
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         for (const command of commands) {
             if (command.type === 'move') {
-                if (!await this.move(command.direction)) return error('Petak di depan bukan jalur yang dapat dilalui. Ikuti daratan dan jembatan.');
+                if (!await this.move(command.direction)) return error('Petak di depan bukan jalur yang dapat dilalui. Ikuti daratan dan jembatan.', true);
+                onCommandComplete(command);
+                if (this.isAt(this.map.finish)) {
+                    const missionSuccess = this.challengeNumber === 4 && this.evaluationProgramComplete;
+                    return { status: 'finish', reachedFinish: true, missionSuccess,
+                        message: missionSuccess ? 'FINISH tercapai. Evaluasi penyelamatan selesai.'
+                            : 'FINISH tercapai, tetapi tiga challenge dan evaluasi belum selesai.' };
+                }
+                continue;
             } else if (command.type === 'setWater') {
                 const pump = this.challengeNumber === 4 ? this.map.evaluationPump : this.map.pump;
                 if (!this.isAt(pump.action)) return error('Datangi titik biru pompa untuk mengisi air.');

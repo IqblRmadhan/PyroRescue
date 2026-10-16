@@ -22,6 +22,9 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
             : 'Gunakan if/else: jika api_padam True, status "selamat"; jika False, status "tunggu". else sejajar dengan if.';
     }
     if (levelNumber === 1) {
+        if (challengeNumber === 4) {
+            return 'Tiga challenge selesai. Ikuti jalan ke kanan sampai petak FINISH untuk evaluasi hasil misi.';
+        }
         if (challengeNumber === 1) {
             return state.atPump
                 ? 'Kamu sudah di pompa! Tulis isi_air = 3 untuk menyimpan 3 unit air di tangki.'
@@ -32,9 +35,7 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
                 ? 'Pos 1 memberi 2 unit tambahan. Tulis isi_air = 5 untuk menyimpan jumlah akhir: 3 + 2 = 5.'
                 : 'Pergi ke Pos 1 sambil membawa 3 unit air. Penjaga menyiapkan 2 unit tambahan untukmu.';
         }
-        if (state.postWater === level1Challenges[3].requiredWater) {
-            return 'Air sudah diterima Pos 2! Ikuti jalan ke kanan sampai petak FINISH.';
-        }
+        if (state.postWater === level1Challenges[3].requiredWater) return 'Air diterima Pos 2. Lanjutkan evaluasi dengan menuju FINISH.';
         return state.atPost2
             ? 'Kamu tiba di Pos 2. Tulis air_pos = isi_air untuk memasok air dari tangkimu.'
             : 'Pergi ke Pos 2. Bawa 5 unit air untuk diserahkan kepada penjaga pos.';

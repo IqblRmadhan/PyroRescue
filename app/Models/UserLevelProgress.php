@@ -16,8 +16,7 @@ class UserLevelProgress extends Model
         'completed_at',
         'completed_challenges',
         'stars',
-        'completed_challenges',
-        'stars',
+        'score',
     ];
 
     protected function casts(): array
@@ -26,8 +25,7 @@ class UserLevelProgress extends Model
             'completed_at' => 'datetime',
             'completed_challenges' => 'integer',
             'stars' => 'integer',
-            'completed_challenges' => 'integer',
-            'stars' => 'integer',
+            'score' => 'integer',
         ];
     }
 

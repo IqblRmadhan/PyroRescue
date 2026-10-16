@@ -52,9 +52,9 @@
                                     <span class="adventure-level__number">LEVEL 0{{ $number }} · {{ !$level['unlocked'] ? 'TERKUNCI' : ($level['completed'] ? 'SELESAI' : ($level['playable'] ? 'MISI TERSEDIA' : 'SEGERA HADIR')) }}</span>
                                     <h2 id="level-{{ $number }}-title">{{ $card['title'] }}</h2><p>{{ $card['description'] }}</p>
                                     @if(!$level['unlocked'])
-                                        <span class="adventure-level__lock">🔒 Selesaikan Level {{ $number - 1 }} dahulu</span>
+                                        <span class="adventure-level__lock">🔒 Raih minimal 1 bintang di Level {{ $number - 1 }}</span>
                                     @elseif($level['playable'])
-                                        <a class="adventure-play" href="{{ route('game.level'.$number) }}"><span aria-hidden="true">▶</span> {{ $level['completed'] ? 'Main Lagi Level '.$number : ($level['challenges'] > 0 ? 'Lanjutkan Level '.$number : 'Mainkan Level '.$number) }}</a>
+                                        <a class="adventure-play" href="{{ route('game.level'.$number) }}"><span aria-hidden="true">▶</span> {{ $level['completed'] || $level['challenges'] >= $level['total_challenges'] ? 'Ulangi Level '.$number : ($level['challenges'] > 0 ? 'Lanjutkan Level '.$number : 'Mainkan Level '.$number) }}</a>
                                     @else
                                         <span class="adventure-level__lock menu-coming-soon">Akses terbuka · Game segera hadir</span>
                                     @endif
@@ -89,8 +89,8 @@
                                     <span class="journey-board__signal"><span aria-hidden="true"></span>{{ $nextMission ? 'MISI SIAP DILANJUTKAN' : 'SEMUA MISI TERSEDIA SELESAI' }}</span>
                                     @if($nextMission)
                                         <h3><small>LEVEL 0{{ $nextMission }}</small>{{ $cards[$nextMission]['title'] }}</h3>
-                                        <p>{{ $levels[$nextMission]['challenges'] > 0 ? 'Checkpoint '.$levels[$nextMission]['challenges'].' dari '.$levels[$nextMission]['total_challenges'].' sudah selesai. Lanjutkan dari tantangan berikutnya.' : 'Misi ini siap dimainkan. Masuk ke peta untuk memulai tantangan pertama.' }}</p>
-                                        <a class="journey-board__action" href="{{ route('game.level'.$nextMission) }}">{{ $levels[$nextMission]['challenges'] > 0 ? 'Lanjutkan misi' : 'Mulai misi' }} <span aria-hidden="true">↗</span></a>
+                                        <p>{{ $levels[$nextMission]['challenges'] >= $levels[$nextMission]['total_challenges'] ? 'FINISH sudah dicapai, tetapi nilai belum mencapai 70%. Ulangi misi untuk meraih minimal satu bintang.' : ($levels[$nextMission]['challenges'] > 0 ? 'Checkpoint '.$levels[$nextMission]['challenges'].' dari '.$levels[$nextMission]['total_challenges'].' sudah selesai. Lanjutkan dari tantangan berikutnya.' : 'Misi ini siap dimainkan. Masuk ke peta untuk memulai tantangan pertama.') }}</p>
+                                        <a class="journey-board__action" href="{{ route('game.level'.$nextMission) }}">{{ $levels[$nextMission]['challenges'] >= $levels[$nextMission]['total_challenges'] ? 'Ulangi misi' : ($levels[$nextMission]['challenges'] > 0 ? 'Lanjutkan misi' : 'Mulai misi') }} <span aria-hidden="true">↗</span></a>
                                     @else
                                         <h3><small>TIM PYRORESCUE</small>Operasi tuntas!</h3>
                                         <p>Level 1 dan 2 telah kamu selesaikan. Level 3 sedang disiapkan; lihat lencana yang sudah kamu kumpulkan.</p>
@@ -112,7 +112,7 @@
                                         <div class="journey-route__copy">
                                             <div class="journey-route__meta"><span>LEVEL 0{{ $number }}</span><span>{{ $level['completed'] ? 'SELESAI' : (!$level['unlocked'] ? 'TERKUNCI' : (!$level['playable'] ? 'SEGERA HADIR' : ($level['challenges'] > 0 ? 'LANJUTKAN' : 'SIAP DIMULAI'))) }}</span></div>
                                             <h4>@if($level['unlocked'] && $level['playable'])<a href="{{ route('game.level'.$number) }}">{{ $card['title'] }}</a>@else{{ $card['title'] }}@endif</h4>
-                                            <p>{{ $level['completed'] ? 'FINISH dicapai · 3 bintang' : (!$level['unlocked'] ? 'Selesaikan level sebelumnya' : (!$level['playable'] ? 'Game segera hadir' : $level['challenges'].' / '.$level['total_challenges'].' tantangan selesai')) }}</p>
+                                            <p>{{ $level['completed'] ? 'FINISH · '.$level['score'].'% · '.$level['stars'].' bintang' : (!$level['unlocked'] ? 'Raih minimal 1 bintang di level sebelumnya' : (!$level['playable'] ? 'Game segera hadir' : ($level['challenges'] >= $level['total_challenges'] ? 'FINISH · '.$level['score'].'% · ulangi misi' : $level['challenges'].' / '.$level['total_challenges'].' tantangan selesai'))) }}</p>
                                             <div class="journey-route__track" role="progressbar" aria-label="Progres Level {{ $number }}" aria-valuemin="0" aria-valuemax="{{ $level['total_challenges'] }}" aria-valuenow="{{ $level['challenges'] }}"><span style="width: {{ $level['challenges'] / $level['total_challenges'] * 100 }}%"></span></div>
                                         </div>
                                     </li>

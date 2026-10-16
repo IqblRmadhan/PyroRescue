@@ -146,8 +146,10 @@ export default class CodeValidator {
             const movementMatch = normalizedLine.match(/^(atas|bawah|kanan|kiri)\((0|[1-9][0-9]*)\)$/);
 
             if (waterAssignment) {
-                if (challengeNumber === 3) {
-                    result.message = 'Pada Challenge 3, gunakan nilai isi_air yang sudah disiapkan di Challenge 2.';
+                if (challengeNumber >= 3) {
+                    result.message = challengeNumber === 4
+                        ? 'Pada evaluasi, gunakan perintah gerak menuju FINISH.'
+                        : 'Pada Challenge 3, gunakan nilai isi_air yang sudah disiapkan di Challenge 2.';
                     return result;
                 }
 
@@ -200,7 +202,8 @@ export default class CodeValidator {
                 continue;
             }
 
-            result.message = challengeNumber === 3
+            result.message = challengeNumber === 4
+                ? 'Pada evaluasi, gunakan perintah gerak untuk mencapai FINISH.' : challengeNumber === 3
                 ? 'Gunakan hanya perintah gerak dan air_pos = isi_air.'
                 : 'Gunakan hanya perintah gerak dan isi_air = angka.';
             return result;
@@ -208,12 +211,14 @@ export default class CodeValidator {
 
         result.syntaxValid = true;
         result.conceptValid = true;
-        result.missionSuccess = challengeNumber === 3
+        result.missionSuccess = challengeNumber === 4 ? commands.length > 0 : challengeNumber === 3
             ? hasPostAssignment
             : hasWaterAssignment && water === requiredWater;
         result.actions = { water, commands };
 
-        if (challengeNumber === 3) {
+        if (challengeNumber === 4) {
+            result.message = 'Kode valid. Ikuti jalan sampai petak FINISH.';
+        } else if (challengeNumber === 3) {
             result.message = hasPostAssignment
                 ? 'Kode valid. Persediaan isi_air akan diberikan ke Pos 2.'
                 : 'Kode valid. Bergeraklah ke Pos 2, lalu tulis air_pos = isi_air.';

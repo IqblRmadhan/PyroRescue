@@ -17,7 +17,9 @@ class GameController extends Controller
         $progress = $summary['levels'][$number];
         return view('game.prototype', [
             'levelNumber' => $number,
-            'resumeChallenge' => $progress['completed'] ? 1 : min($progress['challenges'] + 1, $progress['total_challenges']),
+            'resumeChallenge' => $request->boolean('replay') || $progress['completed']
+                || $progress['challenges'] >= $progress['total_challenges'] ? 1
+                : $progress['challenges'] + 1,
             'saveProgress' => (bool) $request->user(),
             'earnedAchievementKeys' => array_column(array_filter($summary['achievements'], fn ($achievement) => $achievement['earned']), 'key'),
         ]);

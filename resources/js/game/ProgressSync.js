@@ -2,12 +2,12 @@
 export default class ProgressSync {
     constructor({ url, token, level, onStatus, onSaved }) {
         Object.assign(this, { url, token, level, onStatus, onSaved });
-        this.pending = new Set();
+        this.pending = new Map();
         this.running = null;
     }
 
-    save(challenge) {
-        this.pending.add(challenge);
+    save(challenge, score = null) {
+        this.pending.set(challenge, score);
         return this.flush();
     }
 
@@ -21,11 +21,11 @@ export default class ProgressSync {
         this.onStatus('saving');
         try {
             while (this.pending.size) {
-                const challenge = this.pending.values().next().value;
+                const [challenge, score] = this.pending.entries().next().value;
                 const response = await fetch(this.url, {
                     method: 'POST', keepalive: true,
                     headers: { 'Content-Type': 'application/json', Accept: 'application/json', 'X-CSRF-TOKEN': this.token },
-                    body: JSON.stringify({ level: this.level, challenge }),
+                    body: JSON.stringify({ level: this.level, challenge, ...(score === null ? {} : { score }) }),
                 });
                 if (!response.ok) throw new Error('Progres belum tersimpan.');
                 const data = await response.json();

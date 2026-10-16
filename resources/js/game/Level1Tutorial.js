@@ -1,59 +1,71 @@
-const storageKey = 'pyrorescue.level1TutorialSeen';
-
 export const level1TutorialSteps = [
     {
         target: '#game-container',
         eyebrow: '01 / PETA MISI',
-        title: 'Kenali area penyelamatan',
-        text: 'Karakter pemadam berada di peta sebelah kiri. Ikuti jalan menuju pompa air. Titik biru menandai tempat mengambil air, sedangkan titik merah menunjukkan lokasi tugas berikutnya.',
-        note: 'Seret peta untuk melihat area lain. Cubit touchpad untuk mengatur zoom.',
+        title: 'Lihat dan geser peta',
+        text: 'Ini area tempat pemadam bergerak. Klik lalu seret untuk melihat bagian peta lain. Geser dua jari di touchpad untuk menggeser peta, atau cubit untuk zoom.',
+        note: 'Logo PyroRescue di atas akan membawamu kembali ke menu.',
+    },
+    {
+        target: '.game-hud',
+        eyebrow: '02 / STATUS',
+        title: 'Pantau air dan bintang',
+        text: 'Angka di samping tetes air menunjukkan isi tangki. Bintang kecil menunjukkan target misi yang sudah selesai. Nilai persentase dimulai dari 100%.',
+        note: 'Kode salah mengurangi 5%, tabrakan mengurangi 10%. Daftar Misi di kanan merinci target aktif.',
     },
     {
         target: '#code-editor',
-        eyebrow: '02 / URUTAN PERINTAH',
-        title: 'Arahkan pemadam lewat kode',
-        text: 'Tulis perintah gerak di PyroPad. Game membaca baris dari atas ke bawah. Angka dalam kurung berarti jumlah petak yang ditempuh.',
-        code: 'atas(1)\nkanan(2)',
-        note: 'Gunakan atas(n), bawah(n), kanan(n), atau kiri(n). Karakter bergerak saat kode dijalankan.',
+        eyebrow: '03 / PYROPAD',
+        title: 'Tulis perintah di sini',
+        text: 'PyroPad adalah tempat menulis kode untuk mengendalikan pemadam. Perintah dijalankan dari baris paling atas ke bawah; saat mengetik, kamu bisa memilih saran perintah.',
+        note: 'Kamu bisa menjalankan kode sedikit demi sedikit. Kesalahan akan dijelaskan oleh pemandu.',
     },
     {
-        target: '#run-code',
-        eyebrow: '03 / JALANKAN',
-        title: 'Lihat akibat dari kodenya',
-        text: 'Tekan Run Code setelah menulis perintah. Karakter akan mengikuti urutan kode yang valid. Jika jalur atau penulisannya keliru, baca pesan pemandu lalu perbaiki kodenya.',
-        note: 'Kamu boleh menjalankan beberapa langkah sekaligus atau satu per satu.',
+        target: '.game-buttons',
+        eyebrow: '04 / AKSI KODE',
+        title: 'Jalankan atau bersihkan kode',
+        text: 'Run Code menjalankan kode yang kamu tulis. Hapus membersihkan seluruh isi PyroPad supaya kamu bisa mulai mengetik ulang.',
+        note: 'Periksa pesan pemandu setelah menjalankan kode untuk mengetahui hasilnya.',
     },
     {
-        target: '.mission-card--targets',
-        eyebrow: '04 / TARGET MISI',
-        title: 'Periksa tujuanmu',
-        text: 'Daftar Misi di kanan menunjukkan tugas yang harus diselesaikan. Pada Challenge pertama, capai penanda di dekat pompa, lalu isi tangki dengan tiga unit air.',
-        note: 'Kotak target tercentang otomatis ketika tindakanmu berhasil.',
+        target: '.game-map-controls',
+        eyebrow: '05 / KONTROL GAME',
+        title: 'Atur suara dan bantuan',
+        text: 'Musik dan SFX punya tombol terpisah. Ulangi mengembalikan challenge saat ini ke awal, sedangkan Hint memberi petunjuk ketika kamu buntu.',
+        note: 'Tombol Ulangi juga mengembalikan posisi pemadam pada challenge aktif.',
     },
     {
-        target: '#code-editor',
-        eyebrow: '05 / VARIABEL PYTHON',
-        title: 'Simpan air di PyroPad',
-        text: 'Setelah sampai di pompa, tulis kode berikut dan jalankan. isi_air adalah nama variabel, sedangkan 3 adalah nilai yang disimpan untuk tangki.',
-        code: 'isi_air = 3',
-        note: 'Tanda = menyimpan nilai. Nanti kamu akan mengubah dan memakai lagi nilai ini di pos berikutnya.',
+        target: '#material-open',
+        eyebrow: '06 / BELAJAR',
+        title: 'Buka materi saat perlu',
+        text: 'Baca Materi membuka penjelasan Python dan kamus perintah. Lihat juga daftar Misi di atas PyroPad; kotaknya tercentang otomatis ketika target selesai.',
+        note: 'Cara Bermain bisa kamu buka kembali melalui tombol di bagian bawah halaman.',
     },
     {
-        target: '#hint',
-        eyebrow: '06 / BANTUAN',
-        title: 'Bantuan selalu tersedia',
-        text: 'Gunakan Hint saat buntu, Baca Materi untuk melihat penjelasan Python, Hapus untuk membersihkan PyroPad, dan Ulangi untuk mengembalikan challenge saat ini.',
-        note: 'Tutorial ini bisa dibuka kembali lewat tombol Cara Bermain pada panel misi.',
+        target: '#game-container',
+        mapFocus: 'water',
+        eyebrow: '07 / TITIK BIRU',
+        title: 'Berdiri di titik biru',
+        text: 'Kamera sekarang mengarah ke penanda biru dekat pompa. Gerakkan pemadam sampai berdiri tepat di atas titik itu. Di sana kamu dapat menjalankan kode untuk mengambil air.',
+        note: 'Lingkaran yang berdenyut membantu menunjukkan petak yang harus dituju.',
+    },
+    {
+        target: '#game-container',
+        mapFocus: 'challenge',
+        eyebrow: '08 / TITIK MERAH',
+        title: 'Berdiri di titik merah',
+        text: 'Kamera bergeser ke contoh penanda merah di Pos 1. Penanda merah menunjukkan tempat menyelesaikan challenge. Berdirilah tepat di atasnya, tulis kode di PyroPad, lalu tekan Run Code.',
+        note: 'Ikuti penanda merah yang sesuai dengan challenge aktif.',
+    },
+    {
+        target: '#game-container',
+        mapFocus: 'finish',
+        eyebrow: '09 / FINISH',
+        title: 'Akhiri misi di FINISH',
+        text: 'Kamera menuju petak FINISH di ujung jalan. Kamu boleh mencapainya kapan saja, tetapi Level 2 baru terbuka setelah tiga challenge dan evaluasi selesai dengan nilai minimal 70% (satu bintang).',
+        note: 'Kode salah dan tabrakan mengurangi nilai. Kamera kembali ke pemadam setelah Cara Bermain ditutup.',
     },
 ];
-
-export function shouldShowLevel1Tutorial(storage = window.sessionStorage) {
-    try {
-        return storage.getItem(storageKey) !== '1';
-    } catch {
-        return true;
-    }
-}
 
 export class Level1Tutorial {
     constructor(root) {
@@ -63,7 +75,6 @@ export class Level1Tutorial {
         this.eyebrow = root.querySelector('[data-tutorial-eyebrow]');
         this.title = root.querySelector('[data-tutorial-title]');
         this.text = root.querySelector('[data-tutorial-text]');
-        this.code = root.querySelector('[data-tutorial-code]');
         this.note = root.querySelector('[data-tutorial-note]');
         this.progress = root.querySelector('[data-tutorial-progress]');
         this.back = root.querySelector('[data-tutorial-back]');
@@ -74,6 +85,7 @@ export class Level1Tutorial {
         this.opened = false;
         this.onClose = () => {};
         this.previousFocus = null;
+        this.mapScene = null;
 
         this.back.addEventListener('click', () => this.showStep(this.stepIndex - 1));
         this.next.addEventListener('click', () => this.stepIndex === level1TutorialSteps.length - 1
@@ -82,6 +94,10 @@ export class Level1Tutorial {
         this.root.addEventListener('keydown', (event) => this.handleKeydown(event));
         window.addEventListener('resize', () => this.updateSpotlight());
         window.addEventListener('scroll', () => this.updateSpotlight(), { passive: true });
+    }
+
+    setMapScene(scene) {
+        this.mapScene = scene;
     }
 
     open(onClose = () => {}) {
@@ -99,12 +115,12 @@ export class Level1Tutorial {
         this.stepIndex = Math.max(0, Math.min(index, level1TutorialSteps.length - 1));
         const step = level1TutorialSteps[this.stepIndex];
         const target = document.querySelector(step.target);
+        if (step.mapFocus) this.mapScene?.focusTutorialMarker(step.mapFocus);
+        else this.mapScene?.restoreTutorialCamera();
         this.eyebrow.textContent = step.eyebrow;
         this.title.textContent = step.title;
         this.text.textContent = step.text;
         this.note.textContent = step.note;
-        this.code.hidden = !step.code;
-        this.code.textContent = step.code ?? '';
         this.progress.textContent = `${this.stepIndex + 1} / ${level1TutorialSteps.length}`;
         this.back.hidden = this.stepIndex === 0;
         this.next.textContent = this.stepIndex === level1TutorialSteps.length - 1 ? 'Mulai bermain' : 'Lanjut';
@@ -154,9 +170,7 @@ export class Level1Tutorial {
         this.root.hidden = true;
         this.page.inert = false;
         document.body.classList.remove('level1-tutorial-is-open');
-        try {
-            window.sessionStorage.setItem(storageKey, '1');
-        } catch { /* Permainan tetap bisa dilanjutkan saat penyimpanan browser diblokir. */ }
+        this.mapScene?.restoreTutorialCamera();
         this.previousFocus?.focus?.({ preventScroll: true });
         this.onClose();
     }

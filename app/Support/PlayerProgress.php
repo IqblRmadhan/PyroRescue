@@ -11,15 +11,17 @@ class PlayerProgress
         $records = $user?->userLevelProgress()->with('level')->get()->keyBy('level.level_number');
         $levels = [];
         $previousCompleted = true;
-        foreach ([1 => 3, 2 => 4, 3 => 4] as $number => $totalChallenges) {
+        foreach ([1 => 4, 2 => 4, 3 => 4] as $number => $totalChallenges) {
             $record = $records?->get($number);
-            $completed = $record?->status === 'completed';
+            $completed = $record?->status === 'completed' && ($record?->stars ?? 0) >= 1;
             $levels[$number] = [
                 'unlocked' => !$user || $previousCompleted,
                 'completed' => $completed,
                 'challenges' => $completed ? $totalChallenges : ($record?->completed_challenges ?? 0),
                 'total_challenges' => $totalChallenges,
-                'stars' => $completed ? max(3, $record?->stars ?? 0) : 0,
+                'stars' => $completed ? min(3, $record?->stars ?? 0) : 0,
+                // Catatan lama sudah memiliki 3 bintang sebelum kolom nilai ditambahkan.
+                'score' => ($record?->score ?? 0) ?: ($completed && $record->stars === 3 ? 100 : 0),
                 'playable' => true,
             ];
             $previousCompleted = $previousCompleted && $completed;

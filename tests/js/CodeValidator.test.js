@@ -167,3 +167,11 @@ test('unsupported movement and more than 120 commands are rejected', () => {
     assert.equal(tooLong.syntaxValid, false);
     assert.equal(tooLong.actions, null);
 });
+
+test('Level 1 evaluation accepts movement to FINISH and rejects new assignments', () => {
+    const movement = validator.validateVariable('kanan(15)', 5, 4);
+    assert.equal(movement.syntaxValid, true);
+    assert.equal(movement.conceptValid, true);
+    assert.equal(movement.actions.commands.length, 15);
+    assert.equal(validator.validateVariable('isi_air = 5', 5, 4).syntaxValid, false);
+});

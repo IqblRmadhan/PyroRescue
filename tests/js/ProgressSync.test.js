@@ -33,3 +33,14 @@ test('failed saves keep pending challenges for retry without reporting success',
     assert.equal(sync.pending.size, 0);
     assert.deepEqual(statuses, ['saving', 'error', 'saving', 'saved']);
 });
+
+test('final evaluation sends the percentage with the fourth challenge', async t => {
+    let sent;
+    t.mock.method(globalThis, 'fetch', async (_url, options) => {
+        sent = JSON.parse(options.body);
+        return { ok: true, json: async () => ({ saved: true }) };
+    });
+    const sync = new ProgressSync({ url: '/progress/challenge', token: 'test', level: 1, onStatus() {} });
+    assert.equal(await sync.save(4, 85), true);
+    assert.deepEqual(sent, { level: 1, challenge: 4, score: 85 });
+});

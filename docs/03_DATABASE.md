@@ -102,6 +102,7 @@ status
 completed_at
 completed_challenges
 stars
+score
 created_at
 updated_at
 ```
@@ -114,8 +115,10 @@ unlocked
 completed
 ```
 
-`completed_challenges` menyimpan jumlah challenge yang selesai secara berurutan.
-`stars` bernilai 3 setelah level selesai dan tidak bertambah saat level diulang.
+`completed_challenges` menyimpan tiga challenge dan tahap evaluasi secara berurutan.
+`score` menyimpan nilai terbaik (0–100) saat evaluasi mencapai FINISH.
+`stars` bernilai 1 untuk 70–84%, 2 untuk 85–99%, dan 3 untuk 100%.
+Di bawah 70% tidak membuka level berikutnya. Hasil terbaik tidak turun saat level diulang.
 Pencapaian menu dihitung dari progres tersebut. Mode tamu tidak menulis progres.
 
 ## `challenge_attempts`

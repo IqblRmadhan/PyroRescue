@@ -126,6 +126,10 @@
                         <span class="asset-icon asset-icon--star" aria-hidden="true"></span>
                         <strong><span id="mission-stars">0</span>/<span id="mission-target-count">{{ $hasEvaluation ? '3' : '2' }}</span></strong>
                     </div>
+                    <div class="hud-counter hud-counter--score" aria-label="Nilai permainan" title="Kode salah: -5%. Tabrakan: -10%." aria-live="polite">
+                        <span aria-hidden="true">%</span>
+                        <strong><span id="score-value">100</span>%</strong>
+                    </div>
                     @if($isLevel3)
                     <div class="hud-counter hud-counter--condition" aria-live="polite">
                         <strong>api_padam = <span id="fire-condition">False</span></strong>
@@ -172,9 +176,6 @@
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
                     <div>
                         <h2 id="mission-title">{{ $isLevel3 ? 'Challenge 1 - Memadamkan Api di Habitat' : ($isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air') }}</h2>
-                        @if($levelNumber === 1)
-                            <button id="tutorial-open" class="game-tutorial-open" type="button" aria-controls="level1-tutorial">? Cara Bermain</button>
-                        @endif
                     </div>
                 </section>
 
@@ -235,6 +236,15 @@
             </aside>
         </main>
 
+        @if($levelNumber === 1)
+        <footer class="game-tutorial-footer">
+            <span>Perlu melihat kembali fungsi kontrol dan penanda di peta?</span>
+            <button id="tutorial-open" class="game-tutorial-open" type="button" aria-controls="level1-tutorial">
+                <span aria-hidden="true">?</span> Cara Bermain
+            </button>
+        </footer>
+        @endif
+
         <noscript>Aktifkan JavaScript untuk menampilkan area game.</noscript>
     </div>
 
@@ -242,10 +252,9 @@
     <div id="level1-tutorial" class="level1-tutorial" role="dialog" aria-modal="true" aria-labelledby="level1-tutorial-title" hidden>
         <div class="level1-tutorial__spotlight" aria-hidden="true"></div>
         <div class="level1-tutorial__card">
-            <div class="level1-tutorial__topline"><span>BUKU LAPANGAN · LEVEL 01</span><button type="button" data-tutorial-skip aria-label="Lewati tutorial">Lewati ×</button></div>
+            <div class="level1-tutorial__topline"><span>CARA BERMAIN · LEVEL 01</span><button type="button" data-tutorial-skip aria-label="Lewati cara bermain">Lewati ×</button></div>
             <div class="level1-tutorial__heading"><span class="level1-tutorial__mascot" aria-hidden="true"></span><div><span data-tutorial-eyebrow></span><h2 id="level1-tutorial-title" data-tutorial-title></h2></div></div>
             <p data-tutorial-text></p>
-            <pre data-tutorial-code hidden></pre>
             <div class="level1-tutorial__note"><span aria-hidden="true">✦</span><span data-tutorial-note></span></div>
             <div class="level1-tutorial__footer"><span data-tutorial-progress></span><div><button type="button" data-tutorial-back>Sebelumnya</button><button type="button" data-tutorial-next>Lanjut</button></div></div>
         </div>
@@ -347,19 +356,19 @@
     <button id="game-sync-warning" class="game-sync-warning" type="button" hidden>Progres belum tersimpan. Klik untuk mencoba lagi.</button>
     <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div class="level-result__card">
-            <span class="level-result__eyebrow">MISI SELESAI</span>
+            <span id="result-eyebrow" class="level-result__eyebrow">HASIL PERMAINAN</span>
             <h2 id="result-title" tabindex="-1">Level {{ $levelNumber }} Berhasil!</h2>
-            <p class="level-result__subtitle">{{ $isLevel3 ? 'Api padam, bekantan selamat, dan kamu mencapai FINISH.' : ($isLevel2 ? 'Ketiga api padam dan kamu mencapai petak FINISH.' : 'Air sampai di Pos 2 dan kamu mencapai petak FINISH.') }}</p>
+            <p id="result-subtitle" class="level-result__subtitle">Hasil evaluasi penyelamatanmu.</p>
             <div class="level-result__stars" aria-hidden="true">
                 <span></span><span></span><span></span>
             </div>
             <strong id="result-stars" class="level-result__score">3 / 3 bintang</strong>
-            <p class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> untuk memadamkan api serta menyelamatkan bekantan. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
+            <p id="result-recap" class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> untuk memadamkan api serta menyelamatkan bekantan. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 3</code>, memperbaruinya menjadi <code>isi_air = 5</code> setelah mendapat 2 unit bantuan, lalu memakai nilainya di Pos 2. @endif</p>
             <p id="progress-sync-status" class="progress-sync-status" role="status">{{ ($saveProgress ?? false) ? 'Hasil akan tersimpan di akunmu.' : 'Mode tamu: hasil dan pencapaian tidak disimpan.' }}</p>
             <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>
             <div class="level-result__actions">
                 <button id="result-replay" type="button">Main Lagi</button>
-                @if($levelNumber < 3)<a href="{{ route('game.level'.($levelNumber + 1)) }}" data-requires-save>Lanjut Level {{ $levelNumber + 1 }}</a>@endif
+                @if($levelNumber < 3)<a id="next-level-link" href="{{ route('game.level'.($levelNumber + 1)) }}" data-requires-save>Lanjut Level {{ $levelNumber + 1 }}</a>@endif
                 <a href="{{ route('main-menu') }}">Menu Utama</a>
             </div>
         </div>

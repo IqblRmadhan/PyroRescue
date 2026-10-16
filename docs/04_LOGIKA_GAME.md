@@ -158,6 +158,11 @@ AND challenge 3 selesai
 AND evaluasi selesai
 ```
 
-Pada Level 1 saat ini, evaluasi berupa pemeriksaan target ketiga challenge.
-Setelah air sampai di Pos 2, pemain mencapai petak FINISH dan menerima hasil
-tiga bintang. Belum ada soal evaluasi terpisah.
+Pada Level 1, evaluasi akhir dimulai setelah air sampai di Pos 2. Pemain menuju
+FINISH untuk memeriksa hasil tiga challenge. Pemain boleh mencapai FINISH lebih
+awal, tetapi hasilnya nol bintang dan level berikutnya tetap terkunci.
+Nilai awal 100%; kode tidak valid atau aksi salah mengurangi 5%, tabrakan dengan
+petak tak dapat dilalui mengurangi 10%. Hasil 70–84% memberi satu bintang,
+85–99% dua bintang, dan 100% tiga bintang. Nilai di bawah 70% memberi nol
+bintang. Level berikutnya dibuka hanya setelah evaluasi selesai dan pemain
+memperoleh sedikitnya satu bintang.

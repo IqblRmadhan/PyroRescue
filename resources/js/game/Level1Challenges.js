@@ -43,15 +43,24 @@ export default {
     },
     3: {
         title: 'Challenge 3 - Pasok Air ke Pos 2',
-        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos = isi_air untuk menyerahkan nilainya, lalu ikuti jalan ke kanan menuju petak FINISH.',
+        description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos = isi_air untuk menyerahkan nilainya.',
         requiredWater: 5,
         targets: [
             { key: 'location', label: 'Pergi ke Pos 2' },
             { key: 'transfer', label: 'Berikan 5 unit ke air_pos' },
-            { key: 'finish', label: 'Capai petak FINISH di ujung jalan' },
         ],
         hints: [
-            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos = isi_air untuk menyerahkan 5 unit air.\n3. Tulis kanan(15) untuk mencapai petak FINISH. Tekan Run Code. Kamu juga boleh menjalankan langkah terakhir secara terpisah.',
+            'Cara menyelesaikan Challenge 3:\n1. Tulis bawah(1), kanan(6), atas(9), lalu kanan(4) untuk tiba di Pos 2.\n2. Tulis air_pos = isi_air untuk menyerahkan 5 unit air. Tekan Run Code.',
         ],
+        nextMessage: 'Tiga challenge selesai. Ikuti jalan ke kanan menuju FINISH untuk evaluasi hasil misi.',
+    },
+    4: {
+        title: 'Evaluasi - Menuju FINISH',
+        description: 'Tiga challenge sudah selesai. Ikuti jalan ke petak FINISH untuk melihat nilai akhir.',
+        requiredWater: 5,
+        targets: [
+            { key: 'finish', label: 'Capai petak FINISH' },
+        ],
+        hints: ['Dari Pos 2, ikuti jalan ke kanan sampai petak FINISH.'],
     },
 };
