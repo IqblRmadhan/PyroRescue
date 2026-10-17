@@ -6,6 +6,7 @@ import { level2Map } from './Level2Map.js';
 const challenges = {
     1: {
         title: 'Challenge 1 - Mengenal Semprotan',
+        effect: 'Di game: isi_air = 6 dijalankan di pompa sebelum berangkat. Datangi penanda C1, lalu padamkan api dengan 2 kali semprotan.',
         description: 'Datangi pompa di atas jalan dekat jembatan dan tulis isi_air = 6. Gunakan 2 unit untuk memadamkan api C1 dengan semprot() dua kali.',
         texture: 'fireC1',
         requiredWater: 2,
@@ -17,13 +18,14 @@ const challenges = {
         example: 'isi_air = 6\nsemprot()\nsemprot()',
         lesson: 'Ulangi materi variabel: di pompa, isi_air = 6 menyimpan enam unit air. C1 butuh dua semprotan, C2 satu, dan C3 tiga. Tiap semprot() memakai satu unit, sehingga setelah C1 masih ada empat.',
         hints: [
-            'Datangi penanda merah di sebelah pompa. Tulis isi_air = 6 untuk mengisi tangki, lalu lanjut ke api C1.',
+            'Datangi penanda biru di sebelah pompa. Tulis isi_air = 6 untuk mengisi tangki, lalu lanjut ke api C1.',
             'Dari awal challenge: kanan(15), isi_air = 6, kanan(2), bawah(3), kanan(2), lalu semprot() pada dua baris. Jalankan tiap perintah sesuai urutan.',
         ],
         nextMessage: 'Empat unit air tersisa. Lanjutkan ke api kanan atas dan gunakan perulangan untuk menyemprot satu kali.',
     },
     2: {
         title: 'Challenge 2 - Mengulang Semprotan',
+        effect: 'Di game: Datangi penanda C2, lalu padamkan api dengan 1 kali semprotan.',
         description: 'Empat unit air tersisa dari pompa. Pergi ke C2 dan gunakan for serta range() untuk menjalankan 1 semprotan.',
         texture: 'fireC2',
         requiredWater: 1,
@@ -41,6 +43,7 @@ const challenges = {
     },
     3: {
         title: 'Challenge 3 - Variabel dalam Perulangan',
+        effect: 'Di game: Datangi penanda C3, lalu padamkan api dengan 3 kali semprotan.',
         description: 'Gunakan sisa 3 unit air di api kanan bawah. Simpan jumlah_semprot = 3, lalu gunakan nilainya dalam range().',
         texture: 'fireC3',
         requiredWater: 3,

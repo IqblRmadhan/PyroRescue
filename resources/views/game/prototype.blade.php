@@ -144,8 +144,7 @@
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
                      data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"
                      data-progress-url="{{ ($saveProgress ?? false) ? route('progress.challenge') : '' }}"
-                     data-resume-challenge="{{ $resumeChallenge ?? 1 }}"
-                     data-earned-achievements='@json($earnedAchievementKeys ?? [])'></div>
+                     data-resume-challenge="{{ $resumeChallenge ?? 1 }}"></div>
 
                 <div id="damage-overlay" class="game-damage-overlay" aria-hidden="true"></div>
 

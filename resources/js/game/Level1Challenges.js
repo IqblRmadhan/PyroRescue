@@ -17,6 +17,10 @@ export function getLevel1MarkerStarterCode({
 export default {
     1: {
         title: 'Challenge 1 - Mengambil Air',
+        lessonTitle: '1. Membuat variabel',
+        example: 'isi_air = 3',
+        lesson: 'isi_air adalah nama variabel. Angka 3 adalah nilai berupa bilangan bulat (integer). Baris ini menyimpan nilai 3 ke isi_air.',
+        effect: 'Di game: berdiri di penanda pompa dahulu. Saat kode dijalankan, pompa mengisi tangki sampai 3 unit.',
         description: 'Pergi ke pompa di tepi sungai, lalu simpan 3 unit air ke dalam variabel isi_air.',
         requiredWater: 3,
         targets: [
@@ -30,6 +34,10 @@ export default {
     },
     2: {
         title: 'Challenge 2 - Mengubah Nilai',
+        lessonTitle: '2. Mengubah nilai variabel',
+        example: 'isi_air = 5',
+        lesson: 'Dari pompa kamu membawa 3 unit. Penjaga Pos 1 memberi 2 unit lagi, jadi 3 + 2 = 5 unit. Tulis isi_air = 5 untuk menyimpan jumlah akhir. Tanda = mengganti nilai lama 3 dengan 5; angka 5 bukan air tambahan.',
+        effect: 'Di game: berdiri di penanda Pos 1 saat menjalankan isi_air = 5. Kamu akan melihat indikator tangki naik dari 3 ke 5.',
         description: 'Kamu sudah membawa 3 unit. Di Pos 1, penjaga memberi 2 unit lagi: 3 + 2 = 5. Tulis isi_air = 5 untuk menyimpan jumlah akhir, bukan menambah 5 lagi.',
         requiredWater: 5,
         targets: [
@@ -43,6 +51,10 @@ export default {
     },
     3: {
         title: 'Challenge 3 - Pasok Air ke Pos 2',
+        lessonTitle: '3. Menggunakan nilai variabel',
+        example: 'air_pos = isi_air',
+        lesson: 'Nilai isi_air sekarang 5, hasil 3 unit dari pompa + 2 unit dari Pos 1. Baris ini membaca nilai 5 dari isi_air dan menyimpannya ke air_pos.',
+        effect: 'Di game: jalankan di penanda Pos 2 untuk menyerahkan air, lalu injak petak FINISH. Game mengosongkan isi_air setelah penyerahan; dalam Python biasa, assignment tidak mengosongkan variabel asal.',
         description: 'Bawa 5 unit hasil 3 + 2 ke Pos 2. Tulis air_pos = isi_air untuk menyerahkan nilainya.',
         requiredWater: 5,
         targets: [

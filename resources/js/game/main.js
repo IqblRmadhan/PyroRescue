@@ -3,20 +3,17 @@ import ProgressSync from './ProgressSync.js';
 import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions, createLevel3Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
 import Level1Scene from './scenes/Level1Scene.js';
-import Level1Learning from './Level1Learning.js';
+import LearningPanel from './LearningPanel.js';
 import level1Challenges, { getLevel1MarkerStarterCode } from './Level1Challenges.js';
 import level2Challenges, {
     getLevel2WaterCapacity,
     isLevel2WaterTargetComplete,
 } from './Level2Challenges.js';
 import Level2Scene from './scenes/Level2Scene.js';
-import Level2Learning from './Level2Learning.js';
 import Level3Scene from './scenes/Level3Scene.js';
-import Level3Learning from './Level3Learning.js';
 import level3Challenges from './Level3Challenges.js';
-import { gameAudio, getAudioButtonPresentation } from './GameAudio.js';
-import { shouldPlayTargetCue } from './GameFeedback.js';
-import { playCollisionFeedback } from './DamageFeedback.js';
+import { gameAudio, initGameAudioControls } from './GameAudio.js';
+import { shouldPlayTargetCue, playCollisionFeedback } from './GameFeedback.js';
 import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
 import { Level1Tutorial } from './Level1Tutorial.js';
 import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, badgeForScore, canFinishLevel } from './GameScore.js';
@@ -30,20 +27,13 @@ const hasEvaluation = levelNumber > 1;
 const challengeDefinitions = isLevel3 ? level3Challenges : isLevel2 ? level2Challenges : level1Challenges;
 const createSuggestions = isLevel3 ? createLevel3Suggestions : isLevel2 ? createLevel2Suggestions : createLevel1Suggestions;
 const editor = document.getElementById('code-editor');
-const Learning = isLevel3 ? Level3Learning : isLevel2 ? Level2Learning : Level1Learning;
-const learning = new Learning(document.getElementById('learning-panel'));
+const learning = new LearningPanel(document.getElementById('learning-panel'), challengeDefinitions);
 const lineNumbers = document.getElementById('code-line-numbers-content');
 const runButton = document.getElementById('run-code');
 const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear-code');
 const hintButton = document.getElementById('hint');
 const hintButtonLabel = hintButton.querySelector('.hint-button__label');
-const audioButton = document.getElementById('audio-toggle');
-const audioButtonIcon = audioButton.querySelector('.hint-button__icon');
-const audioButtonLabel = audioButton.querySelector('.hint-button__label');
-const musicButton = document.getElementById('music-toggle');
-const musicButtonIcon = musicButton.querySelector('.hint-button__icon');
-const musicButtonLabel = musicButton.querySelector('.hint-button__label');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
@@ -88,7 +78,7 @@ let levelCompleted = false;
 let score = 100;
 let resultCanAdvance = false;
 let sceneReady = false;
-let runningCode = false;
+let operationInProgress = false;
 const progressStatus = document.getElementById('progress-sync-status');
 const progressRetry = document.getElementById('progress-sync-retry');
 const saveWarning = document.getElementById('game-sync-warning');
@@ -120,39 +110,6 @@ levelResult.addEventListener('click', event => {
     if (event.target.closest('a[aria-disabled="true"]')) event.preventDefault();
 });
 
-function renderAudioButton() {
-    const presentation = getAudioButtonPresentation('effects', gameAudio.isEffectsMuted());
-    audioButtonIcon.textContent = presentation.icon;
-    audioButtonLabel.textContent = presentation.label;
-    audioButton.setAttribute('aria-label', presentation.ariaLabel);
-    audioButton.setAttribute('aria-pressed', String(presentation.pressed));
-    const musicPresentation = getAudioButtonPresentation('music', gameAudio.isMusicMuted());
-    musicButtonIcon.textContent = musicPresentation.icon;
-    musicButtonLabel.textContent = musicPresentation.label;
-    musicButton.setAttribute('aria-label', musicPresentation.ariaLabel);
-    musicButton.setAttribute('aria-pressed', String(musicPresentation.pressed));
-}
-
-function toggleAudio() {
-    const wasMuted = gameAudio.isEffectsMuted();
-    if (!wasMuted) gameAudio.play('uiClick');
-    const isMuted = gameAudio.toggleEffectsMuted();
-    renderAudioButton();
-
-    if (!isMuted) {
-        void gameAudio.unlock().then((ready) => {
-            if (ready) gameAudio.play('uiClick');
-        });
-    }
-}
-
-function toggleMusic() {
-    gameAudio.play('uiClick');
-    const isMuted = gameAudio.toggleMusicMuted();
-    renderAudioButton();
-    if (!isMuted) void gameAudio.unlock();
-}
-
 function updateLineNumbers() {
     const lineCount = editor.value.split('\n').length;
     lineNumbers.textContent = Array.from(
@@ -164,7 +121,7 @@ function updateLineNumbers() {
 
 function showFeedback(message, state = 'info') {
     guideDialogue.start([{ message, state }]);
-    setControlsDisabled(true);
+    updateControls();
     renderGuide(true);
 }
 
@@ -206,7 +163,7 @@ function renderGuide(showInstruction = false) {
         ], { duration: 260, easing: 'cubic-bezier(.22, 1, .36, 1)' });
     }
     feedbackOkButton.focus({ preventScroll: true });
-    setControlsDisabled(true);
+    updateControls();
 }
 
 async function nextGuideMessage() {
@@ -236,16 +193,23 @@ async function nextGuideMessage() {
         guideTransitioning = false;
         feedbackOkButton.disabled = false;
         if (feedback.open) feedbackOkButton.focus({ preventScroll: true });
-        setControlsDisabled(levelCompleted);
+        updateControls();
     }
 }
 
 // Tombol aksi dikunci selama animasi dan selama penjelasan masih dibaca.
-function setControlsDisabled(disabled) {
-    const locked = disabled || !sceneReady || feedback.open || Boolean(guideDialogue.current);
+function areControlsLocked() {
+    return operationInProgress || levelCompleted || !sceneReady || feedback.open
+        || Boolean(guideDialogue.current) || Boolean(level1Tutorial?.opened);
+}
+
+function updateControls() {
+    const locked = areControlsLocked();
     runButton.disabled = locked;
     resetButton.disabled = locked;
     clearButton.disabled = locked;
+    const tutorialButton = document.getElementById('tutorial-open');
+    if (tutorialButton) tutorialButton.disabled = locked;
 }
 
 function reduceScore(penalty) {
@@ -521,8 +485,8 @@ const scene = new Scene({
         sceneReady = true;
         configureChallenge();
         if (level1Tutorial && currentChallenge === 1) {
-            setControlsDisabled(true);
             level1Tutorial.open(() => renderGuide(true));
+            updateControls();
         } else {
             renderGuide(true);
         }
@@ -536,10 +500,10 @@ const scene = new Scene({
 });
 level1Tutorial?.setMapScene(scene);
 document.getElementById('tutorial-open')?.addEventListener('click', () => {
-    if (!sceneReady || feedback.open || runningCode || levelCompleted) return;
+    if (areControlsLocked()) return;
     gameAudio.play('uiClick');
-    setControlsDisabled(true);
-    level1Tutorial.open(() => setControlsDisabled(false));
+    level1Tutorial.open(updateControls);
+    updateControls();
 });
 const autocomplete = new CodeAutocomplete(
     editor,
@@ -551,7 +515,7 @@ const autocomplete = new CodeAutocomplete(
 
 // 4. Validasi dahulu, jalankan aksi, lalu tampilkan hasilnya.
 async function runCode() {
-    if (levelCompleted || runningCode || feedback.open || guideDialogue.current || !sceneReady) return;
+    if (areControlsLocked()) return;
     showCodeError();
 
     const definition = challengeDefinitions[currentChallenge];
@@ -569,15 +533,15 @@ async function runCode() {
     );
 
     if (!result.syntaxValid || !result.conceptValid) {
-        runningCode = true;
-        setControlsDisabled(true);
+        operationInProgress = true;
+        updateControls();
         try {
             gameAudio.play('commandError');
             showCodeError(result.message);
             await applyDamage(CODE_ERROR_PENALTY);
         } finally {
-            runningCode = false;
-            setControlsDisabled(false);
+            operationInProgress = false;
+            updateControls();
         }
         return;
     }
@@ -585,8 +549,8 @@ async function runCode() {
     gameAudio.play('run');
 
     hideFeedback();
-    runningCode = true;
-    setControlsDisabled(true);
+    operationInProgress = true;
+    updateControls();
 
     try {
         const completedCommands = [];
@@ -638,8 +602,8 @@ async function runCode() {
         console.error('Aksi game tidak dapat diselesaikan.', error);
         showFeedback('Aksi terhenti. Tekan Mengerti, lalu Ulangi untuk kembali ke awal challenge.', 'error');
     } finally {
-        runningCode = false;
-        setControlsDisabled(levelCompleted);
+        operationInProgress = false;
+        updateControls();
     }
 }
 
@@ -663,12 +627,13 @@ function toggleHint() {
 }
 
 async function resetChallenge() {
-    if (levelCompleted) return;
+    if (areControlsLocked()) return;
     showCodeError();
 
     gameAudio.play('reset');
 
-    setControlsDisabled(true);
+    operationInProgress = true;
+    updateControls();
     configureChallenge({ updateScene: false });
 
     try {
@@ -676,8 +641,12 @@ async function resetChallenge() {
         autocomplete.hide();
         hideFeedback();
         renderGuide(true);
+    } catch (error) {
+        console.error('Challenge tidak dapat diulang.', error);
+        showCodeError('Challenge belum berhasil diulang. Coba tekan Ulangi lagi.');
     } finally {
-        setControlsDisabled(false);
+        operationInProgress = false;
+        updateControls();
     }
 }
 
@@ -700,8 +669,6 @@ runButton.addEventListener('click', runCode);
 resetButton.addEventListener('click', resetChallenge);
 clearButton.addEventListener('click', clearCode);
 hintButton.addEventListener('click', toggleHint);
-audioButton.addEventListener('click', toggleAudio);
-musicButton.addEventListener('click', toggleMusic);
 feedbackOkButton.addEventListener('click', nextGuideMessage);
 feedback.addEventListener('cancel', (event) => {
     event.preventDefault();
@@ -719,13 +686,7 @@ resultReplay.addEventListener('click', () => {
     url.searchParams.set('replay', '1');
     window.location.assign(url);
 });
-const resumeAudio = event => {
-    if (event.target?.closest?.('#music-toggle, #audio-toggle')) return;
-    if (!gameAudio.isMusicMuted() || !gameAudio.isEffectsMuted()) void gameAudio.unlock();
-};
-window.addEventListener('pointerdown', resumeAudio);
-window.addEventListener('keydown', resumeAudio);
-renderAudioButton();
+initGameAudioControls(document.getElementById('music-toggle'), document.getElementById('audio-toggle'));
 updateLineNumbers();
 
 const config = {

@@ -78,7 +78,6 @@ npm run dev
 Di `resources/js/app.js`:
 
 ```js
-import './bootstrap';
 import './game/main';
 ```
 

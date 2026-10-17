@@ -175,3 +175,29 @@ test('Level 1 evaluation accepts movement to FINISH and rejects new assignments'
     assert.equal(movement.actions.commands.length, 15);
     assert.equal(validator.validateVariable('isi_air = 5', 5, 4).syntaxValid, false);
 });
+
+test('Level 1 rejects split identifiers, split numbers, and unexpected indentation', () => {
+    for (const code of ['isi_ air = 3', 'i s i _ a i r = 3', 'isi_air = 1 2',
+        'ka nan(1)', 'kanan(1 2)', '    isi_air = 3', '\tkanan(1)']) {
+        const result = validator.validateVariable(code, 3);
+        assert.equal(result.syntaxValid, false, code);
+        assert.equal(result.actions, null, code);
+        assert.ok(result.message, code);
+    }
+    assert.equal(validator.validateVariable('kanan ( 2 )\nisi_air\t=\t3', 3).missionSuccess, true);
+    assert.equal(validator.validateVariable('air_ pos = isi_air', 5, 3).syntaxValid, false);
+    assert.equal(validator.validateVariable('air_pos = isi_ air', 5, 3).syntaxValid, false);
+});
+
+test('Level 1 action limit includes assignment and transfer in either order', () => {
+    for (const [assignment, challenge] of [['isi_air = 3', 1], ['air_pos = isi_air', 3]]) {
+        for (const steps of [119, 120]) {
+            for (const code of [`kanan(${steps})\n${assignment}`, `${assignment}\nkanan(${steps})`]) {
+                const result = validator.validateVariable(code, 3, challenge);
+                assert.equal(result.syntaxValid, steps === 119, code);
+                if (steps === 119) assert.equal(result.actions.commands.length, 120);
+                else assert.equal(result.actions, null);
+            }
+        }
+    }
+});

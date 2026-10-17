@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import { addFinishTile } from '../FinishPoint.js';
-import { getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
+import { addFinishTile, getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
 import { addPostLabel, addPumpLabel } from '../PumpLabel.js';
 import {
     addLevel1MapShadow,
@@ -51,10 +50,8 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     preload() {
-        this.mapLoadFailed = false;
         this.load.on('loaderror', (file) => {
             if (file.key === 'levelMap') {
-                this.mapLoadFailed = true;
                 return;
             }
 

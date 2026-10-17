@@ -46,7 +46,7 @@ perintah. Pada layar kecil, map dan PyroPad disusun vertikal.
 Pemandu tampil sebagai dialog di bagian bawah layar, dengan karakter besar di
 kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuka.
 
-- `Level1Learning.js` mengganti materi sesuai challenge: membuat variabel,
+- `LearningPanel.js` membaca materi dari `Level*Challenges.js` untuk ketiga level. Pada Level 1: membuat variabel,
   mengganti nilai, lalu memakai nilainya.
 - Setelah Run gerakan selesai tepat di penanda challenge Level 1, kode gerakan
   diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.

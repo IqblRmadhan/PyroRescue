@@ -365,3 +365,43 @@ export class GameAudio {
 }
 
 export const gameAudio = new GameAudio();
+
+// Kontrol halaman menggunakan preferensi dan engine yang sama dengan cerita pembuka.
+export function initGameAudioControls(musicButton, effectsButton) {
+    function renderButtons() {
+        for (const [button, channel, muted] of [
+            [musicButton, 'music', gameAudio.isMusicMuted()],
+            [effectsButton, 'effects', gameAudio.isEffectsMuted()],
+        ]) {
+            const presentation = getAudioButtonPresentation(channel, muted);
+            button.querySelector('.hint-button__icon').textContent = presentation.icon;
+            button.querySelector('.hint-button__label').textContent = presentation.label;
+            button.setAttribute('aria-label', presentation.ariaLabel);
+            button.setAttribute('aria-pressed', String(presentation.pressed));
+        }
+    }
+
+    musicButton.addEventListener('click', () => {
+        gameAudio.play('uiClick');
+        const muted = gameAudio.toggleMusicMuted();
+        renderButtons();
+        if (!muted) void gameAudio.unlock();
+    });
+    effectsButton.addEventListener('click', () => {
+        if (!gameAudio.isEffectsMuted()) gameAudio.play('uiClick');
+        const muted = gameAudio.toggleEffectsMuted();
+        renderButtons();
+        if (!muted) {
+            void gameAudio.unlock().then((ready) => {
+                if (ready) gameAudio.play('uiClick');
+            });
+        }
+    });
+    const resumeAudio = event => {
+        if (musicButton.contains(event.target) || effectsButton.contains(event.target)) return;
+        if (!gameAudio.isMusicMuted() || !gameAudio.isEffectsMuted()) void gameAudio.unlock();
+    };
+    window.addEventListener('pointerdown', resumeAudio);
+    window.addEventListener('keydown', resumeAudio);
+    renderButtons();
+}

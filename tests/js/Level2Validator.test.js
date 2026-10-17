@@ -101,3 +101,13 @@ test('the total expanded action budget includes all loops and movements', () => 
     const code = 'for i in range(60):\n    semprot()\nfor j in range(61):\n    semprot()';
     assert.equal(validator.validateLoop(code, 3, 2).syntaxValid, false);
 });
+
+test('pasted nonstandard indentation returns feedback instead of throwing', () => {
+    for (const indentation of ['\u00a0'.repeat(4), '\u2003', '\v', ' \t']) {
+        const result = validator.validateLoop(`for i in range(1):\n${indentation}semprot()`, 1, 2);
+        assert.equal(result.syntaxValid, false);
+        assert.equal(result.actions, null);
+        assert.ok(result.message);
+    }
+    assert.equal(validator.validateLoop('for i in range(1):\n\tsemprot()', 1, 2).missionSuccess, true);
+});

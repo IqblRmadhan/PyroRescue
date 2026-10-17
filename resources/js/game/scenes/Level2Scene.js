@@ -13,8 +13,7 @@ import {
     level2TileToWorld,
 } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
-import { addFinishTile } from '../FinishPoint.js';
-import { getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
+import { addFinishTile, getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
 import { addFireLabel, addPumpLabel } from '../PumpLabel.js';
 import challenges, {
     getFirePresentation,
@@ -285,7 +284,7 @@ export default class Level2Scene extends Phaser.Scene {
             } else if (command.type === 'setWater') {
                 const pump = this.challengeNumber === 4 ? this.map.evaluationPump : this.map.pump;
                 if (!this.isAt(pump.action)) {
-                    return { status: 'error', missionSuccess: false, message: 'Berdirilah tepat di petak bertanda merah di samping pompa.' };
+                    return { status: 'error', missionSuccess: false, message: 'Berdirilah tepat di petak bertanda biru di samping pompa.' };
                 }
                 await this.fillWater(command.amount, this.challengeNumber === 4 ? this.evaluationPump : this.pump);
             } else if (command.type === 'spray') {

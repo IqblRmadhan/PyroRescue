@@ -6,8 +6,8 @@ halaman dengan game. Bagian-bagiannya diberi komentar bernomor agar mudah diikut
 ## Alur saat pemain menekan Run Code
 
 1. `runCode()` membaca teks dari editor.
-2. `CodeValidator.validateVariable()` memeriksa apakah perintah didukung.
-3. Jika salah, `showFeedback()` menampilkan pesan. Game tidak bergerak.
+2. `CodeValidator` memilih validasi variabel, perulangan, atau percabangan sesuai level.
+3. Jika salah, `showCodeError()` menampilkan pesan di bawah editor dan HP berkurang. Game tidak bergerak.
 4. Jika valid, `scene.runCommands()` menjalankan aksi secara berurutan.
 5. Scene mengirim keadaan terbaru, seperti posisi dan jumlah air.
 6. `renderMissionState()` memperbarui target dan panel belajar.
@@ -20,14 +20,22 @@ perintah yang diizinkan menjadi aksi game.
 
 | Kebutuhan | File di `resources/js/game/` |
 | --- | --- |
-| Judul, target, dan hint challenge | `Level1Challenges.js` |
+| Judul, target, hint, dan isi materi setiap level | `Level1Challenges.js`, `Level2Challenges.js`, `Level3Challenges.js` |
 | Tombol Run, Ulangi, hint, dan pergantian challenge | `main.js` |
 | Saran penulisan kode dan kamus perintah | `CodeAutocomplete.js` |
-| Pemeriksaan kode Python yang didukung | `CodeValidator.js` |
-| Materi variabel dan penjelasan setiap baris | `Level1Learning.js` |
-| Gerakan, animasi, dan kondisi dunia game | `scenes/Level1Scene.js` |
-| Posisi jalan, pompa, dan pos | `Level1Map.js` |
-| Gambar serta frame animasi | `Level1Assets.js` |
+| Pemeriksaan kode Python yang didukung | `CodeValidator.js`, `Level3Validator.js` |
+| Tampilan materi untuk semua level | `LearningPanel.js` |
+| Arahan posisi dan penjelasan kode yang dijalankan | `MissionGuide.js` |
+| Gerakan, animasi, dan kondisi dunia game | `scenes/Level1Scene.js`, `Level2Scene.js`, `Level3Scene.js` |
+| Posisi jalan, pompa, dan pos | `Level*Map.js` |
+| Gambar serta frame animasi | `Level*Assets.js` |
+| Penanda pompa, challenge, dan ubin FINISH | `MapMarkers.js` |
+| Efek kerusakan dan aturan suara target | `GameFeedback.js` |
+| Musik, efek suara, serta tombol Musik/SFX | `GameAudio.js` |
+
+Run dan Ulangi memakai satu status `operationInProgress` di `main.js`.
+`areControlsLocked()` juga mempertimbangkan tutorial, dialog, kesiapan scene,
+dan penyelesaian level. Semua pembaruan tombol melalui `updateControls()`.
 
 Susunan halaman ada di `resources/views/game/prototype.blade.php`, sedangkan
 warna, ukuran, font, dan tata letaknya ada di `resources/css/app.css`.
@@ -53,3 +61,11 @@ berikutnya, tanpa membekukan halaman.
 Jalankan `npm test` untuk memeriksa logika dan `npm run build` untuk memastikan
 JavaScript serta CSS dapat dibangun. Lalu coba ketiga challenge di browser,
 termasuk Run, Ulangi, hint, dan autocomplete dengan keyboard maupun sentuhan.
+
+Pemeriksaan integrasi ketiga level tersedia di `tests/browser/game-ui.mjs`.
+Dengan server Laravel aktif, jalankan `node tests/browser/game-ui.mjs` memakai
+instalasi Playwright yang tersedia. Jika modul berada di luar proyek, isi
+`PLAYWRIGHT_MODULE` dengan URL `file:///.../playwright/index.mjs`.
+`GAME_URL` dapat mengganti alamat bawaan `http://127.0.0.1:8000`.
+Tes menggunakan mode tamu, memeriksa penguncian reset/tutorial dan pesan
+validator, lalu menjalankan ketiga level melalui editor sampai FINISH.

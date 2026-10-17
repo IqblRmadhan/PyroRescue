@@ -2,7 +2,6 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as Level1Map from '../../resources/js/game/Level1Map.js';
 import {
-    isNextTo,
     isOnTile,
     isWalkable,
     level1Map,
@@ -97,10 +96,8 @@ test('water pump is beside the road but does not occupy a walkable tile', () => 
     assert.deepEqual(level1Map.waterAction, { column: 6, row: 20 });
     assert.equal(isWalkable(level1Map.pump.column, level1Map.pump.row), false);
     assert.equal(isWalkable(level1Map.waterAction.column, level1Map.waterAction.row), true);
-    assert.equal(isNextTo(level1Map.waterAction.column, level1Map.waterAction.row, level1Map.pump), true);
     assert.equal(isOnTile(6, 20, level1Map.waterAction), true);
     assert.equal(isOnTile(6, 21, level1Map.waterAction), false);
-    assert.equal(isNextTo(6, 21, level1Map.pump), false);
 });
 
 test('Pos 1 interaction point is on the middle-left road', () => {

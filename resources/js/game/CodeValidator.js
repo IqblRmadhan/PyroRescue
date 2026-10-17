@@ -67,9 +67,10 @@ export default class CodeValidator {
                 let indentation;
                 while (index + 1 < lines.length && /^\s/.test(lines[index + 1])) {
                     const body = lines[++index];
-                    const spaces = body.match(/^[ \t]+/)[0];
+                    const spaces = body.match(/^[ \t]+/)?.[0];
                     indentation ??= spaces;
-                    if (spaces !== indentation || !/^[ \t]+semprot\s*\(\s*\)$/.test(body)) {
+                    if (!spaces || spaces !== indentation || !/^[ \t]+semprot\s*\(\s*\)$/.test(body)
+                        || (spaces.includes(' ') && spaces.includes('\t'))) {
                         return fail('Blok for hanya berisi semprot() dengan indentasi yang sama.');
                     }
                     bodyCount += 1;
@@ -116,8 +117,8 @@ export default class CodeValidator {
             actions: null,
         };
         const lines = code.replace(/\r\n?/g, '\n').split('\n')
-            .map((line) => line.split('#')[0].trim())
-            .filter((line) => line !== '');
+            .map((line) => line.split('#')[0].trimEnd())
+            .filter((line) => line.trim() !== '');
 
         if (lines.length === 0) {
             result.message = 'Tulis perintah seperti atas(2), kanan(2), atau assignment variabel yang diminta.';
@@ -141,9 +142,16 @@ export default class CodeValidator {
         let water = 0;
 
         for (const line of lines) {
-            const normalizedLine = line.replace(/[ \t]/g, '');
-            const waterAssignment = normalizedLine.match(/^isi_air=(0|[1-9][0-9]*)$/);
-            const movementMatch = normalizedLine.match(/^(atas|bawah|kanan|kiri)\((0|[1-9][0-9]*)\)$/);
+            if (/^\s/.test(line)) {
+                result.message = 'Perintah Level 1 ditulis tanpa indentasi di awal baris.';
+                return result;
+            }
+            if (commands.length >= 120) {
+                result.message = 'Gunakan maksimal 120 aksi dalam satu kali Run.';
+                return result;
+            }
+            const waterAssignment = line.match(/^isi_air[ \t]*=[ \t]*(0|[1-9][0-9]*)$/);
+            const movementMatch = line.match(/^(atas|bawah|kanan|kiri)[ \t]*\([ \t]*(0|[1-9][0-9]*)[ \t]*\)$/);
 
             if (waterAssignment) {
                 if (challengeNumber >= 3) {
@@ -165,7 +173,7 @@ export default class CodeValidator {
                 continue;
             }
 
-            if (normalizedLine === 'air_pos=isi_air') {
+            if (/^air_pos[ \t]*=[ \t]*isi_air$/.test(line)) {
                 if (challengeNumber !== 3) {
                     result.message = 'air_pos = isi_air baru digunakan pada Challenge 3.';
                     return result;

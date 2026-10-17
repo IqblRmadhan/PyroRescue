@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
-import { playCollisionFeedback } from '../../resources/js/game/DamageFeedback.js';
+import { playCollisionFeedback } from '../../resources/js/game/GameFeedback.js';
 
 function createScene() {
     const state = { tint: null, shakes: 0, cancelled: false, timerRemoved: false };

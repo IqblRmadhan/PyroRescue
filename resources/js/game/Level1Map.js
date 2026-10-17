@@ -73,17 +73,6 @@ export function isWalkable(column, row) {
     return walkableTiles.has(`${column},${row}`);
 }
 
-export function isNextTo(column, row, target) {
-    return Math.abs(column - target.column) + Math.abs(row - target.row) === 1;
-}
-
-export function isWithinOneTile(column, row, target) {
-    const columnDistance = Math.abs(column - target.column);
-    const rowDistance = Math.abs(row - target.row);
-
-    return Math.max(columnDistance, rowDistance) === 1;
-}
-
 export function isOnTile(column, row, target) {
     return column === target.column && row === target.row;
 }

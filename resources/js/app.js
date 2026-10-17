@@ -1,4 +1,3 @@
-import './bootstrap';
 import '../css/splash.css';
 import '../css/page-loader.css';
 import '../css/auth-refresh.css';

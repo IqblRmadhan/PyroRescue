@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import * as FinishPoint from '../../resources/js/game/FinishPoint.js';
-import { getFinishFootprint } from '../../resources/js/game/FinishPoint.js';
+import * as FinishPoint from '../../resources/js/game/MapMarkers.js';
+import { getFinishFootprint } from '../../resources/js/game/MapMarkers.js';
 
 test('finish tile can be drawn without creating a label', () => {
     const state = { rectangles: [] };

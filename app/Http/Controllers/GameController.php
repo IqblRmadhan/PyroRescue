@@ -21,7 +21,6 @@ class GameController extends Controller
                 || $progress['challenges'] >= $progress['total_challenges'] ? 1
                 : $progress['challenges'] + 1,
             'saveProgress' => (bool) $request->user(),
-            'earnedAchievementKeys' => array_column(array_filter($summary['achievements'], fn ($achievement) => $achievement['earned']), 'key'),
         ]);
     }
 }
