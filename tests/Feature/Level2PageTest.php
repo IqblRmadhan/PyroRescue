@@ -12,7 +12,8 @@ class Level2PageTest extends TestCase
         $this->post(route('login.guest'));
         $this->get('/main-menu')->assertOk()->assertSee(url('/game/2'), false);
         $this->get('/game/2')->assertOk()
-            ->assertSee('class="game-prototype game-workspace game-scale-80"', false)
+            ->assertSee('class="game-prototype game-workspace game-scale-80 is-page-loading"', false)
+            ->assertSee('Menyiapkan cerita Level 2...')
             ->assertSee('Hutan Gambut Berasap')
             ->assertSee('id="level-story"', false)
             ->assertSee('data-level-number="2"', false)

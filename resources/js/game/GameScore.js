@@ -12,6 +12,11 @@ export function starsForScore(score, evaluationComplete) {
     return 3;
 }
 
+export function starsForFinish(score, missionComplete) {
+    const stars = starsForScore(score, true);
+    return missionComplete ? stars : Math.min(2, stars);
+}
+
 export function badgeForScore(levelNumber, score) {
     const stars = starsForScore(score, true);
     return {
@@ -21,8 +26,9 @@ export function badgeForScore(levelNumber, score) {
     };
 }
 
-export function canFinishLevel(completedChallenges, currentChallenge, outcome) {
+export function canFinishLevel(completedChallenges, currentChallenge, outcome, levelNumber = 1) {
     const completedTraining = [1, 2, 3].every(number => completedChallenges.has(number)
         || (currentChallenge === number && outcome.missionSuccess));
-    return completedTraining && outcome.reachedFinish && outcome.missionSuccess;
+    const evaluationReached = currentChallenge === 4 || (levelNumber === 1 && currentChallenge === 3);
+    return completedTraining && evaluationReached && outcome.reachedFinish && outcome.missionSuccess;
 }

@@ -69,9 +69,10 @@
 @keyframes journey-signal { 50% { box-shadow: 0 0 0 7px #83e1a00b, 0 0 18px #83e1a0; } }
 @keyframes journey-idle { to { background-position-x: -660px; } }
 .menu-achievements { margin-top: 65px; }
-.menu-achievement-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }
+.menu-achievement-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .menu-achievement { position: relative; display: flex; align-items: center; flex-direction: column; padding: 26px 16px 24px; border: 1px solid #7897a84d; border-radius: 14px; background: radial-gradient(ellipse at 50% 15%, #48758130, transparent 65%), #153247; text-align: center; }
 .menu-achievement__number { position: absolute; top: 13px; left: 15px; color: #8aa6ae; font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+.menu-achievement__level { position: absolute; top: 13px; right: 15px; color: #a9c8ce; font-size: 9px; font-weight: 800; letter-spacing: .1em; }
 .menu-achievement__medal { width: 112px; margin-bottom: 18px; }
 .menu-achievement__state { padding: 5px 9px; border: 1px solid #809eab40; border-radius: 20px; background: #0c263750; font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #a1bec8; }
 .menu-achievement h3 { margin: 11px 0 8px; color: #e5e6db; font-size: 16px; font-weight: 700; }
@@ -98,7 +99,11 @@
 .progress-sync-pending { pointer-events: none; opacity: .5; }
 .game-sync-warning[hidden] { display: none; }
 .game-sync-warning { position: fixed; z-index: 190; right: 20px; top: 20px; max-width: calc(100% - 40px); padding: 12px 18px; color: #4f3516; border: 2px solid #e0b25b; border-radius: 8px; background: #ffedb7; font: 700 13px/1.5 'Trebuchet MS', sans-serif; box-shadow: 0 5px 20px #071d3e88; cursor: pointer; }
-.achievement-toast { position: fixed; z-index: 200; top: 20px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); padding: 15px 23px; border: 2px solid #f0ca78; border-radius: 10px; background: #143c52; color: #ffe6a6; box-shadow: 0 8px 25px #04192588; font: 700 14px/1.5 'Trebuchet MS', sans-serif; text-align: center; }
+.achievement-toast { position: fixed; z-index: 200; top: 18px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; width: min(330px, calc(100% - 32px)); padding: 10px 14px; border: 2px solid #f0ca78; border-radius: 10px; background: #143c52; color: #ffe6a6; box-shadow: 0 8px 25px #04192588; font: 700 14px/1.4 'Trebuchet MS', sans-serif; animation: achievement-enter 250ms ease-out; pointer-events: none; }
+.achievement-toast .achievement-badge { flex: 0 0 58px; width: 58px; }
+.achievement-toast__label { display: block; margin-bottom: 4px; color: #a9d5cc; font-size: 9px; letter-spacing: .13em; }
+.achievement-toast strong { display: block; }
+@keyframes achievement-enter { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translate(-50%, 0); } }
 @media (max-width: 1100px) { .menu-achievement-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 1000px) {
     .journey-board__top { grid-template-columns: minmax(0, 1fr) 110px; }

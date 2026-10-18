@@ -513,6 +513,9 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     async updateWaterAtPost(amount) {
+        if (amount !== this.requiredWater) {
+            return { success: false, message: `Pos 1 hanya menyiapkan ${this.requiredWater} unit air. Nilai ${amount} tidak dapat diisi.` };
+        }
         if (!isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
             return {
                 success: false,

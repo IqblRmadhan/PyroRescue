@@ -10,5 +10,5 @@
         <path d="m60 23 2 4 5 1-4 3 1 5-4-2-4 2 1-5-4-3 5-1Z" fill="var(--badge-color, #ffe396)"/>
     </svg>
     <span class="achievement-badge__symbol">@include('game.partials.achievement-icon', ['kind' => $kind])</span>
-    <span class="achievement-badge__rank">{{ ['water' => 'AIR', 'supply' => 'I', 'loop' => 'FOR', 'shield' => 'II', 'rescue' => 'III'][$kind] ?? '' }}</span>
+    <span class="achievement-badge__rank">{{ ['water' => 'AIR', 'post' => 'POS', 'supply' => 'I', 'spark' => 'API', 'loop' => 'FOR', 'shield' => 'II', 'habitat' => 'HUTAN', 'branch' => 'IF', 'rescue' => 'III'][$kind] ?? '' }}</span>
 </span>

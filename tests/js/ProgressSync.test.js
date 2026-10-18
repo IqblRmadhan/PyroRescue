@@ -44,3 +44,19 @@ test('final evaluation sends the percentage with the fourth challenge', async t 
     assert.equal(await sync.save(4, 85), true);
     assert.deepEqual(sent, { level: 1, challenge: 4, score: 85 });
 });
+
+test('successful save reports earned achievements to the game', async t => {
+    const received = [];
+    t.mock.method(globalThis, 'fetch', async () => ({
+        ok: true,
+        json: async () => ({ saved: true, achievements: [
+            { key: 'water', title: 'Pasokan Pertama', earned: true },
+        ] }),
+    }));
+    const sync = new ProgressSync({
+        url: '/progress/challenge', token: 'test', level: 1,
+        onStatus() {}, onSaved: data => received.push(data.achievements[0].key),
+    });
+    assert.equal(await sync.save(1), true);
+    assert.deepEqual(received, ['water']);
+});

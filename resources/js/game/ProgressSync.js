@@ -1,7 +1,7 @@
 // Antrean menjaga urutan challenge ketika pemain melanjutkan sebelum respons sebelumnya tiba.
 export default class ProgressSync {
-    constructor({ url, token, level, onStatus }) {
-        Object.assign(this, { url, token, level, onStatus });
+    constructor({ url, token, level, onStatus, onSaved = () => {} }) {
+        Object.assign(this, { url, token, level, onStatus, onSaved });
         this.pending = new Map();
         this.running = null;
     }
@@ -31,6 +31,7 @@ export default class ProgressSync {
                 const data = await response.json();
                 if (!data.saved) throw new Error('Sesi akun tidak aktif.');
                 this.pending.delete(challenge);
+                this.onSaved(data);
             }
             this.onStatus('saved');
             return true;

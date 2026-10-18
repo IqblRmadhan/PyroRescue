@@ -13,7 +13,8 @@ export class MenuMusic {
         this.audio = createAudio(source);
         this.audio.loop = true;
         this.audio.volume = 0.5;
-        this.audio.preload = 'none';
+        this.audio.preload = 'auto';
+        this.audio.autoplay = !this.muted;
         this.playing = false;
         this.starting = null;
         this.playRequest = 0;
@@ -92,6 +93,8 @@ export function initMenuMusic(button) {
         if (document.hidden) music.pause();
         else void music.start();
     });
+    window.addEventListener('pageshow', () => { void music.start(); });
+    window.addEventListener('focus', () => { void music.start(); });
     window.addEventListener('pagehide', () => music.pause());
     void music.start();
     return music;

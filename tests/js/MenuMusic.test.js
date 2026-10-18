@@ -33,6 +33,7 @@ test('menu music can start after autoplay rejection and remembers the choice for
 
     assert.equal(await menu.music.start(), false);
     assert.equal(menu.label.textContent, 'Putar Musik');
+    assert.equal(menu.music.audio.autoplay, true);
     allowed = true;
     assert.equal(await menu.music.start(), true);
     assert.equal(menu.attributes['aria-pressed'], 'true');

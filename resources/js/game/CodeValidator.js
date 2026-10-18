@@ -168,6 +168,12 @@ export default class CodeValidator {
                     return result;
                 }
 
+                if (challengeNumber === 2 && water !== requiredWater) {
+                    result.message = `Di Pos 1, jumlah akhir harus tepat ${requiredWater} unit (3 dari pompa + 2 bantuan). Nilai ${water} tidak dapat diisi.`;
+                    result.syntaxValid = true;
+                    return result;
+                }
+
                 hasWaterAssignment = true;
                 commands.push({ type: 'setWater', amount: water });
                 continue;

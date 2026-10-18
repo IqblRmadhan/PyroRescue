@@ -16,7 +16,7 @@ import { gameAudio, initGameAudioControls } from './GameAudio.js';
 import { shouldPlayTargetCue, playCollisionFeedback } from './GameFeedback.js';
 import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
 import { Level1Tutorial } from './Level1Tutorial.js';
-import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, badgeForScore, canFinishLevel } from './GameScore.js';
+import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForFinish, badgeForScore, canFinishLevel } from './GameScore.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -58,6 +58,7 @@ const targetList = document.getElementById('target-list');
 const levelResult = document.getElementById('level-result');
 const resultRating = document.getElementById('result-rating');
 const resultBadge = document.getElementById('result-badge');
+const resultReward = document.getElementById('result-reward');
 const resultTitle = document.getElementById('result-title');
 const resultEyebrow = document.getElementById('result-eyebrow');
 const resultSubtitle = document.getElementById('result-subtitle');
@@ -68,6 +69,9 @@ const level1Tutorial = levelNumber === 1
     ? new Level1Tutorial(document.getElementById('level1-tutorial')) : null;
 const defaultHint = 'Susun instruksi dari atas ke bawah.';
 const gameContainer = document.getElementById('game-container');
+const earnedAchievementKeys = new Set(JSON.parse(gameContainer.dataset.earnedAchievements || '[]'));
+const achievementQueue = [];
+let achievementToastOpen = false;
 let currentChallenge = Number(gameContainer.dataset.resumeChallenge ?? 1);
 let hintIndex = 0;
 let latestState = {};
@@ -103,6 +107,14 @@ const progressSync = gameContainer.dataset.progressUrl ? new ProgressSync({
     token: document.querySelector('meta[name="csrf-token"]').content,
     level: levelNumber,
     onStatus: showSaveStatus,
+    onSaved: data => {
+        for (const achievement of data.achievements ?? []) {
+            if (!achievement.earned || earnedAchievementKeys.has(achievement.key)) continue;
+            earnedAchievementKeys.add(achievement.key);
+            achievementQueue.push(achievement);
+        }
+        showNextAchievement();
+    },
 }) : null;
 progressRetry.addEventListener('click', () => { void progressSync?.flush(); });
 saveWarning.addEventListener('click', () => { void progressSync?.flush(); });
@@ -272,6 +284,33 @@ function showBadge(badge) {
     window.setTimeout(() => toast.remove(), 6500);
 }
 
+function showNextAchievement() {
+    if (achievementToastOpen || !achievementQueue.length) return;
+    achievementToastOpen = true;
+    const achievement = achievementQueue.shift();
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.setAttribute('role', 'status');
+    const medal = document.getElementById('achievement-icon-library')
+        ?.querySelector(`[data-achievement-key="${achievement.key}"] .achievement-badge`)
+        ?.cloneNode(true);
+    if (medal) toast.append(medal);
+    const copy = document.createElement('div');
+    const label = document.createElement('span');
+    label.className = 'achievement-toast__label';
+    label.textContent = 'PENCAPAIAN BARU';
+    const title = document.createElement('strong');
+    title.textContent = achievement.title;
+    copy.append(label, title);
+    toast.append(copy);
+    document.body.append(toast);
+    window.setTimeout(() => {
+        toast.remove();
+        achievementToastOpen = false;
+        showNextAchievement();
+    }, 4200);
+}
+
 function hideHint() {
     hintText.hidden = true;
     hintButton.setAttribute('aria-expanded', 'false');
@@ -433,32 +472,36 @@ function configureChallenge({ updateScene = true } = {}) {
     }
 }
 
-function showLevelResult() {
+function showLevelResult(missionComplete = true) {
     const badge = badgeForScore(levelNumber, score);
-    const stars = starsForScore(score, true);
-    resultCanAdvance = true;
+    const stars = starsForFinish(score, missionComplete);
+    resultCanAdvance = missionComplete && stars >= 1;
     levelCompleted = true;
     hideFeedback();
-    resultEyebrow.textContent = 'MISI SELESAI';
-    resultTitle.textContent = `Level ${levelNumber} berhasil!`;
-    resultSubtitle.textContent = levelNumber < 3
-        ? `Semua challenge dan evaluasi selesai. Level ${levelNumber + 1} terbuka!`
-        : 'Semua challenge dan evaluasi selesai. Penyelamatan tuntas!';
+    resultEyebrow.textContent = missionComplete ? 'MISI SELESAI' : 'FINISH TERCAPAI';
+    resultTitle.textContent = missionComplete ? `Level ${levelNumber} berhasil!` : 'Misi belum tuntas';
+    resultSubtitle.textContent = !missionComplete
+        ? 'Kamu tiba di FINISH, tetapi masih ada challenge atau evaluasi yang belum selesai. Maksimal 2 bintang; main lagi untuk membuka level berikutnya.'
+        : !resultCanAdvance ? 'Semua challenge selesai, tetapi nilaimu belum mencapai 70%. Main lagi untuk membuka level berikutnya.'
+            : levelNumber < 3 ? `Semua challenge dan evaluasi selesai. Level ${levelNumber + 1} terbuka!`
+                : 'Semua challenge dan evaluasi selesai. Penyelamatan tuntas!';
     resultRating.textContent = badge.title;
     document.getElementById('result-tier').textContent = badge.tier;
     document.getElementById('result-score').textContent = `${score}%`;
-    document.getElementById('result-star-count').textContent = `${stars} / 3 bintang`;
+    document.getElementById('result-star-count').textContent = `${stars} / 3 bintang${missionComplete ? '' : ' percobaan'}`;
     document.getElementById('result-stars').setAttribute('aria-label', `${stars} dari 3 bintang`);
     levelResult.querySelectorAll('.level-result__stars span').forEach((star, index) => {
         star.classList.toggle('is-unearned', index >= stars);
     });
     resultBadge.className = `level-result__badge badge--${badge.style}`;
+    resultReward.hidden = !missionComplete;
+    document.getElementById('progress-sync-status').hidden = !missionComplete;
     if (nextLevelLink) nextLevelLink.hidden = !resultCanAdvance;
     levelResult.hidden = false;
     if (progressSync) showSaveStatus(savingState);
     prototypePage.inert = true;
     (resultReplay.disabled ? resultTitle : resultReplay).focus();
-    showBadge(badge);
+    if (missionComplete) showBadge(badge);
 }
 
 function advanceChallenge() {
@@ -484,6 +527,7 @@ const scene = new Scene({
         if (currentChallenge > 1) await scene.resetChallenge(currentChallenge);
         sceneReady = true;
         configureChallenge();
+        window.dispatchEvent(new Event('pyro:game-ready'));
         if (level1Tutorial && currentChallenge === 1) {
             level1Tutorial.open(() => renderGuide(true));
             updateControls();
@@ -492,6 +536,7 @@ const scene = new Scene({
         }
     },
     onLoadError() {
+        window.dispatchEvent(new Event('pyro:game-load-error'));
         gameAudio.play('commandError');
         showFeedback('Aset game gagal dimuat. Muat ulang halaman untuk mencoba lagi.', 'error');
     },
@@ -563,8 +608,12 @@ async function runCode() {
             await applyDamage(outcome.collision ? COLLISION_PENALTY : CODE_ERROR_PENALTY);
             return;
         }
-        if (outcome.reachedFinish && !canFinishLevel(completedChallenges, currentChallenge, outcome)) {
-            showFeedback('Selesaikan semua challenge dan evaluasi terlebih dahulu, lalu kembali ke FINISH.', 'info');
+        if (outcome.reachedFinish && !canFinishLevel(completedChallenges, currentChallenge, outcome, levelNumber)) {
+            if (outcome.missionSuccess && currentChallenge < 4) {
+                completedChallenges.add(currentChallenge);
+                if (progressSync) void progressSync.save(currentChallenge);
+            }
+            showLevelResult(false);
             return;
         }
         if (outcome.missionSuccess) scene.markChallengeComplete();

@@ -54,7 +54,7 @@ class Level3PageTest extends TestCase
         }
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4, 'score' => 100])->assertOk()
             ->assertJsonPath('levels.3.completed', true)->assertJsonPath('totalStars', 9)->assertJsonPath('completedLevels', 3)
-            ->assertJsonPath('achievements.4.earned', true)->assertJsonPath('achievements.4.tier', 'Emas');
+            ->assertJsonPath('achievements.8.earned', true)->assertJsonPath('achievements.8.tier', 'Emas');
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4, 'score' => 100])->assertOk()->assertJsonPath('totalStars', 9);
         $this->get('/game/3')->assertSee('data-resume-challenge="1"', false);
     }

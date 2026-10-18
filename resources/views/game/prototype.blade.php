@@ -63,8 +63,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @include('partials.favicon')
 </head>
-<body class="game-prototype game-workspace game-scale-80" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
-    <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title"
+<body class="game-prototype game-workspace game-scale-80 is-page-loading" data-audio-base-url="{{ asset('assets/audio') }}" style="--icon-sheet: url('{{ asset('assets/ui/icons.png') }}')">
+    @include('partials.page-loader')
+    <section id="level-story" class="level-story" role="dialog" aria-modal="true" aria-labelledby="story-title" inert
              data-game-page="prototype-page" data-level-number="{{ $levelNumber }}">
         <h1 id="story-title" class="sr-only">Cerita pembuka Level {{ $levelNumber }}</h1>
 
@@ -144,6 +145,7 @@
                      aria-label="Peta hutan Kalimantan. Cubit touchpad untuk zoom, geser dua jari atau klik dan seret untuk menggeser peta. Kamera mengikuti pemadam saat kode dijalankan."
                      data-level="{{ $levelNumber }}" data-asset-base-url="{{ asset('assets') }}"
                      data-progress-url="{{ ($saveProgress ?? false) ? route('progress.challenge') : '' }}"
+                     data-earned-achievements="{{ json_encode($earnedAchievementKeys ?? []) }}"
                      data-resume-challenge="{{ $resumeChallenge ?? 1 }}"></div>
 
                 <div id="damage-overlay" class="game-damage-overlay" aria-hidden="true"></div>
@@ -348,6 +350,13 @@
     </section>
 
     <button id="game-sync-warning" class="game-sync-warning" type="button" hidden>Progres belum tersimpan. Klik untuk mencoba lagi.</button>
+    <div id="achievement-icon-library" hidden>
+        @foreach($achievements ?? [] as $achievement)
+            <span data-achievement-key="{{ $achievement['key'] }}">
+                @include('game.partials.achievement-badge', ['kind' => $achievement['key']])
+            </span>
+        @endforeach
+    </div>
     <section id="level-result" class="level-result" role="dialog" aria-modal="true" aria-labelledby="result-title" hidden>
         <div class="level-result__card">
             <span id="result-eyebrow" class="level-result__eyebrow">HASIL PERMAINAN</span>
@@ -357,7 +366,7 @@
                 <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
             </div>
             <div class="level-result__score"><span>NILAI MISI</span><strong id="result-score">100%</strong><span id="result-star-count">3 / 3 bintang</span></div>
-            <div class="level-result__reward">
+            <div id="result-reward" class="level-result__reward">
                 <div id="result-badge" class="level-result__badge">
                     @include('game.partials.achievement-badge', ['kind' => [1 => 'supply', 2 => 'shield', 3 => 'rescue'][$levelNumber]])
                 </div>
@@ -370,7 +379,7 @@
             <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>
             <div class="level-result__actions">
                 <button id="result-replay" type="button">Main Lagi</button>
-                @if($levelNumber < 3)<a id="next-level-link" href="{{ route('game.level'.($levelNumber + 1)) }}" data-requires-save>Lanjut Level {{ $levelNumber + 1 }}</a>@endif
+                @if($levelNumber < 3)<a id="next-level-link" href="{{ route('game.level'.($levelNumber + 1)) }}" data-level-entry="{{ $levelNumber + 1 }}" data-requires-save>Lanjut Level {{ $levelNumber + 1 }}</a>@endif
                 <a href="{{ route('main-menu') }}">Menu Utama</a>
             </div>
         </div>

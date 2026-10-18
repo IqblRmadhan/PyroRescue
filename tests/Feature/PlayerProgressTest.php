@@ -44,7 +44,7 @@ class PlayerProgressTest extends TestCase
             $response = $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => $challenge,
                 ...($challenge === 4 ? ['score' => 100] : [])])->assertOk();
         }
-        $response->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('totalStars', 6)->assertJsonPath('earnedAchievements', 4);
+        $response->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('totalStars', 6)->assertJsonPath('earnedAchievements', 6);
         $this->assertSame(2, UserLevelProgress::where('user_id', $user->id)->where('status', 'completed')->count());
         $this->get('/main-menu')->assertOk()->assertSee('<strong>6</strong><span>/ 9</span>', false)->assertDontSee('Selesaikan semua misi di Level 2');
         $this->post('/logout');
@@ -55,7 +55,7 @@ class PlayerProgressTest extends TestCase
         $this->get('/main-menu')->assertOk()->assertSee('<strong>0</strong><span>/ 9</span>', false);
     }
 
-    public function test_finish_requires_all_challenges_but_low_scores_still_unlock_next_level(): void
+    public function test_finish_requires_all_challenges_and_one_star_to_unlock_next_level(): void
     {
         $this->actingAs(User::factory()->create());
         foreach ([1, 2, 3] as $challenge) {
@@ -64,12 +64,13 @@ class PlayerProgressTest extends TestCase
         $this->get('/game/2')->assertRedirect(route('main-menu'));
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4])->assertUnprocessable();
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 69])
-            ->assertOk()->assertJsonPath('levels.2.unlocked', true)->assertJsonPath('levels.1.stars', 0)
-            ->assertJsonPath('levels.1.completed', true)->assertJsonPath('achievements.1.tier', 'Tuntas');
+            ->assertOk()->assertJsonPath('levels.2.unlocked', false)->assertJsonPath('levels.1.stars', 0)
+            ->assertJsonPath('levels.1.completed', true)->assertJsonPath('achievements.2.tier', 'Tuntas');
         $this->get('/game/1')->assertOk()->assertSee('data-resume-challenge="1"', false);
-        $this->get('/game/2')->assertOk();
+        $this->get('/game/2')->assertRedirect(route('main-menu'));
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 70])
             ->assertOk()->assertJsonPath('levels.2.unlocked', true)->assertJsonPath('levels.1.stars', 1);
+        $this->get('/game/2')->assertOk();
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 85])
             ->assertOk()->assertJsonPath('levels.1.stars', 2);
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 100])
@@ -78,17 +79,17 @@ class PlayerProgressTest extends TestCase
             $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => $challenge])->assertOk();
         }
         $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => 4, 'score' => 69])
-            ->assertOk()->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('levels.2.completed', true);
+            ->assertOk()->assertJsonPath('levels.3.unlocked', false)->assertJsonPath('levels.2.completed', true);
         $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => 4, 'score' => 70])
             ->assertOk()->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('levels.2.stars', 1);
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 10])
-            ->assertOk()->assertJsonPath('levels.1.score', 100)->assertJsonPath('achievements.1.tier', 'Emas');
+            ->assertOk()->assertJsonPath('levels.1.score', 100)->assertJsonPath('achievements.2.tier', 'Emas');
         foreach ([1, 2, 3] as $challenge) {
             $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => $challenge])->assertOk();
         }
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4, 'score' => 1])
-            ->assertOk()->assertJsonPath('levels.3.completed', true)->assertJsonPath('achievements.4.earned', true)
-            ->assertJsonPath('achievements.4.tier', 'Tuntas');
+            ->assertOk()->assertJsonPath('levels.3.completed', true)->assertJsonPath('achievements.8.earned', true)
+            ->assertJsonPath('achievements.8.tier', 'Tuntas');
     }
 
     public function test_guests_have_no_level_locks_and_never_write_progress(): void

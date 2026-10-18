@@ -38,7 +38,15 @@ test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
 
     const wrongAmount = validator.validateVariable('isi_air = 3', 5, 2);
     assert.equal(wrongAmount.syntaxValid, true);
+    assert.equal(wrongAmount.conceptValid, false);
     assert.equal(wrongAmount.missionSuccess, false);
+    assert.equal(wrongAmount.actions, null);
+    for (const amount of [0, 4, 6, 9]) {
+        const rejected = validator.validateVariable(`isi_air = ${amount}`, 5, 2);
+        assert.equal(rejected.conceptValid, false);
+        assert.equal(rejected.actions, null);
+        assert.match(rejected.message, /tepat 5 unit/);
+    }
 });
 
 test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {

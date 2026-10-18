@@ -3,16 +3,17 @@ import '../css/page-loader.css';
 import '../css/auth-refresh.css';
 import '../css/menu-dashboard.css';
 import '../css/level1-tutorial.css';
-import { initPageLoader } from './PageLoader.js';
+import { initPageLoader, waitForStoryImages } from './PageLoader.js';
+import { initMenuMusic } from './game/MenuMusic.js';
 
-if (document.body.matches('.splash-page, .auth-page')) initPageLoader();
+const isGamePage = Boolean(document.getElementById('game-container'));
+const pageLoader = document.body.matches('.splash-page, .auth-page, .main-menu-page') || isGamePage
+    ? initPageLoader() : null;
 if (document.body.matches('.auth-page')) {
     import('./AuthPassword.js').then(({ initAuthPassword }) => initAuthPassword());
 }
 if (document.body.matches('.main-menu-page')) {
-    import('./game/MenuMusic.js').then(({ initMenuMusic }) => {
-        initMenuMusic(document.querySelector('[data-menu-music-toggle]'));
-    });
+    initMenuMusic(document.querySelector('[data-menu-music-toggle]'));
     window.addEventListener('pageshow', event => {
         if (event.persisted) location.reload();
     });
@@ -44,12 +45,22 @@ if (gamePrototype) {
     window.visualViewport?.addEventListener('resize', updateLayoutMode);
 }
 
-if (document.getElementById('game-container')) {
+if (isGamePage) {
+    window.addEventListener('pyro:game-ready', () => {
+        requestAnimationFrame(() => requestAnimationFrame(() => pageLoader.hide()));
+    }, { once: true });
+    window.addEventListener('pyro:game-load-error', () => pageLoader.hide(), { once: true });
     const startGame = (() => {
         let gameModule;
 
         return () => {
-            gameModule ??= import('./game/main.js');
+            const levelNumber = document.getElementById('game-container').dataset.level;
+            pageLoader.show(`Menyiapkan peta Level ${levelNumber}...`, 'Memuat peta, karakter, dan animasi');
+            gameModule ??= import('./game/main.js').catch(error => {
+                console.error('Game tidak dapat dimuat.', error);
+                pageLoader.hide();
+                document.getElementById('game-container').textContent = 'Game gagal dimuat. Muat ulang halaman untuk mencoba lagi.';
+            });
 
             return gameModule;
         };
@@ -58,9 +69,18 @@ if (document.getElementById('game-container')) {
     const storyElement = document.getElementById('level-story');
 
     if (storyElement) {
-        import('./game/StoryIntro.js').then(({ default: StoryIntro }) => {
-            new StoryIntro(storyElement, { onComplete: startGame });
-        });
+        Promise.all([import('./game/StoryIntro.js'), waitForStoryImages(storyElement)])
+            .then(([{ default: StoryIntro }]) => {
+                pageLoader.hide();
+                storyElement.removeAttribute('inert');
+                new StoryIntro(storyElement, { onComplete: startGame });
+            }).catch(error => {
+                console.error('Cerita pembuka tidak dapat dimuat.', error);
+                pageLoader.hide();
+                storyElement.hidden = true;
+                document.getElementById('prototype-page').removeAttribute('inert');
+                startGame();
+            });
     } else {
         startGame();
     }

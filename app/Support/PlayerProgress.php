@@ -24,16 +24,20 @@ class PlayerProgress
                 'score' => ($record?->score ?? 0) ?: ($completed && $record->stars === 3 ? 100 : 0),
                 'playable' => true,
             ];
-            $previousCompleted = $previousCompleted && $completed;
+            $previousCompleted = $previousCompleted && $completed && $levels[$number]['stars'] >= 1;
         }
         $achievements = [
             ['key' => 'water', 'title' => 'Pasokan Pertama', 'description' => 'Ambil air di pompa pada Challenge 1 Level 1.', 'earned' => $levels[1]['challenges'] >= 1],
+            ['key' => 'post', 'title' => 'Pasokan Pos 1', 'description' => 'Simpan tepat 5 unit air pada Challenge 2 Level 1.', 'earned' => $levels[1]['challenges'] >= 2],
             ['key' => 'supply', 'title' => 'Ahli Variabel', 'description' => 'Selesaikan pengiriman air dan capai FINISH Level 1.', 'earned' => $levels[1]['completed']],
+            ['key' => 'spark', 'title' => 'Api Pertama Padam', 'description' => 'Padamkan titik api pertama di Level 2.', 'earned' => $levels[2]['challenges'] >= 1],
             ['key' => 'loop', 'title' => 'Aksi Berulang', 'description' => 'Padamkan api Challenge 2 Level 2 menggunakan perulangan.', 'earned' => $levels[2]['challenges'] >= 2],
             ['key' => 'shield', 'title' => 'Penjaga Hutan', 'description' => 'Tuntaskan evaluasi mandiri dan capai FINISH Level 2.', 'earned' => $levels[2]['completed']],
+            ['key' => 'habitat', 'title' => 'Pelindung Habitat', 'description' => 'Amankan habitat pada Challenge 1 Level 3.', 'earned' => $levels[3]['challenges'] >= 1],
+            ['key' => 'branch', 'title' => 'Ahli Keputusan', 'description' => 'Gunakan percabangan pada Challenge 3 Level 3.', 'earned' => $levels[3]['challenges'] >= 3],
             ['key' => 'rescue', 'title' => 'Sahabat Bekantan', 'description' => 'Selesaikan seluruh challenge dan evaluasi penyelamatan Level 3.', 'earned' => $levels[3]['completed']],
         ];
-        foreach ([1 => 1, 2 => 3, 3 => 4] as $number => $index) {
+        foreach ([1 => 2, 2 => 5, 3 => 8] as $number => $index) {
             $score = $levels[$number]['score'];
             $achievements[$index]['tier'] = $score < 70 ? 'Tuntas' : ($score < 85 ? 'Perunggu' : ($score < 100 ? 'Perak' : 'Emas'));
         }

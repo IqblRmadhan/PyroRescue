@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, badgeForScore, canFinishLevel } from '../../resources/js/game/GameScore.js';
+import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, starsForFinish, badgeForScore, canFinishLevel } from '../../resources/js/game/GameScore.js';
 
 test('wrong code and blocked movement reduce score without dropping below zero', () => {
     assert.equal(deductScore(100, CODE_ERROR_PENALTY), 95);
@@ -23,6 +23,7 @@ test('FINISH requires all training challenges and successful evaluation', () => 
     assert.equal(canFinishLevel(new Set([1, 2, 3]), 4, { ...success, reachedFinish: false }), false);
     // Level 1 dapat menyerahkan air di C3 lalu berjalan ke FINISH dalam satu Run.
     assert.equal(canFinishLevel(new Set([1, 2]), 3, success), true);
+    assert.equal(canFinishLevel(new Set([1, 2]), 3, success, 2), false);
 });
 
 test('finish gives stars only after evaluation, at the exact percentage thresholds', () => {
@@ -33,4 +34,8 @@ test('finish gives stars only after evaluation, at the exact percentage threshol
     assert.equal(starsForScore(85, true), 2);
     assert.equal(starsForScore(99, true), 2);
     assert.equal(starsForScore(100, true), 3);
+    assert.equal(starsForFinish(100, false), 2);
+    assert.equal(starsForFinish(85, false), 2);
+    assert.equal(starsForFinish(70, false), 1);
+    assert.equal(starsForFinish(69, false), 0);
 });

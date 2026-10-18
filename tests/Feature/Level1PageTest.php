@@ -25,7 +25,8 @@ class Level1PageTest extends TestCase
 
         $this->get('/game/1')
             ->assertOk()
-            ->assertSee('class="game-prototype game-workspace game-scale-80"', false)
+            ->assertSee('class="game-prototype game-workspace game-scale-80 is-page-loading"', false)
+            ->assertSee('Menyiapkan cerita Level 1...')
             ->assertSee('data-audio-base-url=', false)
             ->assertSee('Tepi Sungai Terbakar')
             ->assertSee('id="level-story"', false)
