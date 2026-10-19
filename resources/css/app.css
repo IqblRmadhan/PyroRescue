@@ -756,6 +756,11 @@
     background-position: center;
     background-size: contain;
 }
+.asset-icon--rescue {
+    background-image: url('/assets/ui/checkbox-checked.png');
+    background-position: center;
+    background-size: contain;
+}
 
 /* Landing page: dibuat dari aset peta dan ikon PyroRescue yang sudah tersedia. */
 .landing-page {
@@ -2387,6 +2392,7 @@
 .game-prototype.game-workspace .mission-card__icon { font-size: 25px; }
 .game-prototype.game-workspace .mission-card h2 { margin-bottom: 4px; font-size: clamp(15px, 1.2vw, 18px); }
 .game-prototype.game-workspace .target-list { gap: 4px 14px; font-size: 13px; line-height: 1.35; }
+.game-prototype.game-workspace .target-list { display: grid; grid-template-columns: minmax(0, 1fr); }
 .game-prototype.game-workspace .target-check { flex-basis: 17px; width: 17px; height: 17px; }
 .game-prototype.game-workspace .panel-content {
     flex: 1;
@@ -3042,8 +3048,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: clamp(230px, 23vw, 320px);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
 }
+
+.adventure-level__image-wrap:focus-visible { outline: 3px solid #ffdf80; outline-offset: 5px; border-radius: 45%; }
 
 .adventure-level__image-wrap img {
     display: block;
@@ -3286,7 +3299,7 @@
     position: relative;
     display: block;
     width: 100%;
-    height: 640px;
+    height: 545px;
     min-height: 0;
     margin: 0;
 }
@@ -3317,6 +3330,7 @@
 .adventure-carousel .adventure-level.is-next {
     z-index: 1;
     opacity: .62;
+    pointer-events: auto;
 }
 
 .adventure-carousel .adventure-level.is-previous {
@@ -3338,11 +3352,11 @@
 
 .adventure-carousel .adventure-level__image-wrap {
     width: 100%;
-    height: clamp(300px, 31vw, 410px);
+    height: clamp(245px, 25vw, 330px);
 }
 
 .adventure-carousel .adventure-level__image-wrap img {
-    width: min(100%, 630px);
+    width: min(100%, 510px);
     max-height: 100%;
 }
 
@@ -3440,12 +3454,12 @@
 
 @media (max-width: 720px) {
     .adventure-carousel { grid-template-columns: 48px minmax(0, 1fr) 48px; gap: 2px; margin-top: 24px; }
-    .adventure-carousel .adventure-islands { height: 505px; margin: 0; }
+    .adventure-carousel .adventure-islands { height: 455px; margin: 0; }
     .adventure-carousel .adventure-level { min-height: 0; padding: 0 2px 10px; }
     .adventure-carousel .adventure-level.is-previous { transform: translateX(-62%) translateY(14px) scale(.75); }
     .adventure-carousel .adventure-level.is-next { transform: translateX(62%) translateY(14px) scale(.75); }
     .adventure-carousel .adventure-level__image-wrap,
-    .adventure-carousel .adventure-level--locked .adventure-level__image-wrap { height: clamp(200px, 49vw, 320px); }
+    .adventure-carousel .adventure-level--locked .adventure-level__image-wrap { height: clamp(180px, 42vw, 270px); }
     .adventure-carousel .adventure-level__copy { margin-top: -8px; }
     .adventure-carousel .adventure-level h2 { font-size: clamp(24px, 5vw, 34px); }
     .adventure-carousel .adventure-level__copy p { display: block; max-width: 330px; margin-top: 7px; padding: 7px 10px; font-size: 12px; }
@@ -3456,8 +3470,8 @@
 }
 
 @media (max-width: 440px) {
-    .adventure-carousel .adventure-islands { height: 490px; }
-    .adventure-carousel .adventure-level__image-wrap { height: 54vw; }
+    .adventure-carousel .adventure-islands { height: 440px; }
+    .adventure-carousel .adventure-level__image-wrap { height: 46vw; }
     .adventure-carousel .adventure-level__copy { margin-top: 0; }
     .adventure-carousel .adventure-level h2 { font-size: 23px; }
     .adventure-carousel .adventure-play { min-width: 0; padding: 8px 14px; font-size: 19px; }
@@ -3986,4 +4000,86 @@
     .auth-scene, .auth-scene__copy, .auth-form-panel, .auth-stage, .auth-scene__button, .auth-submit, .auth-guest { transition: none; }
     .auth-scene__light, .auth-scene__mascot { animation: none; }
     .auth-scene__mascot { transform: translateX(-50%); }
+}
+/* Level 3 layers existing portraits over the sanctuary map. */
+.level-story[data-level-number='3'] .story-stage { width: min(1200px, calc(100vw - 32px)); height: min(760px, calc(100dvh - 32px)); aspect-ratio: auto; }
+.level-story[data-level-number='3'] .story-slide > img:first-child { opacity: .7; }
+.level-story[data-level-number='3'] .story-portrait { position: absolute; z-index: 1; bottom: 0; width: 32%; height: 85%; object-fit: contain; object-position: bottom; }
+.level-story[data-level-number='3'] .story-portrait--commander { right: 1%; }
+.level-story[data-level-number='3'] .story-portrait--player { left: 1%; }
+.level-story[data-level-number='3'] .story-dialogue { bottom: 18%; left: 4%; right: 35%; padding: 24px; max-height: 62%; overflow: visible; }
+.level-story[data-level-number='3'] [data-speaker='player'] .story-dialogue { left: 35%; right: 4%; }
+.level-story[data-level-number='3'] .story-dialogue p { font-size: clamp(15px, 2vw, 26px); line-height: 1.4; }
+.level-story[data-level-number='3'] .story-next { bottom: 4%; }
+.game-prototype.game-workspace.game-level3 .game-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; width: min(350px, calc(100% - 120px)); }
+.game-level3 .hud-health { grid-column: 1 / -1; grid-row: 1; }
+.game-prototype.game-workspace.game-level3 .hud-counter { min-height: 38px; padding: 4px 8px; gap: 3px; font-size: 12px; }
+.game-prototype.game-workspace.game-level3 .hud-counter .asset-icon { flex-basis: 28px; width: 28px; height: 30px; transform: none; }
+.game-prototype.game-workspace.game-level3 .hud-counter--step { grid-column: 1 / -1; min-height: 28px; }
+.level3-world-state { grid-column: 1 / -1; pointer-events: auto; position: relative; color: #fff7dd; background: #172c24ed; border: 1px solid #c9a367; border-radius: 6px; padding: 8px; font: 12px/1.5 monospace; }
+.level3-world-state summary { cursor: pointer; }
+.level3-world-state > div { position: absolute; z-index: 5; top: 100%; right: 0; width: max-content; display: grid; gap: 5px; padding: 12px; background: #172c24; border-radius: 6px; }
+.level3-result-summary { margin: 16px auto; padding: 0; list-style: none; font: 14px/1.7 'Trebuchet MS', sans-serif; }
+#feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: clamp(120px, 23vw, 320px); grid-template-columns: var(--portrait-width) minmax(0, 1fr); }
+#feedback.mission-guide--level3 .mission-guide__portrait { grid-row: 1; grid-column: 1; height: min(65dvh, 530px); aspect-ratio: auto; }
+#feedback.mission-guide--level3 .mission-guide__portrait img { inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: bottom; }
+#feedback.mission-guide--level3 .mission-guide__bubble { grid-row: 1; grid-column: 2; }
+#feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__stage { grid-template-columns: minmax(0, 1fr) var(--portrait-width); }
+#feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__portrait--commander { grid-column: 2; }
+#feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__bubble { grid-column: 1; }
+#feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__bubble::before { left: auto; right: -16px; transform: rotate(225deg); }
+#feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__portrait--player,
+#feedback.mission-guide--level3[data-speaker='player'] .mission-guide__portrait--commander { display: none; }
+@media (max-width: 600px) {
+    .level-story[data-level-number='3'] .story-dialogue { padding: 16px; bottom: 19%; max-height: 65%; }
+    .level-story[data-level-number='3'] .story-dialogue p { font-size: 15px; }
+    .level-story[data-level-number='3'] .story-speaker { font-size: 12px; padding: 5px 8px; left: 6px; }
+    #feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: 75px; }
+    #feedback.mission-guide--level3 .mission-guide__portrait { height: 180px; }
+    #feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__bubble::before { right: -10px; }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+    .level-story[data-level-number='3'] .story-dialogue { bottom: 22%; padding: 12px 16px; max-height: 58%; }
+    .level-story[data-level-number='3'] .story-dialogue p { font-size: clamp(12px, 2.2vh, 16px); line-height: 1.35; }
+    .level-story[data-level-number='3'] .story-speaker { font-size: 12px; padding: 4px 9px; }
+    #feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: 105px; gap: 12px; }
+    #feedback.mission-guide--level3 .mission-guide__portrait { height: min(80dvh, 270px); }
+    #feedback.mission-guide--level3 .mission-guide__bubble { max-height: calc(100dvh - 42px); padding: 22px 18px 12px; }
+    #feedback.mission-guide--level3 #feedback-message { font-size: 15px; }
+    #feedback.mission-guide--level3 .mission-guide__actions { padding-top: 8px; }
+}
+/* Potret dialog dipotong di pinggang, sama seperti pemandu biasa. */
+#feedback.mission-guide--level3 .mission-guide__portrait { height: auto; aspect-ratio: 4 / 5; }
+#feedback.mission-guide--level3 .mission-guide__portrait img { inset: auto; top: -30%; left: -17.5%; width: 135%; height: auto; object-fit: contain; }
+.level-story[data-level-number='3'] .story-portrait { height: 62%; width: 32%; object-fit: cover; object-position: center top; }
+@media (max-width: 600px) {
+    #feedback.mission-guide--level3 .mission-guide__portrait { height: 125px; aspect-ratio: auto; }
+}
+#feedback.mission-guide--level3 .mission-guide__portrait--commander img { top: 0; }
+.level-story[data-level-number='3'] .story-portrait--commander { height: 45%; object-position: center top; }
+.guide-message__sentence { margin: 0; padding: 11px 13px; border: 2px solid #dbc596; border-radius: 8px; background: #fffaf0c9; box-shadow: inset 0 0 0 2px #fff; font-size: 17px; line-height: 1.55; }
+.guide-code-chip { display: inline-block; margin: 2px 3px; padding: 2px 7px; color: #e9f8ff; border: 1px solid #4f7588; border-radius: 4px; background: #102938; box-shadow: 0 2px 0 #071923; font: 700 .88em/1.4 Consolas, monospace; text-shadow: none; white-space: nowrap; }
+.guide-analogy { margin: 10px 0 0; padding: 11px 12px 12px; border: 2px solid #c98935; border-radius: 9px; background: #f5e6ba; box-shadow: inset 0 0 0 2px #fff3cc, 0 3px 0 #8c5a28; color: #263b51; }
+.guide-analogy__title { display: block; color: #713e20; font: 800 12px/1.25 'PixelFont', 'Trebuchet MS', sans-serif; letter-spacing: .035em; }
+.guide-analogy__intro { margin: 7px 0 9px; font-size: 14px; line-height: 1.4; }
+.guide-analogy__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(175px, 1fr)); gap: 7px; }
+.guide-analogy__row { display: flex; flex-direction: column; gap: 3px; min-width: 0; margin-left: calc(var(--analogy-depth) * 10px); padding: 8px 9px; border: 2px solid #7394a5; border-bottom-width: 4px; border-radius: 6px; background: #f9fcf9; font-size: 13px; line-height: 1.35; }
+.guide-analogy__row--yes { border-color: #549566; background: #edf8e9; }
+.guide-analogy__row--no { border-color: #b86151; background: #fff0e8; }
+.guide-analogy__row--answer { border-color: #c18a3c; background: #fff8df; }
+.guide-analogy__label { color: #713e20; font-size: 11px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+.guide-code-panel { margin-top: 10px; padding: 10px 11px 11px; border: 2px solid #426779; border-radius: 8px; background: #dce9e8; box-shadow: inset 0 0 0 2px #f1fbf7, 0 3px 0 #274552; }
+#feedback.mission-guide #feedback-message .guide-code-label { display: block; margin-bottom: 7px; color: #284f5d; font: 800 11px/1.3 'PixelFont', 'Trebuchet MS', sans-serif; letter-spacing: .035em; }
+#feedback.mission-guide #feedback-message .guide-code-panel pre { margin: 0; padding: 10px 13px; overflow-x: auto; color: #e2f5ff; border: 1px solid #577989; border-radius: 6px; background: #102938; font: 15px/1.5 Consolas, monospace; text-shadow: none; white-space: pre; }
+@media (max-width: 600px) {
+    .guide-message__sentence { padding: 9px 10px; font-size: 14px; }
+    .guide-analogy__rows { grid-template-columns: 1fr; }
+    .guide-analogy__row { margin-left: calc(var(--analogy-depth) * 8px); }
+}
+@media (max-height: 500px) {
+    .guide-message__sentence { padding: 7px 9px; font-size: 13px; }
+    .guide-analogy { padding: 8px 9px; }
+    .guide-analogy__intro { margin: 4px 0 6px; font-size: 12px; }
+    .guide-analogy__row { padding: 6px 7px; font-size: 12px; }
+    #feedback.mission-guide #feedback-message .guide-code-panel pre { padding: 7px 9px; font-size: 12px; }
 }

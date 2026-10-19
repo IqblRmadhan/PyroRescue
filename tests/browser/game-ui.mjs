@@ -1,3 +1,4 @@
+// Level 3 has a dedicated complete flow in level3-gameplay.mjs.
 // Jalankan dengan server Laravel aktif dan Playwright yang sudah tersedia.
 // PLAYWRIGHT_MODULE dapat berisi URL file modul Playwright di luar proyek.
 import assert from 'node:assert/strict';
@@ -94,7 +95,7 @@ try {
     await page.getByRole('button', { name: 'Main sebagai Tamu' }).click();
     await page.waitForURL('**/main-menu');
 
-    for (const level of [1, 2, 3]) {
+    for (const level of [1, 2]) {
         await page.goto(`${origin}/game/${level}`);
         await page.locator('#story-skip').click();
         if (level === 1) await page.locator('[data-tutorial-skip]').click();
@@ -133,10 +134,10 @@ try {
             const current = await page.evaluate(() => window.pyroGame.scene.getScenes(true)[0].challengeNumber);
             assert.equal(current, challenge);
             if (challenge < 4) {
-                const titles = level === 1 ? ['1. Membuat variabel', '2. Mengubah nilai variabel', '3. Menggunakan nilai variabel']
+                const titles = level === 1 ? ['1. Membuat variabel', '2. Menjaga nilai variabel', '3. Menggunakan nilai variabel']
                     : level === 2 ? ['Challenge 1 - Mengenal Semprotan', 'Challenge 2 - Mengulang Semprotan', 'Challenge 3 - Variabel dalam Perulangan']
                         : ['Challenge 1 - Memadamkan Api di Habitat', 'Challenge 2 - Memeriksa Kondisi Api dengan if', 'Challenge 3 - Menentukan Tindakan dengan if/else'];
-                const codes = level === 1 ? ['isi_air = 3', 'isi_air = 5', 'air_pos = isi_air']
+                const codes = level === 1 ? ['isi_air = 5', '# isi_air tetap 5 selama perjalanan', 'air_pos = isi_air']
                     : level === 2 ? ['isi_air = 6\nsemprot()\nsemprot()', 'for i in range(1):\n    semprot()', 'jumlah_semprot = 3\nfor i in range(jumlah_semprot):\n    semprot()']
                         : ['jumlah_semprot = 3\nfor i in range(jumlah_semprot):\n    semprot()', 'if api_padam:\n    status_bekantan = "aman"', 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"'];
                 await checkMaterial(titles[challenge - 1], codes[challenge - 1]);
@@ -149,7 +150,7 @@ try {
 
             if (level === 1) {
                 await goTo([null, map.waterAction, map.post1Action, map.post2Action, map.finish][challenge], walkable);
-                if (challenge < 4) await run(['', 'isi_air = 3', 'isi_air = 5', 'air_pos = isi_air'][challenge]);
+                if (challenge === 1 || challenge === 3) await run(['', 'isi_air = 5', '', 'air_pos = isi_air'][challenge]);
             } else {
                 if (challenge === 1 || challenge === 4) {
                     await goTo((challenge === 1 ? map.pump : map.evaluationPump).action, walkable);

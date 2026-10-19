@@ -85,3 +85,10 @@ export function tileToWorld(column, row) {
         y: row * level1Map.tileSize + halfTile,
     };
 }
+
+export function worldToTile(x, y) {
+    return {
+        column: Math.floor(x / level1Map.tileSize),
+        row: Math.floor(y / level1Map.tileSize),
+    };
+}

@@ -4,11 +4,15 @@ export class StoryTypewriter {
     constructor({
         delay = 30,
         reducedMotion = false,
+        onCharacter = () => {},
+        soundEvery = 2,
         schedule = (callback, wait) => setTimeout(callback, wait),
         cancelSchedule = (timerId) => clearTimeout(timerId),
     } = {}) {
         this.delay = delay;
         this.reducedMotion = reducedMotion;
+        this.onCharacter = onCharacter;
+        this.soundEvery = Math.max(1, soundEvery);
         this.schedule = schedule;
         this.cancelSchedule = cancelSchedule;
         this.timerId = null;
@@ -21,6 +25,7 @@ export class StoryTypewriter {
         this.onUpdate = onUpdate;
         this.onComplete = onComplete;
         this.characterIndex = 0;
+        this.soundedCharacterCount = 0;
 
         if (this.reducedMotion || this.characters.length === 0) {
             this.onUpdate(this.characters.join(''));
@@ -39,6 +44,11 @@ export class StoryTypewriter {
             if (!this.typing) return;
 
             this.characterIndex += 1;
+            const character = this.characters[this.characterIndex - 1];
+            if (character.trim()) {
+                if (this.soundedCharacterCount % this.soundEvery === 0) this.onCharacter(character);
+                this.soundedCharacterCount += 1;
+            }
             this.onUpdate(this.characters.slice(0, this.characterIndex).join(''));
 
             if (this.characterIndex >= this.characters.length) {
@@ -89,8 +99,8 @@ export function getStoryNextButtonPresentation({
 
     if (isLastSlide) {
         return {
-            label: 'MULAI MISI',
-            ariaLabel: `Mulai misi Level ${levelNumber}`,
+            label: 'TIBA DI LOKASI',
+            ariaLabel: `Tiba di lokasi Level ${levelNumber}`,
             action: 'start',
         };
     }
@@ -121,10 +131,14 @@ export default class StoryIntro {
         });
         this.typewriter = new StoryTypewriter({
             reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
+            onCharacter: () => {
+                if (this.audioReady) gameAudio.play('typing');
+            },
         });
         this.onComplete = onComplete;
         this.currentIndex = 0;
         this.finished = false;
+        this.audioReady = false;
 
         this.handleKeydown = this.handleKeydown.bind(this);
         this.showNext = this.showNext.bind(this);
@@ -142,7 +156,8 @@ export default class StoryIntro {
     }
 
     resumeAudio() {
-        if (!gameAudio.isMusicMuted() || !gameAudio.isEffectsMuted()) void gameAudio.unlock();
+        if (gameAudio.isMusicMuted() && gameAudio.isEffectsMuted()) return;
+        void gameAudio.unlock().then((ready) => { this.audioReady = ready; });
     }
 
     showSlide(index) {
@@ -212,6 +227,7 @@ export default class StoryIntro {
     }
 
     handleKeydown(event) {
+        this.resumeAudio();
         if (event.key === 'ArrowRight') {
             event.preventDefault();
             this.showNext();

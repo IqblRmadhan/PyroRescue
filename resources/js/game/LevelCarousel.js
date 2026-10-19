@@ -1,3 +1,9 @@
+export function getLevelImageAction({ isCurrent, href, index }) {
+    if (!isCurrent) return { type: 'select', index };
+    if (href) return { type: 'navigate', href };
+    return { type: 'none' };
+}
+
 export function initLevelCarousel(root) {
     const levels = [...root.querySelectorAll('[data-level]')];
     const steps = [...root.querySelectorAll('[data-carousel-step]')];
@@ -14,9 +20,17 @@ export function initLevelCarousel(root) {
             level.classList.toggle('is-current', isCurrent);
             level.classList.toggle('is-next', position === 1);
             level.classList.toggle('is-previous', position === levels.length - 1);
-            level.toggleAttribute('inert', !isCurrent);
             if (isCurrent) level.removeAttribute('aria-hidden');
             else level.setAttribute('aria-hidden', 'true');
+            const imageButton = level.querySelector('[data-level-image]');
+            if (imageButton) {
+                imageButton.tabIndex = isCurrent ? 0 : -1;
+                imageButton.setAttribute('aria-label', isCurrent
+                    ? imageButton.dataset.levelHref
+                        ? `Mainkan ${imageButton.dataset.levelTitle}`
+                        : `${imageButton.dataset.levelTitle} belum dapat dimainkan`
+                    : `Pilih ${imageButton.dataset.levelTitle}`);
+            }
         });
 
         steps.forEach((step, stepIndex) => {
@@ -33,6 +47,17 @@ export function initLevelCarousel(root) {
     root.querySelector('[data-carousel-previous]')?.addEventListener('click', () => showLevel(currentIndex - 1));
     root.querySelector('[data-carousel-next]')?.addEventListener('click', () => showLevel(currentIndex + 1));
     steps.forEach((step, index) => step.addEventListener('click', () => showLevel(index)));
+    levels.forEach((level, index) => {
+        level.querySelector('[data-level-image]')?.addEventListener('click', () => {
+            const action = getLevelImageAction({
+                isCurrent: index === currentIndex,
+                href: level.querySelector('[data-level-image]').dataset.levelHref,
+                index,
+            });
+            if (action.type === 'select') showLevel(action.index);
+            if (action.type === 'navigate') window.location.href = action.href;
+        });
+    });
     root.addEventListener('keydown', (event) => {
         if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
         event.preventDefault();

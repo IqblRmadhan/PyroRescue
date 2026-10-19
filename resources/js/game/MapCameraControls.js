@@ -55,7 +55,7 @@ export function enableMapCameraControls(scene, map) {
     }
 
     function onPointerDown(event) {
-        if (event.button !== 0 || !event.isPrimary) return;
+        if (event.button !== 0 || !event.isPrimary || event.ctrlKey || event.metaKey) return;
         drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
         canvas.setPointerCapture(event.pointerId);
         canvas.style.cursor = 'grabbing';

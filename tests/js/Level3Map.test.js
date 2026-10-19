@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
-import { level3Map, isLevel3Walkable } from '../../resources/js/game/Level3Map.js';
+import { level3Map, isLevel3Walkable, level3WorldToTile } from '../../resources/js/game/Level3Map.js';
 import { level3Assets, level3MapImage, level3MapShadowImage } from '../../resources/js/game/Level3Assets.js';
 
 test('every Level 3 interaction and checkpoint is reachable from the start', () => {
@@ -15,12 +15,22 @@ test('every Level 3 interaction and checkpoint is reachable from the start', () 
         for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) queue.push({ column: column + dx, row: row + dy });
     }
     for (const target of [level3Map.pump.action, level3Map.evaluationPump.action, level3Map.habitat,
-        level3Map.fires[1].action, level3Map.fires[4].action, level3Map.evaluationStart, level3Map.finish]) {
+        ...Object.values(level3Map.fires).map(fire => fire.action), level3Map.post,
+        level3Map.tower, level3Map.crossing, level3Map.northWatch, level3Map.alternative,
+        level3Map.evaluationStart, level3Map.finish]) {
         assert.equal(visited.has(`${target.column},${target.row}`), true);
     }
     for (const [column, row] of [[-1, 0], [40, 18], [0, 30], [10, 10], [32, 8], [25, 22]]) {
         assert.equal(isLevel3Walkable(column, row), false, 'water is blocked');
     }
+});
+
+test('Level 3 uses only the central pump and converts debug clicks to grid tiles', () => {
+    assert.deepEqual(level3Map.pump, level3Map.evaluationPump);
+    assert.deepEqual(level3Map.pump.action, { column: 22, row: 18 });
+    assert.deepEqual(level3WorldToTile(899, 759), { column: 22, row: 18 });
+    assert.equal(isLevel3Walkable(22, 18), true);
+    assert.notDeepEqual(level3Map.pump.action, level3Map.crossing);
 });
 
 test('map and shadow align and all asset frames stay within original PNGs', () => {

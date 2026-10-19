@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { enableDebugTeleport } from '../DebugTeleport.js';
 import { firefighterAnimations } from '../Level1Assets.js';
 import {
     addLevel2MapShadow,
@@ -11,6 +12,7 @@ import {
     isLevel2Walkable,
     level2Map,
     level2TileToWorld,
+    level2WorldToTile,
 } from '../Level2Map.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
 import { addFinishTile, getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
@@ -32,6 +34,7 @@ export default class Level2Scene extends Phaser.Scene {
         onLoadError,
         onStateChange = () => {},
         onAudio = () => {},
+        onDebugTeleport = () => {},
     }, settings = {}) {
         super(settings.sceneKey ?? 'Level2Scene');
         // Level 3 memakai kembali rendering, gerakan, pompa, dan animasi Level 2.
@@ -41,11 +44,14 @@ export default class Level2Scene extends Phaser.Scene {
         this.mapImage = settings.mapImage ?? level2MapImage;
         this.mapShadowImage = settings.mapShadowImage ?? level2MapShadowImage;
         this.isWalkable = settings.isWalkable ?? isLevel2Walkable;
+        this.debugWorldToTile = settings.worldToTile ?? level2WorldToTile;
+        this.debugIsWalkable = settings.debugIsWalkable ?? this.isWalkable;
         this.assetBaseUrl = assetBaseUrl;
         this.onReady = onReady;
         this.onLoadError = onLoadError;
         this.onStateChange = onStateChange;
         this.onAudio = onAudio;
+        this.onDebugTeleport = onDebugTeleport;
         this.challengeNumber = 1;
         this.sprays = 0;
         this.water = 0;
@@ -82,6 +88,12 @@ export default class Level2Scene extends Phaser.Scene {
         const camera = this.cameras.main;
         camera.setBounds(0, 0, this.map.width, this.map.height).setZoom(1.15).setRoundPixels(true);
         enableMapCameraControls(this, this.map);
+        enableDebugTeleport(this, {
+            worldToTile: this.debugWorldToTile,
+            isWalkable: this.debugIsWalkable,
+            teleport: (column, row) => this.teleportForTesting(column, row),
+            onTeleport: this.onDebugTeleport,
+        });
         this.resetChallenge(1).then(() => this.onReady());
     }
 
@@ -127,7 +139,8 @@ export default class Level2Scene extends Phaser.Scene {
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
             .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
-        const grid = this.add.graphics().setDepth(3).lineStyle(1, 0x17382d, 0.22);
+        const isLevel3 = this.sys.settings.key === 'Level3Scene';
+        const grid = this.add.graphics().setDepth(3).lineStyle(isLevel3 ? 1.5 : 1, 0x17382d, isLevel3 ? 0.48 : 0.22);
         for (let x = 0; x <= 1600; x += 40) grid.lineBetween(x, 0, x, 1200);
         for (let y = 0; y <= 1200; y += 40) grid.lineBetween(0, y, 1600, y);
     }
@@ -260,6 +273,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     async runCommands(commands, onCommandComplete = () => {}) {
+        this.cameras.main.panEffect.reset();
         const requested = commands.filter((command) => command.type === 'spray').length;
         const remaining = this.requiredWater - this.sprays;
         if (requested > remaining) {
@@ -311,7 +325,7 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     async fillWater(amount, pump = this.pump) {
-        const cycleCount = getPumpAnimationCycleCount(amount);
+        const cycleCount = getPumpAnimationCycleCount(amount, this.water);
         if (cycleCount > 0) this.onAudio('pump');
         for (let cycle = 0; cycle < cycleCount; cycle += 1) {
             await new Promise((resolve) => {
@@ -319,6 +333,8 @@ export default class Level2Scene extends Phaser.Scene {
                 pump.play('level2-pump-flow');
             });
             pump.stop().setFrame('idle');
+            this.water += 1;
+            this.publishState();
         }
         this.water = amount;
         if (cycleCount > 0) this.onAudio('water');
@@ -373,6 +389,17 @@ export default class Level2Scene extends Phaser.Scene {
         this.direction = direction;
         this.player.play(`level2-player-idle-${direction}`, true).setOrigin(0.5, 0.9).setScale(playerScale);
         this.syncPlayerShadow();
+    }
+
+    teleportForTesting(column, row) {
+        this.tweens.killTweensOf(this.player);
+        const position = level2TileToWorld(column, row);
+        this.playerColumn = column;
+        this.playerRow = row;
+        this.player.setPosition(position.x, position.y);
+        this.setPlayerIdle(this.direction ?? 'east');
+        this.publishState();
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09).centerOn(position.x, position.y);
     }
 
     playPlayerAnimation(name) {

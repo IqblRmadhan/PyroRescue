@@ -56,3 +56,7 @@ export function isLevel2Walkable(column, row) {
 export function level2TileToWorld(column, row) {
     return { x: column * 40 + 20, y: row * 40 + 20 };
 }
+
+export function level2WorldToTile(x, y) {
+    return { column: Math.floor(x / 40), row: Math.floor(y / 40) };
+}

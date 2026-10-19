@@ -10,6 +10,7 @@ const expectedAudioFiles = [
     'music-loop.wav',
     'fire.wav',
     'ui-click.wav',
+    'typing.wav',
     'story-next.wav',
     'run.wav',
     'clear.wav',
@@ -93,6 +94,7 @@ test('the replaced forest fire ambience asset is removed', () => {
 
 test('audio cue names resolve to their physical files', () => {
     assert.equal(gameAudioModule.getAudioFileName?.('uiClick'), 'ui-click.wav');
+    assert.equal(gameAudioModule.getAudioFileName?.('typing'), 'typing.wav');
     assert.equal(gameAudioModule.getAudioFileName?.('fireOut'), 'fire-out.wav');
     assert.equal(gameAudioModule.getAudioFileName?.('levelComplete'), 'level-complete.wav');
     assert.equal(gameAudioModule.getAudioFileName?.('unknown'), null);

@@ -101,6 +101,7 @@ level_id
 status
 completed_at
 completed_challenges
+level3_checkpoint (JSON nullable)
 stars
 score
 created_at
@@ -158,3 +159,5 @@ ChallengeAttempt belongsTo Challenge
 ## Kenapa sederhana?
 
 Karena game hanya memiliki tiga level. Jangan membuat inventory, shop, leaderboard, atau sistem achievement kompleks jika belum diperlukan.
+
+Level 3 menyimpan checkpoint submisi pada level3_checkpoint: challenge, step, posisi, air, semprotan tiap api, satwa di pos/mengikuti, kondisi jalur, evaluasi, percobaan, dan hint. Snapshot challenge lama diabaikan saat resume.

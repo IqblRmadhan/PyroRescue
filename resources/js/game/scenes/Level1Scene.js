@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { createLevel1Atmosphere } from '../Level1Atmosphere.js';
+import { enableDebugTeleport } from '../DebugTeleport.js';
 import { enableMapCameraControls } from '../MapCameraControls.js';
 import { addFinishTile, getChallengeMarkerStyle, getMarkerTexture, showChallengeMarker } from '../MapMarkers.js';
 import { addPostLabel, addPumpLabel } from '../PumpLabel.js';
@@ -18,6 +19,7 @@ import {
     isWalkable,
     level1Map,
     tileToWorld,
+    worldToTile,
 } from '../Level1Map.js';
 
 const cameraZoom = 1.15;
@@ -36,10 +38,11 @@ export default class Level1Scene extends Phaser.Scene {
         onLoadError,
         onStateChange = () => {},
         onAudio = () => {},
+        onDebugTeleport = () => {},
     }) {
         super('Level1Scene');
         this.challengeNumber = 1;
-        this.requiredWater = 3;
+        this.requiredWater = 5;
         this.postWater = 0;
         this.hasDeliveredWater = false;
         this.assetBaseUrl = assetBaseUrl;
@@ -47,6 +50,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.onLoadError = onLoadError;
         this.onStateChange = onStateChange;
         this.onAudio = onAudio;
+        this.onDebugTeleport = onDebugTeleport;
     }
 
     preload() {
@@ -91,6 +95,12 @@ export default class Level1Scene extends Phaser.Scene {
         this.drawMissionObjects();
         this.atmosphere = createLevel1Atmosphere(this);
         this.configureCamera();
+        enableDebugTeleport(this, {
+            worldToTile,
+            isWalkable,
+            teleport: (column, row) => this.teleportForTesting(column, row),
+            onTeleport: this.onDebugTeleport,
+        });
         this.resetChallenge(1).then(() => this.onReady());
     }
 
@@ -369,7 +379,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     setChallenge(challengeNumber) {
         this.challengeNumber = challengeNumber;
-        this.requiredWater = challengeNumber === 1 ? 3 : 5;
+        this.requiredWater = 5;
         for (const [number, marker] of Object.entries(this.actionMarkers)) {
             const activeChallenge = this.hasDeliveredWater ? 4 : challengeNumber;
             const markerType = Number(number) === 1 ? 'pump' : 'action';
@@ -386,6 +396,7 @@ export default class Level1Scene extends Phaser.Scene {
     }
 
     async runCommands(commands, onCommandComplete = () => {}) {
+        this.cameras.main.panEffect.reset();
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
         this.setPlayerIdle(this.direction);
 
@@ -408,9 +419,7 @@ export default class Level1Scene extends Phaser.Scene {
             if (command.type === 'setWater') {
                 const result = this.challengeNumber === 1
                     ? await this.fillWater(command.amount)
-                    : this.challengeNumber === 2
-                        ? await this.updateWaterAtPost(command.amount)
-                        : { success: false, message: 'Challenge 3 hanya menggunakan air_pos = isi_air.' };
+                    : { success: false, message: 'Air sudah diisi di pompa. Lanjutkan perjalanan tanpa assignment ulang.' };
                 if (!result.success) {
                     return { status: 'error', missionSuccess: false, message: result.message };
                 }
@@ -435,11 +444,12 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
-        if (this.challengeNumber === 2 && this.water === this.requiredWater) {
+        if (this.challengeNumber === 2 && this.water === this.requiredWater
+            && isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
             return {
                 status: 'success',
                 missionSuccess: true,
-                message: `Berhasil! 3 unit bawaan ditambah 2 unit bantuan menjadi ${this.water} unit di isi_air.`,
+                message: `Pemeriksaan Pos 1 selesai. Persediaan tetap ${this.water} unit. Antar ke Pos 2.`,
             };
         }
 
@@ -473,10 +483,10 @@ export default class Level1Scene extends Phaser.Scene {
 
         if (this.challengeNumber === 2) {
             if (isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
-                return `Kamu tiba di Pos 1. Penjaga memberikan 2 unit bantuan untuk Pos 2; tulis isi_air = ${this.requiredWater}.`;
+                return `Kamu tiba di Pos 1 dengan ${this.water} unit. Lanjutkan ke Pos 2.`;
             }
 
-            return `Bawa ${this.water} unit air ke Pos 1. Penjaga menyiapkan 2 unit tambahan untuk Pos 2.`;
+            return `Bawa ${this.water} unit air ke penanda Pos 1 untuk melapor.`;
         }
 
         return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos = isi_air.';
@@ -493,9 +503,8 @@ export default class Level1Scene extends Phaser.Scene {
         const previousDirection = this.direction;
         const pumpDirection = this.getDirectionTo(level1Map.pump);
         this.setPlayerIdle(pumpDirection);
-        this.setWater(0);
-
-        for (let cycle = 1; cycle <= amount; cycle += 1) {
+        const previousWater = this.water;
+        for (let cycle = previousWater + 1; cycle <= amount; cycle += 1) {
             this.onAudio('pump');
             await this.playPumpCycle();
             const isLastCycle = cycle === amount;
@@ -506,43 +515,7 @@ export default class Level1Scene extends Phaser.Scene {
                 await this.wait(pumpCyclePause);
             }
         }
-
-        this.setPlayerIdle(previousDirection);
-
-        return { success: true };
-    }
-
-    async updateWaterAtPost(amount) {
-        if (amount !== this.requiredWater) {
-            return { success: false, message: `Pos 1 hanya menyiapkan ${this.requiredWater} unit air. Nilai ${amount} tidak dapat diisi.` };
-        }
-        if (!isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
-            return {
-                success: false,
-                message: 'Pergi ke penanda merah di Pos 1 sebelum mengubah isi_air.',
-            };
-        }
-
-        const previousDirection = this.direction;
-        this.setPlayerIdle(this.getDirectionTo(level1Map.post1Npc));
-        await this.playNpcAction(
-            this.npcPost1,
-            'npc-post1-give-water',
-            'npc-post1-idle',
-        );
-
-        if (this.water < amount) {
-            for (let total = this.water + 1; total <= amount; total += 1) {
-                await this.wait(250);
-                const isLastUpdate = total === amount;
-                this.setWater(total, { suppressTargetAudio: isLastUpdate });
-                if (!isLastUpdate) this.onAudio('water');
-            }
-        } else {
-            await this.wait(250);
-            this.setWater(amount, { suppressTargetAudio: true });
-        }
-
+        if (amount <= previousWater) this.setWater(amount, { suppressTargetAudio: true });
         this.setPlayerIdle(previousDirection);
 
         return { success: true };
@@ -690,6 +663,17 @@ export default class Level1Scene extends Phaser.Scene {
         this.syncPlayerShadow();
     }
 
+    teleportForTesting(column, row) {
+        this.tweens.killTweensOf(this.player);
+        const position = tileToWorld(column, row);
+        this.playerColumn = column;
+        this.playerRow = row;
+        this.player.setPosition(position.x, position.y);
+        this.setPlayerIdle(this.direction ?? 'north');
+        this.publishState();
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09).centerOn(position.x, position.y);
+    }
+
     syncPlayerShadow() {
         this.playerShadow.setPosition(
             this.player.x,
@@ -719,7 +703,7 @@ export default class Level1Scene extends Phaser.Scene {
 
         const checkpoints = {
             1: { ...level1Map.start, water: 0 },
-            2: { ...level1Map.waterAction, direction: 'north', water: 3 },
+            2: { ...level1Map.waterAction, direction: 'north', water: 5 },
             3: { ...level1Map.post1Action, direction: 'east', water: 5 },
             4: { ...level1Map.post2Action, direction: 'east', water: 0, postWater: 5 },
         };

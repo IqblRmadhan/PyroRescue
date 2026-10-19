@@ -11,6 +11,7 @@ const sourceVolume = 1;
 
 export const audioCueFiles = Object.freeze({
     uiClick: 'ui-click.wav',
+    typing: 'typing.wav',
     storyNext: 'story-next.wav',
     run: 'run.wav',
     clear: 'clear.wav',

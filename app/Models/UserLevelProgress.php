@@ -17,6 +17,7 @@ class UserLevelProgress extends Model
         'completed_challenges',
         'stars',
         'score',
+        'level3_checkpoint',
     ];
 
     protected function casts(): array
@@ -26,6 +27,7 @@ class UserLevelProgress extends Model
             'completed_challenges' => 'integer',
             'stars' => 'integer',
             'score' => 'integer',
+            'level3_checkpoint' => 'array',
         ];
     }
 

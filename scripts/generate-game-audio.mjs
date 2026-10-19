@@ -105,6 +105,12 @@ function createEffects() {
         square(520 + time * 1600, time) * envelope(time, duration, 0.004, 0.07) * 0.24
     ));
 
+    const typingNoise = seededNoise(17);
+    createWav('typing.wav', 0.055, (time, _index, duration) => (
+        square(760 - time * 2400, time) * envelope(time, duration, 0.002, 0.035) * 0.09
+        + typingNoise() * envelope(time, duration, 0.001, 0.025) * 0.035
+    ));
+
     const storyNoise = seededNoise(21);
     createWav('story-next.wav', 0.2, (time, _index, duration) => (
         sine(440 + time * 850, time) * envelope(time, duration, 0.01, 0.1) * 0.22
@@ -203,4 +209,4 @@ function createEffects() {
 createMusic();
 createEffects();
 
-console.log(`Generated 17 synthetic WAV files in ${audioDirectory}`);
+console.log(`Generated 18 synthetic WAV files in ${audioDirectory}`);

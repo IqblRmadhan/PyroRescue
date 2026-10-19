@@ -67,6 +67,34 @@ export const level1TutorialSteps = [
     },
 ];
 
+export const level1SequenceStarterCode = 'atas(...)\nkanan(...)\natas(...)';
+
+export const level1SequenceTutorialSteps = [
+    {
+        target: '#game-container',
+        mapFocus: 'water',
+        eyebrow: '01 / TUJUAN PERTAMA',
+        title: 'Temukan pompa air',
+        text: 'Tim sudah tiba di lokasi. Kamera menunjukkan titik biru di dekat pompa yang harus kamu capai lebih dahulu.',
+        note: 'Untuk sampai ke sana, karakter perlu menjalankan beberapa perintah gerak secara berurutan.',
+    },
+    {
+        target: '#code-editor',
+        eyebrow: '02 / SEQUENCE',
+        title: 'Susun urutan perjalanan',
+        text: 'PyroPad sudah berisi kerangka atas(...), kanan(...), lalu atas(...). Ganti setiap ... dengan jumlah petak yang tepat. Setiap baris dijalankan dari atas ke bawah.',
+        note: 'Urutan perintah disebut sequence. Jika urutannya berubah, jalur yang ditempuh karakter juga berubah.',
+    },
+    {
+        target: '.game-buttons',
+        eyebrow: '03 / COBA LANGSUNG',
+        title: 'Jalankan sequence',
+        text: 'Tekan Run Code setelah ketiga angka terisi. Karakter akan mengikuti urutanmu menuju titik biru. Sesampainya di pompa, PyroPad akan memberi kisi-kisi berikutnya.',
+        note: 'Checklist Challenge 1 akan tercentang sambil kamu bermain. Cara Bermain di bawah halaman dapat dibuka kembali kapan saja.',
+        nextLabel: 'Coba sequence',
+    },
+];
+
 export class Level1Tutorial {
     constructor(root) {
         this.root = root;
@@ -88,9 +116,9 @@ export class Level1Tutorial {
         this.mapScene = null;
 
         this.back.addEventListener('click', () => this.showStep(this.stepIndex - 1));
-        this.next.addEventListener('click', () => this.stepIndex === level1TutorialSteps.length - 1
+        this.next.addEventListener('click', () => this.stepIndex === this.activeSteps.length - 1
             ? this.close() : this.showStep(this.stepIndex + 1));
-        this.skip.addEventListener('click', () => this.close());
+        this.skip.addEventListener('click', () => this.close('skipped'));
         this.root.addEventListener('keydown', (event) => this.handleKeydown(event));
         window.addEventListener('resize', () => this.updateSpotlight());
         window.addEventListener('scroll', () => this.updateSpotlight(), { passive: true });
@@ -100,9 +128,10 @@ export class Level1Tutorial {
         this.mapScene = scene;
     }
 
-    open(onClose = () => {}) {
+    open(onClose = () => {}, { steps = level1TutorialSteps } = {}) {
         if (this.opened) return;
         this.opened = true;
+        this.activeSteps = steps;
         this.onClose = onClose;
         this.previousFocus = document.activeElement;
         this.root.hidden = false;
@@ -111,9 +140,13 @@ export class Level1Tutorial {
         this.showStep(0);
     }
 
+    openSequence(onClose = () => {}) {
+        this.open(onClose, { steps: level1SequenceTutorialSteps });
+    }
+
     showStep(index) {
-        this.stepIndex = Math.max(0, Math.min(index, level1TutorialSteps.length - 1));
-        const step = level1TutorialSteps[this.stepIndex];
+        this.stepIndex = Math.max(0, Math.min(index, this.activeSteps.length - 1));
+        const step = this.activeSteps[this.stepIndex];
         const target = document.querySelector(step.target);
         if (step.mapFocus) this.mapScene?.focusTutorialMarker(step.mapFocus);
         else this.mapScene?.restoreTutorialCamera();
@@ -121,9 +154,10 @@ export class Level1Tutorial {
         this.title.textContent = step.title;
         this.text.textContent = step.text;
         this.note.textContent = step.note;
-        this.progress.textContent = `${this.stepIndex + 1} / ${level1TutorialSteps.length}`;
+        this.progress.textContent = `${this.stepIndex + 1} / ${this.activeSteps.length}`;
         this.back.hidden = this.stepIndex === 0;
-        this.next.textContent = this.stepIndex === level1TutorialSteps.length - 1 ? 'Mulai bermain' : 'Lanjut';
+        this.next.textContent = this.stepIndex === this.activeSteps.length - 1
+            ? step.nextLabel ?? 'Mulai bermain' : 'Lanjut';
         this.card.classList.toggle('level1-tutorial__card--left',
             Boolean(target?.getBoundingClientRect().left > window.innerWidth / 2));
         if (window.innerWidth <= 700) target?.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -134,7 +168,7 @@ export class Level1Tutorial {
 
     updateSpotlight() {
         if (!this.opened) return;
-        const target = document.querySelector(level1TutorialSteps[this.stepIndex].target);
+        const target = document.querySelector(this.activeSteps[this.stepIndex].target);
         if (!target) return;
         const bounds = target.getBoundingClientRect();
         this.card.classList.toggle('level1-tutorial__card--top',
@@ -149,7 +183,7 @@ export class Level1Tutorial {
     handleKeydown(event) {
         if (event.key === 'Escape') {
             event.preventDefault();
-            this.close();
+            this.close('skipped');
         }
         if (event.key !== 'Tab') return;
         const buttons = [this.skip, this.back, this.next].filter(button => !button.hidden);
@@ -164,7 +198,7 @@ export class Level1Tutorial {
         }
     }
 
-    close() {
+    close(reason = 'completed') {
         if (!this.opened) return;
         this.opened = false;
         this.root.hidden = true;
@@ -172,6 +206,6 @@ export class Level1Tutorial {
         document.body.classList.remove('level1-tutorial-is-open');
         this.mapScene?.restoreTutorialCamera();
         this.previousFocus?.focus?.({ preventScroll: true });
-        this.onClose();
+        this.onClose(reason);
     }
 }

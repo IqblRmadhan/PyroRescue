@@ -4,6 +4,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MainMenuController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\Level3CheckpointController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -32,4 +33,5 @@ Route::middleware('player')->group(function () {
     Route::get('/game/2', [GameController::class, 'play'])->defaults('number', 2)->name('game.level2');
     Route::get('/game/3', [GameController::class, 'play'])->defaults('number', 3)->name('game.level3');
     Route::post('/progress/challenge', [ProgressController::class, 'store'])->name('progress.challenge');
+    Route::post('/progress/level3-checkpoint', [Level3CheckpointController::class, 'store'])->name('progress.level3-checkpoint');
 });

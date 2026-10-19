@@ -16,15 +16,27 @@ class Level3PageTest extends TestCase
         $this->seed();
     }
 
-    public function test_guest_can_open_level_three_with_temporary_story_and_no_saved_progress(): void
+    public function test_guest_can_open_level_three_with_rescue_briefing_and_no_saved_progress(): void
     {
         $this->get('/game/3')->assertRedirect(route('login'));
         $this->post(route('login.guest'));
         $this->get('/main-menu')->assertOk()->assertSee(route('game.level3'), false);
         $this->get('/game/3')->assertOk()->assertSee('Suaka Bekantan')
             ->assertSee('data-level="3"', false)->assertSee('data-progress-url=""', false)
-            ->assertSee('assets/story/level2/1.png')->assertSee('assets/story/level2/4.png')
-            ->assertSee('api_padam')->assertSee('status_bekantan')->assertSee('id="bekantan-status"', false)
+            ->assertSee('assets/maps/level3-map.png')->assertDontSee('assets/story/level2/')
+            ->assertSee('assets/characters/komandan.png')->assertSee('assets/characters/mission-guide.png')
+            ->assertSee('story-portrait--commander')->assertSee('story-portrait--player')
+            ->assertSee('data-speaker="commander"', false)->assertSee('data-speaker="player"', false)
+            ->assertSee('data-guide-portrait="commander"', false)->assertSee('data-guide-portrait="player"', false)
+            ->assertSee('data-guide-speaker-name', false)->assertSee('if menjalankan tindakan saat kondisi True')
+            ->assertSee('api_padam')->assertSee('id="bekantan-status"', false)
+            ->assertSee('id="required-water">5</span>', false)
+            ->assertSee('id="rescued-count"', false)->assertSee('id="extinguished-count"', false)
+            ->assertSee('id="sub-mission"', false)->assertSee('id="jalur-condition"', false)
+            ->assertSee('id="animal-condition"', false)->assertSee('id="water-needed"', false)
+            ->assertSee('id="hud-water"', false)->assertSee('id="hud-world-state"', false)
+            ->assertSee('tahan Control lalu klik petak jalan untuk teleport')
+            ->assertSee('Bekantan diselamatkan: 3/3')->assertSee('Evaluasi akhir: LULUS')
             ->assertDontSee('Lanjut Level 4');
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4])->assertOk()->assertJsonPath('saved', false);
         $this->assertDatabaseCount('user_level_progress', 0);

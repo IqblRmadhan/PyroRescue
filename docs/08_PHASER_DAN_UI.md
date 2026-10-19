@@ -47,7 +47,7 @@ Pemandu tampil sebagai dialog di bagian bawah layar, dengan karakter besar di
 kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuka.
 
 - `LearningPanel.js` membaca materi dari `Level*Challenges.js` untuk ketiga level. Pada Level 1: membuat variabel,
-  mengganti nilai, lalu memakai nilainya.
+  menjaga nilai selama perjalanan, lalu memakai nilainya.
 - Setelah Run gerakan selesai tepat di penanda challenge Level 1, kode gerakan
   diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
   Melewati penanda biru atau merah tidak mengganti kode. Isian juga tidak menimpa
@@ -78,6 +78,14 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   dengan tombol Lanjut/Mengerti tanpa melewati antrean penjelasan.
 - Potret pemandu memakai `assets/characters/mission-guide.png`, dengan gambar
   asli tetap utuh dan ditampilkan sebagai potret melalui CSS.
+- Isi dialog arahan disusun sebagai kartu situasi, chip istilah Python, kartu
+  **Analogi Lapangan**, dan panel kisi-kisi PyroPad. Level 1 sampai Level 3
+  memakai struktur visual yang sama. Evaluasi tetap menampilkan analogi sasaran
+  operasi, tetapi tidak menampilkan kisi-kisi atau jawaban kode.
+- Setelah sebuah challenge selesai, dialog menghubungkan materi lama dengan
+  materi berikutnya melalui tiga kotak: **Baru dilakukan**, **Masalah**, dan
+  **Solusi berikutnya**. Peralihan ini dibaca sebelum challenge berikutnya
+  diaktifkan agar konsep baru terasa sebagai jawaban atas keterbatasan cara lama.
 - Cubit touchpad (atau Ctrl + scroll) di peta untuk zoom. Geser dua jari atau
   klik dan seret untuk menggeser kamera tanpa tombol tambahan. Zoom keluar
   dibatasi agar map tetap memenuhi area game dan tidak terlalu kecil; zoom masuk
@@ -144,25 +152,36 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 
 ## Implementasi Level 3
 
-- `/game/3` memakai layout PyroPad, dengan status `api_padam` dan bekantan di HUD.
-- `Level3Map.js` memisahkan jalur dan posisi objek dari gambar map sementara.
-  Grid 40 px mengikuti daratan dan jembatan; air tidak dapat dilalui.
-- `Level3Scene` memakai kembali rendering, gerakan, pompa, dan animasi
-  `Level2Scene` melalui konfigurasi map/aset. Keadaan misi, percabangan,
-  checkpoint, dan bekantan ditangani oleh scene Level 3.
-- Api latihan memakai sprite C3 Level 2 (3 semprotan); api evaluasi memakai
-  sprite EVAL Level 2 tetapi membutuhkan 4 semprotan sesuai modul.
-- `Level3Assets.js` membaca 10 frame bekantan saat runtime; PNG sumber tidak diubah.
-  Lima frame baris pertama berulang saat status `tunggu`, lalu lima frame baris kedua
-  berulang saat status `aman` atau `selamat`, dengan kecepatan 4 fps. Skala tetap memakai
-  acuan 56 px agar bekantan lebih kecil dari pemadam dan tidak berubah proporsi.
-- Story Level 2 digunakan sementara. Materi, autocomplete, hint, dan pemandu
-  memakai `Level3Challenges.js` sesuai BAB III PDF. Evaluasi menghilangkan bantuan.
-- C2 dan C3 mempertahankan api latihan yang telah padam. Kondisi diperiksa pada
-  saat command conditional dijalankan, sehingga loop di atasnya dapat mengubah
-  hasil kondisi dalam Run yang sama.
-- Akun menyimpan 4 tahap dan mendapat 1–3 bintang sesuai nilai setelah FINISH. Tamu tidak
-  menyimpan progres. Hasil Level 2 menyediakan tombol menuju Level 3.
+- Alur aktif mengikuti docs/PyroRescue_Alur_Gameplay_Level_3_Lengkap.md.
+- Level3Challenges menyediakan enam submisi per challenge dan empat tahap
+  evaluasi. Level3Mission menyimpan state checkpoint yang dapat diuji tanpa Phaser.
+- Level3Scene memakai rendering dan animasi Level2Scene, dengan tiga api,
+  tiga bekantan, penanda tujuan aktif, pos evakuasi, dan gerbang FINISH.
+- Level3Validator membaca subset Python menjadi AST terbatas, tanpa eval,
+  shell, maupun eksekusi Python server. Maksimal 120 aksi dan delapan tingkat blok.
+- Kondisi dunia diperbarui sesudah animasi aksi, sehingga if setelah for
+  membaca api_padam terbaru. Baris cabang aktif ditandai pada PyroPad.
+- Komandan tampil di kanan memakai komandan.png; karakter pemain di kiri
+  memakai mission-guide.png. Story Level 3 mempunyai briefing dan tutorial sendiri.
+- Checklist submisi ditampilkan satu kolom sesuai urutan pengerjaan.
+- HUD selalu menampilkan HP dan langkah aktif. Air, api, satwa, serta kondisi
+  dunia hanya muncul ketika dipakai oleh submisi aktif; ikon memakai aset UI.
+- Level 3 memakai satu pompa di persimpangan tengah. Pompa dekat pos evakuasi
+  beserta label dan penandanya tidak dirender. Pompa berada di (22,18) dengan
+  penanda biru; pemeriksaan persimpangan tetap memakai penanda merah di (24,18).
+- Shortcut pengujian `Ctrl + klik` tersedia pada Level 1, 2, dan 3. Shortcut
+  memindahkan pemain ke petak jalan serta menolak petak yang tidak dapat diinjak.
+  Teleport ke petak biasa tidak membuka dialog perjalanan. Jika pemain mendarat
+  tepat pada titik interaksi aktif, game tetap memberikan respons titik tersebut;
+  Pos 1 Level 1 juga menyelesaikan Challenge 2 karena tugasnya cukup dikunjungi.
+- Kabut menutup jembatan utara dari persimpangan selama keputusan jalur C1
+  belum diselesaikan. Gerakan biasa tertahan; program keputusan yang benar
+  dapat melewatinya dan menghilangkan kabut secara otomatis. Kabut digambar
+  sebagai kumpulan petak pixel dengan animasi bertahap agar sesuai gaya 2D.
+- Endpoint checkpoint menyimpan snapshot submisi untuk akun; tamu tidak menulis
+  database. Migration 2026_10_18_000001 menambahkan kolom level3_checkpoint.
+- Uji browser lengkap: node tests/browser/level3-gameplay.mjs dengan server
+  pada GAME_URL dan modul Playwright pada PLAYWRIGHT_MODULE.
 
 ## Umpan balik tabrakan dan bar HP
 
@@ -190,11 +209,16 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 
 ## Tutorial Level 1
 
-Sesudah cerita pembuka dan peta siap, awal Challenge 1 Level 1 menampilkan tur
-**Cara Bermain**. Tur menjelaskan peta, status air dan HP, PyroPad,
-tombol Run Code dan Hapus, kontrol suara, Ulangi, Hint, serta Baca Materi.
-Kamera kemudian bergeser ke penanda biru di pompa, penanda merah di Pos 1,
-dan FINISH, masing-masing dengan lingkaran penunjuk. Penanda biru adalah petak
+Tombol terakhir cerita memakai teks **Tiba di Lokasi**. Setelah peta siap, awal
+Challenge 1 menampilkan tiga langkah persiapan yang menyatu dengan misi:
+menemukan pompa, memahami sequence gerakan, lalu menjalankan kerangka
+`atas(...)`, `kanan(...)`, dan `atas(...)` di PyroPad. Setelah pemain menutup
+langkah terakhir, fokus langsung berpindah ke PyroPad tanpa dialog tambahan.
+
+Tur lengkap **Cara Bermain** tetap dapat dibuka dari bawah halaman. Tur ini
+menjelaskan status air dan HP, tombol aksi, kontrol suara, Ulangi, Hint,
+Baca Materi, penanda biru di pompa, penanda merah di Pos 1, dan FINISH.
+Penanda biru adalah petak
 mengambil air; penanda merah adalah petak menjalankan kode untuk challenge.
 Tur tidak memberi jawaban kode. Pemain bisa maju, kembali, atau melewatinya.
 Tombol **Cara Bermain** di footer game membuka tur lagi selama game aktif.
@@ -219,6 +243,10 @@ arahan sesuai posisi pemain. Tur tidak mengubah challenge atau progres akun.
 - Cue tersedia untuk cerita pembuka, tombol UI, gerakan, jalan buntu, pompa,
   pengisian air, semprotan, api padam, kesalahan kode, target, challenge,
   dan penyelesaian level.
+- Cerita pembuka memakai musik latar game setelah interaksi pertama yang
+  diizinkan browser. Efek `typing.wav` berbunyi tiap dua karakter non-spasi
+  selama animasi teks. Musik dan SFX aktif secara default jika pemain belum
+  menyimpan preferensi; masing-masing tetap mengikuti tombol mute miliknya.
 - Tombol **Musik** dan **SFX** tersedia terpisah di dalam game bersama Hint dan
   Ulangi. SFX mencakup langkah, karakter, pompa, semprotan, api, dan UI.
   Pilihan disimpan dengan kunci `pyrorescue.musicMuted` dan
@@ -439,3 +467,11 @@ button {
 ```
 
 Jangan buat admin panel, leaderboard, shop, atau kustomisasi avatar dulu.
+
+Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai. Run mengembalikan kamera mengikuti pemain. Potret dialog ditampilkan setengah badan.
+
+Kisi-kisi PyroPad: ChallengeStarterCode.js menyediakan kerangka dengan ... untuk challenge latihan Level 1–3. Kerangka muncul sekali per titik pengerjaan/submisi sesudah Run selesai; kode yang sedang diedit tidak ditimpa. Reset mengaktifkan kerangka kembali. Seluruh evaluasi tidak mendapat kerangka kode.
+
+Penyempurnaan arahan: checklist submisi diberi nomor, papan MISI dihapus (marker merah tetap ada), grid Level 3 memakai garis 1,5 px beropasitas 0,48. Arahan perjalanan hanya menjelaskan lokasi dan tujuan; instruksi serta kerangka kode muncul setelah tiba pada penanda pengerjaan. Potongan kode dialog memakai blok pre/code dengan textContent. Pengisian pompa hanya menganimasikan tambahan air, bukan seluruh isi akhir. Habitat terakhir dipindah ke pulau berpondok: penanda (29,5), checkpoint (29,6).
+
+Level 1 terbaru: isi 5 unit sekali di pompa. Pos 1 cukup dikunjungi dengan air tetap 5; tidak ada assignment ulang. Pos 2 menerima air melalui air_pos = isi_air.

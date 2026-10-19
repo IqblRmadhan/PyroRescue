@@ -1,25 +1,182 @@
 import level1Challenges from './Level1Challenges.js';
 import level2Challenges from './Level2Challenges.js';
+import { getLevel3Guidance } from './Level3Guidance.js';
+import { getChallengeStarterCode } from './ChallengeStarterCode.js';
+
+const guideAnalogies = {
+    1: {
+        1: {
+            title: 'Tangki Berlabel',
+            intro: 'Bayangkan variabel sebagai tangki yang diberi nama agar isinya dapat dikenali.',
+            rows: [
+                { label: 'Nama tangki', text: 'isi_air', type: 'question' },
+                { label: 'Nilai yang disimpan', text: '5 unit air', type: 'answer' },
+                { label: 'Hasil', text: 'Nama isi_air sekarang mewakili angka 5.', type: 'yes' },
+            ],
+        },
+        2: {
+            title: 'Persediaan Tetap Terbawa',
+            intro: 'Seperti membawa tangki di kendaraan: isinya tidak hilang hanya karena berpindah tempat.',
+            rows: [
+                { label: 'Sebelum berangkat', text: 'Tangki berisi 5 unit.', type: 'question' },
+                { label: 'Selama perjalanan', text: 'Tidak perlu mengisi atau mengganti nilainya lagi.', type: 'answer' },
+                { label: 'Saat tiba', text: 'isi_air tetap bernilai 5.', type: 'yes' },
+            ],
+        },
+        3: {
+            title: 'Catatan Penyerahan Air',
+            intro: 'Bayangkan petugas membaca angka pada tangki lalu menyalinnya ke catatan milik pos.',
+            rows: [
+                { label: 'Baca', text: 'Lihat nilai yang tersimpan dalam isi_air.', type: 'question' },
+                { label: 'Salin', text: 'Catat nilai yang sama ke air_pos.', type: 'answer' },
+                { label: 'Aturan game', text: 'Setelah diserahkan, tangki pemain dikosongkan.', type: 'yes' },
+            ],
+        },
+        4: {
+            title: 'Gerbang Pemeriksaan Akhir',
+            intro: 'Seperti petugas yang baru boleh pulang setelah memastikan seluruh tugas lapangan selesai.',
+            rows: [
+                { label: 'Periksa', text: 'Air sudah diterima Pos 2.', type: 'question' },
+                { label: 'Tujuan', text: 'Ikuti jalan sampai petak FINISH.', type: 'answer' },
+                { label: 'Selesai jika', text: 'Semua challenge telah tercatat.', type: 'yes' },
+            ],
+        },
+    },
+    2: {
+        1: {
+            title: 'Tombol Selang Pemadam',
+            intro: 'Satu pemanggilan fungsi sama seperti menekan tombol alat satu kali.',
+            rows: [
+                { label: 'Satu tekan', text: 'semprot() dijalankan sekali.', type: 'question' },
+                { label: 'Dua semprotan', text: 'Jalankan perintah yang sama dua kali.', type: 'answer' },
+                { label: 'Biaya', text: 'Setiap semprotan memakai 1 unit air.', type: 'yes' },
+            ],
+        },
+        2: {
+            title: 'Penyemprot Otomatis',
+            intro: 'Seperti mengatur mesin agar mengulangi tindakan yang sama sesuai angka pada penghitung.',
+            rows: [
+                { label: 'Atur pengulangan', text: 'range() menentukan berapa kali.', type: 'question' },
+                { label: 'Pilih tindakan', text: 'semprot() diletakkan di dalam for.', type: 'answer' },
+                { label: 'Mesin bekerja', text: 'Perintah dijalankan dari hitungan awal sampai selesai.', type: 'yes' },
+            ],
+        },
+        3: {
+            title: 'Panel Penghitung Semprotan',
+            intro: 'Angka pengulangan disimpan pada panel bernama jumlah_semprot, lalu dibaca oleh mesin.',
+            rows: [
+                { label: 'Simpan angka', text: 'jumlah_semprot menyimpan jumlah yang diperlukan.', type: 'question' },
+                { label: 'Baca angka', text: 'range(jumlah_semprot) memakai nilai tersebut.', type: 'answer' },
+                { label: 'Ulangi', text: 'for menjalankan semprot() sebanyak nilai itu.', type: 'yes' },
+            ],
+        },
+        4: {
+            title: 'Papan Operasi Mandiri',
+            intro: 'Seperti daftar pemeriksaan petugas sebelum meninggalkan area kebakaran.',
+            rows: [
+                { label: 'Persediaan', text: 'Siapkan air yang cukup.', type: 'question' },
+                { label: 'Pemadaman', text: 'Gunakan konsep pengulangan yang sudah dipelajari.', type: 'answer' },
+                { label: 'Tujuan akhir', text: 'Pastikan api padam lalu capai FINISH.', type: 'yes' },
+            ],
+        },
+    },
+};
+
+function bridge(title, message, previous, problem, next) {
+    return {
+        message,
+        analogy: {
+            title,
+            intro: 'Materi berikutnya tumbuh dari langkah yang baru saja kamu selesaikan.',
+            rows: [
+                { label: 'Baru dilakukan', text: previous, type: 'yes' },
+                { label: 'Masalah', text: problem, type: 'question' },
+                { label: 'Solusi berikutnya', text: next, type: 'answer' },
+            ],
+        },
+    };
+}
+
+const challengeBridges = {
+    1: {
+        1: bridge(
+            'Nilai Tetap Dibawa',
+            'Tangki sudah berisi 5 liter air yang tersimpan dalam isi_air. Saat kendaraan berpindah ke Pos 1, nilainya tetap ikut terbawa. Jadi kita tidak perlu menulis isi_air = 5 lagi.',
+            'Menyimpan 5 unit air ke variabel isi_air.',
+            'Bagaimana menjaga nilai itu selama perjalanan?',
+            'Bawa variabel yang sama ke Pos 1 tanpa mengisinya ulang.',
+        ),
+        2: bridge(
+            'Gunakan Nilai yang Sudah Ada',
+            'Lima unit air masih tersimpan dalam isi_air. Daripada menulis angka 5 lagi saat menyerahkan air, kita dapat membaca nilai yang sudah ada lalu menyalinnya ke air_pos.',
+            'Membawa isi_air tanpa mengubah nilainya.',
+            'Bagaimana Pos 2 menerima nilai yang sama tanpa mengetik ulang angkanya?',
+            'Gunakan air_pos = isi_air untuk membaca dan menyalin nilai.',
+        ),
+        3: bridge(
+            'Pemeriksaan Misi',
+            'Air sudah disimpan, dibawa, lalu diserahkan dengan variabel. Sekarang ikuti jalan menuju FINISH agar seluruh rangkaian misi diperiksa.',
+            'Menyerahkan nilai isi_air kepada air_pos.',
+            'Apakah seluruh urutan pengiriman sudah selesai?',
+            'Capai FINISH untuk menjalankan evaluasi akhir.',
+        ),
+    },
+    2: {
+        1: bridge(
+            'Dari Pengulangan Manual ke for',
+            'Barusan kita menulis semprot() dua kali. Bagaimana kalau api membutuhkan 100 semprotan? Tidak mungkin kita menulis semprot() 100 kali. Agar lebih ringkas, gunakan for dan range() untuk mengulang perintah secara otomatis.',
+            'Menjalankan semprot() pada dua baris terpisah.',
+            'Semakin banyak semprotan, semakin banyak baris yang harus disalin.',
+            'for dan range() mengulang semprot() dengan satu pola.',
+        ),
+        2: bridge(
+            'Jumlah Pengulangan Bisa Disimpan',
+            'Kita sudah memakai range() untuk mengulang semprot(). Jika kebutuhan api berubah-ubah, akan lebih mudah menyimpan jumlahnya dalam variabel jumlah_semprot lalu meminta range() membaca variabel tersebut.',
+            'Menuliskan angka pengulangan langsung di dalam range().',
+            'Angka harus dicari dan diganti setiap kali kebutuhan berubah.',
+            'Simpan angka pada jumlah_semprot dan gunakan di dalam range().',
+        ),
+        3: bridge(
+            'Gabungkan Semua Bekal',
+            'Sekarang kamu sudah mengenal fungsi, perulangan, dan variabel pengatur jumlah. Pada evaluasi, tentukan sendiri cara menggabungkan ketiganya untuk menyiapkan air, memadamkan api, lalu mencapai FINISH.',
+            'Mengatur jumlah pengulangan melalui variabel.',
+            'Misi berikutnya tidak menyediakan kisi-kisi kode.',
+            'Baca keadaan misi lalu susun program lengkap secara mandiri.',
+        ),
+    },
+    3: {
+        1: bridge(
+            'Dari Satu Keputusan ke Beberapa Syarat',
+            'Kita sudah memakai if dan else untuk memilih tindakan berdasarkan satu keadaan. Krisis berikutnya membutuhkan pemeriksaan air sekaligus keselamatan satwa, jadi keputusan harus disusun lebih bertahap.',
+            'Memilih satu dari dua tindakan dengan if dan else.',
+            'Satu pemeriksaan belum cukup untuk menjamin penyelamatan aman.',
+            'Bandingkan air dan susun pemeriksaan keselamatan bertingkat.',
+        ),
+        2: bridge(
+            'Pemeriksaan Bertingkat',
+            'Dua kondisi sudah berhasil diperiksa secara berurutan. Di habitat berikutnya ada tambahan kondisi jalur, sehingga setiap gerbang keselamatan harus diperiksa sebelum penyelamatan dilakukan.',
+            'Memeriksa kondisi satwa lalu keadaan api.',
+            'Jalur yang berbahaya masih dapat menggagalkan penyelamatan.',
+            'Tambahkan pemeriksaan jalur di dalam keputusan yang sudah ada.',
+        ),
+        3: bridge(
+            'Operasi Mandiri Terakhir',
+            'Kamu sudah berlatih memeriksa air, api, satwa, dan jalur. Evaluasi terakhir meminta semua cara berpikir itu dipakai bersama tanpa kisi-kisi kode.',
+            'Menyusun tiga tingkat pemeriksaan keselamatan.',
+            'Semua kondisi dapat berubah dalam satu operasi terakhir.',
+            'Susun keputusan lengkap, padamkan api, lalu selamatkan bekantan.',
+        ),
+    },
+};
+
+export function getChallengeBridge(levelNumber, completedChallenge) {
+    return challengeBridges[levelNumber]?.[completedChallenge] ?? null;
+}
 
 // Arahan memakai posisi terkini, bukan hanya checklist yang pernah dicentang.
 export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }) {
     if (levelNumber === 3) {
-        if (challengeNumber === 4) {
-            return state.rescued ? 'Bekantan selamat! Pergi satu petak ke bawah menuju FINISH.'
-                : state.conditionChecked ? 'Evaluasi belum selesai. Gunakan Ulangi, lalu perbaiki program penyelamatan lengkapmu.'
-                    : 'Evaluasi mandiri: datangi pompa pulau tengah, siapkan 4 unit air, lalu pergi ke pulau bawah. Padamkan api dengan 4 semprotan dan tentukan status bekantan dalam satu program. Akhiri di FINISH.';
-        }
-        if (challengeNumber === 1) {
-            const remaining = 3 - (state.sprays ?? 0);
-            if ((state.water ?? 0) < remaining) return state.atPump
-                ? 'Kamu di pompa. Tulis isi_air = 3 untuk menyiapkan tiga semprotan.'
-                : 'Pergi ke titik biru pompa di kanan tempat awal. Siapkan 3 unit air sebelum menuju habitat di pulau tengah.';
-            return state.atFire ? `Simpan ${remaining} dalam jumlah_semprot, lalu gunakan for dan range(jumlah_semprot) untuk menyemprot. Api yang padam membuat api_padam menjadi True.`
-                : 'Ikuti jembatan ke kanan, lalu naik ke titik merah api habitat di pulau tengah.';
-        }
-        if (!state.atHabitat) return 'Api habitat sudah padam. Dari penanda api, turun dua petak ke penanda bekantan.';
-        return challengeNumber === 2 ? 'Periksa if api_padam: lalu isi status_bekantan = "aman" di dalam blok. True dan False adalah Boolean, tanpa tanda petik.'
-            : 'Gunakan if/else: jika api_padam True, status "selamat"; jika False, status "tunggu". else sejajar dengan if.';
+        return getLevel3Guidance(challengeNumber, state).message;
     }
     if (levelNumber === 1) {
         if (challengeNumber === 4) {
@@ -27,13 +184,13 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
         }
         if (challengeNumber === 1) {
             return state.atPump
-                ? 'Kamu sudah di pompa! Tulis isi_air = 3 untuk menyimpan 3 unit air di tangki.'
+                ? 'Kamu sudah di pompa! Tulis isi_air = 5 untuk menyimpan 5 unit air di tangki.'
                 : 'Pergi ke pompa air di tepi sungai. Gunakan perintah gerak untuk mencapai penandanya.';
         }
         if (challengeNumber === 2) {
             return state.atPost1
-                ? 'Pos 1 memberi 2 unit tambahan. Tulis isi_air = 5 untuk menyimpan jumlah akhir: 3 + 2 = 5.'
-                : 'Pergi ke Pos 1 sambil membawa 3 unit air. Penjaga menyiapkan 2 unit tambahan untukmu.';
+                ? 'Pemeriksaan Pos 1 selesai. Lima unit air tetap tersimpan; lanjutkan pengiriman ke Pos 2.'
+                : 'Pergi ke Pos 1 sambil membawa 5 unit air dari pompa. Capai penandanya untuk melapor.';
         }
         if (state.postWater === level1Challenges[3].requiredWater) return 'Air diterima Pos 2. Lanjutkan evaluasi dengan menuju FINISH.';
         return state.atPost2
@@ -63,6 +220,23 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
     return `Simpan ${remaining} dalam jumlah_semprot, lalu pakai range(jumlah_semprot) untuk mengulang semprot().`;
 }
 
+export function getGuidePresentation({ levelNumber, challengeNumber, state = {} }) {
+    if (levelNumber === 3) return getLevel3Guidance(challengeNumber, state);
+
+    const atLocation = challengeNumber === 1 ? state.atPump
+        : challengeNumber === 2 ? state.atPost1 : state.atPost2;
+    const starter = getChallengeStarterCode(levelNumber, challengeNumber, {
+        ...state,
+        atLocation,
+    });
+
+    return {
+        message: getGuideInstruction({ levelNumber, challengeNumber, state }),
+        code: starter?.code ?? '',
+        analogy: guideAnalogies[levelNumber]?.[challengeNumber] ?? null,
+    };
+}
+
 // commands hanya memuat aksi yang dilaporkan selesai oleh scene.
 // Kode asli disimpan sebelum editor bisa berubah saat mencapai penanda.
 export function explainExecutedCommands({ levelNumber, challengeNumber, commands, code = '', initialWater = 0 }) {
@@ -79,6 +253,12 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
         } else if (command.type === 'setWater') {
             messages.push(`isi_air = ${command.amount} menyimpan nilai ${command.amount} ke variabel isi_air, mengganti nilai ${water} menjadi ${command.amount}. Tanda = menyimpan nilai, bukan menambahkannya. Di game, jumlah ini menjadi isi tangkimu.`);
             water = command.amount;
+        } else if (command.type === 'branch') {
+            messages.push('Saya memeriksa ' + command.condition + ': hasilnya ' + (command.result ? 'True, cabang if dijalankan.' : 'False, cabang else dijalankan.'));
+        } else if (command.type === 'rescue') {
+            messages.push('Kondisi aman. Bekantan mengikuti saya; saya harus mengantarnya ke pos sebelum dihitung selamat.');
+        } else if (command.type === 'patrol') {
+            messages.push('Satwa tidak terjebak. Saya melanjutkan patroli.');
         } else if (command.type === 'conditional') {
             const branch = command.fireOut ? 'if' : command.whenFalse === null ? 'tidak ada blok' : 'else';
             messages.push(`api_padam bernilai ${command.fireOut ? 'True' : 'False'}, sehingga ${branch} dijalankan. Status bekantan sekarang "${command.status}". if memeriksa kondisi; assignment di dalam blok menyimpan status.`);

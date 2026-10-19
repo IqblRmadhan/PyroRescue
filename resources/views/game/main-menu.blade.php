@@ -46,8 +46,14 @@
                     <div class="adventure-carousel__viewport"><div class="adventure-islands" data-carousel-track>
                         @foreach($cards as $number => $card)
                             @php $level = $levels[$number]; $position = ($number - $selectedLevel + 3) % 3; @endphp
-                            <article class="adventure-level {{ !$level['unlocked'] ? 'adventure-level--locked' : '' }} {{ $number === 2 ? 'adventure-level--two' : ($number === 3 ? 'adventure-level--three' : '') }} {{ $position === 0 ? 'is-current' : ($position === 1 ? 'is-next' : 'is-previous') }}" data-level="{{ $number }}" aria-labelledby="level-{{ $number }}-title" @if($position !== 0) aria-hidden="true" inert @endif>
-                                <div class="adventure-level__image-wrap"><img src="{{ asset('assets/menu/'.$card['image']) }}" alt="{{ $card['title'] }}"></div>
+                            <article class="adventure-level {{ !$level['unlocked'] ? 'adventure-level--locked' : '' }} {{ $number === 2 ? 'adventure-level--two' : ($number === 3 ? 'adventure-level--three' : '') }} {{ $position === 0 ? 'is-current' : ($position === 1 ? 'is-next' : 'is-previous') }}" data-level="{{ $number }}" aria-labelledby="level-{{ $number }}-title" @if($position !== 0) aria-hidden="true" @endif>
+                                <button class="adventure-level__image-wrap" type="button" data-level-image
+                                        data-level-title="Level {{ $number }}: {{ $card['title'] }}"
+                                        data-level-href="{{ $level['unlocked'] && $level['playable'] ? route('game.level'.$number) : '' }}"
+                                        aria-label="{{ $position === 0 ? ($level['unlocked'] && $level['playable'] ? 'Mainkan Level '.$number : 'Level '.$number.' belum dapat dimainkan') : 'Pilih Level '.$number }}"
+                                        @if($position !== 0) tabindex="-1" @endif>
+                                    <img src="{{ asset('assets/menu/'.$card['image']) }}" alt="">
+                                </button>
                                 <div class="adventure-level__copy">
                                     <span class="adventure-level__number">LEVEL 0{{ $number }} · {{ !$level['unlocked'] ? 'TERKUNCI' : ($level['completed'] ? 'SELESAI' : ($level['playable'] ? 'MISI TERSEDIA' : 'SEGERA HADIR')) }}</span>
                                     <h2 id="level-{{ $number }}-title">{{ $card['title'] }}</h2><p>{{ $card['description'] }}</p>

@@ -2,9 +2,12 @@ import Phaser from 'phaser';
 import ProgressSync from './ProgressSync.js';
 import CodeAutocomplete, { createLevel1Suggestions, createLevel2Suggestions, createLevel3Suggestions } from './CodeAutocomplete.js';
 import CodeValidator from './CodeValidator.js';
+import { isDebugInteractionTarget } from './DebugTeleport.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import LearningPanel from './LearningPanel.js';
-import level1Challenges, { getLevel1MarkerStarterCode } from './Level1Challenges.js';
+import level1Challenges from './Level1Challenges.js';
+import { getChallengeStarterCode } from './ChallengeStarterCode.js';
+import { renderGuideMessage } from './GuideMessage.js';
 import level2Challenges, {
     getLevel2WaterCapacity,
     isLevel2WaterTargetComplete,
@@ -12,10 +15,17 @@ import level2Challenges, {
 import Level2Scene from './scenes/Level2Scene.js';
 import Level3Scene from './scenes/Level3Scene.js';
 import level3Challenges from './Level3Challenges.js';
+import { focusMissionTarget, getMissionCameraTarget } from './MissionCamera.js';
 import { gameAudio, initGameAudioControls } from './GameAudio.js';
 import { shouldPlayTargetCue, playCollisionFeedback } from './GameFeedback.js';
-import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from './MissionGuide.js';
-import { Level1Tutorial } from './Level1Tutorial.js';
+import {
+    getChallengeBridge,
+    getGuideInstruction,
+    getGuidePresentation,
+    explainExecutedCommands,
+    GuideDialogue,
+} from './MissionGuide.js';
+import { Level1Tutorial, level1SequenceStarterCode } from './Level1Tutorial.js';
 import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForFinish, badgeForScore, canFinishLevel } from './GameScore.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
@@ -76,7 +86,7 @@ let currentChallenge = Number(gameContainer.dataset.resumeChallenge ?? 1);
 let hintIndex = 0;
 let latestState = {};
 let completedTargets = new Set();
-let hasShownMarkerStarterCode = false;
+const shownStarterCodes = new Set();
 const completedChallenges = new Set(Array.from({ length: currentChallenge - 1 }, (_, index) => index + 1));
 let levelCompleted = false;
 let score = 100;
@@ -117,7 +127,33 @@ const progressSync = gameContainer.dataset.progressUrl ? new ProgressSync({
     },
 }) : null;
 progressRetry.addEventListener('click', () => { void progressSync?.flush(); });
+let pendingLevel3Checkpoint = null;
+let checkpointSaving = false;
+async function saveLevel3Checkpoint(checkpoint = pendingLevel3Checkpoint) {
+    if (!gameContainer.dataset.checkpointUrl || !checkpoint) return;
+    pendingLevel3Checkpoint = structuredClone(checkpoint);
+    if (checkpointSaving) return;
+    checkpointSaving = true;
+    try {
+        while (pendingLevel3Checkpoint) {
+            const snapshot = pendingLevel3Checkpoint;
+            if (progressSync && !await progressSync.flush()) return;
+            const response = await fetch(gameContainer.dataset.checkpointUrl, {
+                method: 'POST', keepalive: true,
+                headers: { 'Content-Type': 'application/json', Accept: 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: JSON.stringify({ checkpoint: snapshot }),
+            });
+            if (!response.ok) throw new Error('Checkpoint belum tersimpan.');
+            if (pendingLevel3Checkpoint === snapshot) pendingLevel3Checkpoint = null;
+        }
+        showSaveStatus('saved');
+    } catch { showSaveStatus('error'); }
+    finally { checkpointSaving = false; }
+}
+progressRetry.addEventListener('click', () => { void saveLevel3Checkpoint(); });
 saveWarning.addEventListener('click', () => { void progressSync?.flush(); });
+saveWarning.addEventListener('click', () => { void saveLevel3Checkpoint(); });
 levelResult.addEventListener('click', event => {
     if (event.target.closest('a[aria-disabled="true"]')) event.preventDefault();
 });
@@ -149,6 +185,12 @@ function renderGuide(showInstruction = false) {
     if (!entry && !showInstruction) return;
     const wasOpen = feedback.open;
     feedback.dataset.state = entry?.state ?? 'instruction';
+    if (isLevel3) {
+        const speaker = entry?.state === 'info' ? 'player' : 'commander';
+        feedback.dataset.speaker = speaker;
+        feedback.querySelector('[data-guide-speaker-name]').textContent = speaker === 'commander' ? 'KOMANDAN' : 'ANGGOTA PYRORESCUE';
+        feedback.querySelector('[data-guide-speaker-role]').textContent = speaker === 'commander' ? 'KOMANDAN OPERASI' : 'TIM PENYELAMAT';
+    }
     const titles = {
         instruction: 'Langkah berikutnya',
         info: 'Arti kode yang kamu jalankan',
@@ -156,11 +198,16 @@ function renderGuide(showInstruction = false) {
         error: 'Mari perbaiki kodenya',
     };
     guideTitle.textContent = titles[feedback.dataset.state];
-    feedbackMessage.textContent = entry?.message ?? getGuideInstruction({
-        levelNumber,
-        challengeNumber: currentChallenge,
-        state: latestState,
-    });
+    const presentation = !entry
+        ? getGuidePresentation({ levelNumber, challengeNumber: currentChallenge, state: latestState })
+        : null;
+    const message = entry?.message ?? presentation.message;
+    renderGuideMessage(
+        feedbackMessage,
+        message,
+        entry?.code ?? presentation?.code ?? '',
+        entry?.analogy ?? presentation?.analogy ?? null,
+    );
     guideNextLabel.textContent = entry ? 'Lanjut' : 'Mengerti, ayo mulai';
     guideProgress.textContent = guideDialogue.messages.length > 1
         ? `${guideDialogue.messages.length - 1} penjelasan berikutnya` : entry ? 'Berikutnya: arahan misi' : 'Siap melanjutkan misi?';
@@ -252,7 +299,7 @@ async function restartLevel() {
     configureChallenge({ updateScene: false });
     autocomplete.hide();
     gameAudio.play('reset');
-    await scene.resetChallenge(1, true);
+    await scene.resetChallenge(1, true, true);
     showCodeError('HP habis. Level diulang dari Challenge 1 dengan HP penuh.');
 }
 
@@ -321,16 +368,7 @@ function hideHint() {
 // 2. Cocokkan keadaan game dengan target, lalu perbarui panel misi.
 function isTargetComplete(targetKey, state) {
     if (isLevel3) {
-        switch (targetKey) {
-            case 'location': return state.atFire;
-            case 'water': return state.water >= challengeDefinitions[currentChallenge].requiredWater;
-            case 'fire': return state.fireOut;
-            case 'habitat': return state.atHabitat;
-            case 'safe': return state.conditionChecked && state.bekantanStatus === 'aman';
-            case 'rescued': return state.rescued;
-            case 'finish': return state.atFinish;
-            default: return false;
-        }
+        return targetKey.startsWith('step-') && Number(targetKey.slice(5)) < (state.step ?? 0);
     }
     if (isLevel2) {
         return targetKey === 'location' ? state.atFire
@@ -359,23 +397,19 @@ function isTargetComplete(targetKey, state) {
 
 // Dipanggil setelah Run gerakan selesai, bukan saat melewati penanda di tengah jalan.
 function showMarkerStarterCode() {
-    const markerStarterCode = levelNumber === 1
-        ? getLevel1MarkerStarterCode({
-            challengeNumber: currentChallenge,
-            hasShownStarterCode: hasShownMarkerStarterCode,
-            isAtMarker: isTargetComplete('location', latestState),
-        })
-        : null;
-    if (markerStarterCode) {
-        hasShownMarkerStarterCode = true;
-        editor.value = markerStarterCode;
+    const starter = getChallengeStarterCode(levelNumber, currentChallenge, {
+        ...latestState, atLocation: isTargetComplete('location', latestState),
+    });
+    if (starter && !shownStarterCodes.has(starter.key)) {
+        shownStarterCodes.add(starter.key);
+        editor.value = starter.code;
         editor.scrollTop = 0;
         editor.scrollLeft = 0;
         editor.dispatchEvent(new Event('input', { bubbles: true }));
-        const placeholderStart = markerStarterCode.indexOf('...');
+        const placeholderStart = starter.code.indexOf('...');
         editor.setSelectionRange(placeholderStart, placeholderStart + 3);
         autocomplete.hide();
-        document.getElementById('editor-action-status').textContent = 'Kode gerakan diganti dengan isian challenge.';
+        document.getElementById('editor-action-status').textContent = 'Kisi-kisi tersedia. Ganti setiap ... dengan kode jawabanmu.';
     }
 }
 
@@ -387,8 +421,29 @@ function renderMissionState(state = {}) {
     latestState = { ...latestState, ...persistentState };
 
     if (isLevel3) {
+        const visibleHud = new Set(latestState.hud ?? []);
+        document.getElementById('hud-water').hidden = !visibleHud.has('water');
+        document.getElementById('hud-fire').hidden = !visibleHud.has('fire');
+        document.getElementById('hud-rescue').hidden = !visibleHud.has('animal');
+        const worldState = document.getElementById('hud-world-state');
+        worldState.hidden = !['fire', 'animal', 'route'].some(name => visibleHud.has(name));
+        for (const status of worldState.querySelectorAll('[data-world-condition]')) {
+            const condition = status.dataset.worldCondition;
+            status.hidden = condition === 'water-fire'
+                ? !(visibleHud.has('water') && visibleHud.has('fire'))
+                : !visibleHud.has(condition);
+        }
         document.getElementById('fire-condition').textContent = latestState.apiPadam ? 'True' : 'False';
         document.getElementById('bekantan-status').textContent = (latestState.bekantanStatus ?? 'tunggu').toUpperCase();
+        document.getElementById('rescued-count').textContent = latestState.rescuedCount ?? 0;
+        document.getElementById('extinguished-count').textContent = latestState.extinguishedCount ?? 0;
+        document.getElementById('sub-mission').textContent = `${Math.min((latestState.step ?? 0) + 1, latestState.totalSteps ?? 6)}/${latestState.totalSteps ?? 6}`;
+        document.getElementById('jalur-condition').textContent = latestState.routeSafe ? 'True' : 'False';
+        document.getElementById('animal-condition').textContent = latestState.animalTrapped ? 'True' : 'False';
+        document.getElementById('water-needed').textContent = latestState.requiredWater ?? 2;
+        // Reset mengembalikan checklist ke checkpoint, bukan riwayat aksi yang dibatalkan.
+        completedTargets = new Set(challengeDefinitions[currentChallenge].targets
+            .filter(target => isTargetComplete(target.key, latestState)).map(target => target.key));
     }
     const counter = levelNumber === 1 && currentChallenge === 4
         ? latestState.postWater : latestState.water;
@@ -418,13 +473,13 @@ function renderMissionState(state = {}) {
 
 function renderTargets() {
     const definition = challengeDefinitions[currentChallenge];
-    const items = definition.targets.map((target) => {
+    const items = definition.targets.map((target, index) => {
         const item = document.createElement('li');
         const check = document.createElement('span');
         check.className = 'target-check';
         check.setAttribute('aria-hidden', 'true');
         item.dataset.targetKey = target.key;
-        item.append(check, target.label);
+        item.append(check, `${index + 1}. ${target.label}`);
         return item;
     });
 
@@ -434,12 +489,12 @@ function renderTargets() {
 function configureChallenge({ updateScene = true } = {}) {
     const definition = challengeDefinitions[currentChallenge];
     completedTargets = new Set();
-    hasShownMarkerStarterCode = false;
+    shownStarterCodes.clear();
     latestState = {};
     hintIndex = 0;
     missionTitle.textContent = definition.title;
     guideDialogue.reset();
-    requiredWater.textContent = hasEvaluation ? getLevel2WaterCapacity() : definition.requiredWater;
+    requiredWater.textContent = isLevel3 ? 5 : hasEvaluation ? getLevel2WaterCapacity() : definition.requiredWater;
     if (levelNumber === 1) {
         const waterHud = requiredWater.closest('.hud-counter');
         waterHud.title = currentChallenge === 4 ? 'Air telah diterima Pos 2' : 'Isi air / target';
@@ -447,7 +502,7 @@ function configureChallenge({ updateScene = true } = {}) {
             ? 'Air yang diterima Pos 2' : 'Isi air dan target');
     }
     if (hasEvaluation) {
-        const capacity = getLevel2WaterCapacity();
+        const capacity = isLevel3 ? 5 : getLevel2WaterCapacity();
         const waterHud = requiredWater.closest('.hud-counter');
         waterHud.title = `Isi tangki / kapasitas ${capacity} unit`;
         waterHud.setAttribute('aria-label', `Isi tangki dan kapasitas ${capacity} unit air`);
@@ -469,6 +524,7 @@ function configureChallenge({ updateScene = true } = {}) {
 
     if (updateScene) {
         scene.setChallenge(currentChallenge);
+        showMarkerStarterCode();
     }
 }
 
@@ -482,7 +538,8 @@ function showLevelResult(missionComplete = true) {
     resultTitle.textContent = missionComplete ? `Level ${levelNumber} berhasil!` : 'Misi belum tuntas';
     resultSubtitle.textContent = !missionComplete
         ? 'Kamu tiba di FINISH, tetapi masih ada challenge atau evaluasi yang belum selesai. Maksimal 2 bintang; main lagi untuk membuka level berikutnya.'
-        : !resultCanAdvance ? 'Semua challenge selesai, tetapi nilaimu belum mencapai 70%. Main lagi untuk membuka level berikutnya.'
+        : isLevel3 ? 'Tiga api padam, tiga bekantan di pos, dan evaluasi lulus. PyroRescue selesai!'
+            : !resultCanAdvance ? 'Semua challenge selesai, tetapi nilaimu belum mencapai 70%. Main lagi untuk membuka level berikutnya.'
             : levelNumber < 3 ? `Semua challenge dan evaluasi selesai. Level ${levelNumber + 1} terbuka!`
                 : 'Semua challenge dan evaluasi selesai. Penyelamatan tuntas!';
     resultRating.textContent = badge.title;
@@ -517,19 +574,65 @@ function advanceChallenge() {
     if (!hasEvaluation) gameAudio.play('challengeComplete');
     currentChallenge += 1;
     configureChallenge();
+    focusMissionTarget(scene, getMissionCameraTarget(levelNumber, currentChallenge, scene), reducedMotion.matches);
 }
 
 // 3. Hubungkan panel HTML dengan scene Phaser dan bantuan penulisan kode.
 const Scene = isLevel3 ? Level3Scene : isLevel2 ? Level2Scene : Level1Scene;
 const scene = new Scene({
     assetBaseUrl: document.getElementById('game-container').dataset.assetBaseUrl,
+    savedCheckpoint: isLevel3 ? JSON.parse(gameContainer.dataset.level3Checkpoint || 'null') : null,
+    onCheckpoint: checkpoint => { if (isLevel3) void saveLevel3Checkpoint(checkpoint); },
+    onBranch: branch => {
+        if (!isLevel3) return;
+        editor.style.backgroundImage = branch
+            ? `linear-gradient(to bottom, transparent ${(branch.line - 1) * parseFloat(getComputedStyle(editor).lineHeight)}px, #ffd45f33 0, #ffd45f33 ${branch.line * parseFloat(getComputedStyle(editor).lineHeight)}px, transparent 0)` : '';
+        document.getElementById('editor-action-status').textContent = branch
+            ? `Baris ${branch.line}: ${branch.condition} = ${branch.result ? 'True' : 'False'}` : '';
+    },
+    async onDebugTeleport() {
+        if (!isDebugInteractionTarget(levelNumber, currentChallenge, latestState)) return;
+
+        showMarkerStarterCode();
+        if (levelNumber === 1 && currentChallenge === 2) {
+            const outcome = await scene.runCommands([]);
+            if (outcome.missionSuccess) {
+                scene.markChallengeComplete();
+                gameAudio.play('challengeComplete');
+                const bridgeMessage = getChallengeBridge(levelNumber, currentChallenge);
+                guideDialogue.start(
+                    [
+                        { message: outcome.message, state: 'success' },
+                        ...(bridgeMessage ? [{ ...bridgeMessage, state: 'instruction' }] : []),
+                    ],
+                    () => advanceChallenge(),
+                );
+                renderGuide(true);
+                return;
+            }
+        }
+
+        renderGuide(true);
+    },
     async onReady() {
         if (currentChallenge > 1) await scene.resetChallenge(currentChallenge);
         sceneReady = true;
         configureChallenge();
         window.dispatchEvent(new Event('pyro:game-ready'));
         if (level1Tutorial && currentChallenge === 1) {
-            level1Tutorial.open(() => renderGuide(true));
+            editor.value = level1SequenceStarterCode;
+            updateLineNumbers();
+            const placeholderStart = editor.value.indexOf('...');
+            editor.setSelectionRange(placeholderStart, placeholderStart + 3);
+            level1Tutorial.openSequence((reason) => {
+                updateControls();
+                if (reason === 'skipped') {
+                    renderGuide(true);
+                    return;
+                }
+                editor.focus({ preventScroll: true });
+                editor.setSelectionRange(placeholderStart, placeholderStart + 3);
+            });
             updateControls();
         } else {
             renderGuide(true);
@@ -565,6 +668,12 @@ async function runCode() {
 
     const definition = challengeDefinitions[currentChallenge];
     const submittedCode = editor.value;
+    const stepBeforeRun = latestState.step;
+    if (isLevel3) {
+        scene.mission.attempts += 1;
+        scene.mission.checkpoint.attempts = scene.mission.attempts;
+        void saveLevel3Checkpoint(scene.mission.checkpoint);
+    }
     const initialWater = latestState.water ?? 0;
     const instructionBefore = getGuideInstruction({
         levelNumber,
@@ -600,6 +709,13 @@ async function runCode() {
     try {
         const completedCommands = [];
         const outcome = await scene.runCommands(result.actions.commands, (command) => completedCommands.push(command));
+        if (isLevel3 && latestState.step !== stepBeforeRun && !outcome.missionSuccess) {
+            focusMissionTarget(scene, scene.activeStep?.target, reducedMotion.matches);
+        }
+        if (isLevel2 && initialWater < definition.requiredWater
+            && latestState.water >= definition.requiredWater && !outcome.missionSuccess) {
+            focusMissionTarget(scene, getMissionCameraTarget(levelNumber, currentChallenge, scene), reducedMotion.matches);
+        }
         if (outcome.status === 'error') {
             if (!outcome.collision) {
                 gameAudio.play('commandError');
@@ -618,7 +734,6 @@ async function runCode() {
         }
         if (outcome.missionSuccess) scene.markChallengeComplete();
         if (!outcome.missionSuccess && completedCommands.length > 0
-            && completedCommands.every(command => command.type === 'move')
             && editor.value === submittedCode) {
             showMarkerStarterCode();
         }
@@ -632,6 +747,9 @@ async function runCode() {
         if (outcome.missionSuccess || outcome.reachedFinish) {
             messages.push({ message: outcome.message,
                 state: outcome.missionSuccess ? 'success' : 'info' });
+            const bridgeMessage = outcome.missionSuccess
+                ? getChallengeBridge(levelNumber, currentChallenge) : null;
+            if (bridgeMessage) messages.push({ ...bridgeMessage, state: 'instruction' });
         }
         const shouldOpenGuide = guideDialogue.start(messages, () => {
             if (outcome.missionSuccess) advanceChallenge();
@@ -665,6 +783,11 @@ function toggleHint() {
     }
 
     gameAudio.play('hint');
+    if (isLevel3) {
+        scene.mission.hintsUsed += 1;
+        scene.mission.checkpoint.hintsUsed = scene.mission.hintsUsed;
+        void saveLevel3Checkpoint(scene.mission.checkpoint);
+    }
 
     const hints = challengeDefinitions[currentChallenge].hints;
     hintText.textContent = hints[hintIndex];
@@ -687,6 +810,7 @@ async function resetChallenge() {
 
     try {
         await scene.resetChallenge(currentChallenge, true);
+        showMarkerStarterCode();
         autocomplete.hide();
         hideFeedback();
         renderGuide(true);

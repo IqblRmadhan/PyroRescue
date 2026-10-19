@@ -1,81 +1,40 @@
 # Level dan Challenge PyroRescue
 
-# Level 1 — Variabel Persediaan Air
+# Level 1 - Variabel Persediaan Air
 
-## Materi
-Variabel.
+Pengisian dilakukan sekali di pompa. Pemain tidak diminta mengganti 3 menjadi 5.
 
-## Tujuan Pembelajaran
-Pemain mampu membuat, mengubah, dan menggunakan nilai variabel sederhana melalui persediaan air.
+### Challenge 1 - Mengambil Air
 
-## Misi
-Menyiapkan persediaan air untuk pos pemadam. Level 1 belum memiliki aksi memadamkan api.
-
-### Tutorial Gerak
-
-Pemain mempelajari perintah gerak dasar:
-
-```python
-atas(1)
-bawah(1)
-kanan(1)
-kiri(1)
-```
-
-### Challenge 1 — Mengambil Air
-
-Pemain menuju pompa, lalu menyimpan tiga unit air ke dalam variabel:
-
-```python
-isi_air = 3
-```
-
-Efek:
-
-```text
-Pompa bergerak dan tangki pemain terisi 3 unit.
-```
-
-### Challenge 2 — Mengubah Nilai di Pos 1
-
-Pemain membawa 3 unit air dari pompa. Penjaga Pos 1 memberikan 2 unit tambahan untuk dikirim ke Pos 2, sehingga muatan pemain menjadi 5 unit.
+Datangi pompa dan isi lima unit dengan kode berikut:
 
 ```python
 isi_air = 5
 ```
 
-Efek:
+Kisi-kisi PyroPad menampilkan isi_air = ... untuk dilengkapi pemain.
 
-```text
-Indikator air berubah dari 3 menjadi 5 setelah pemain menerima 2 unit bantuan dari Pos 1.
-```
+### Challenge 2 - Melapor di Pos 1
 
-Penjelasan untuk pemain: `isi_air = 3` adalah muatan dari pompa. Pos 1 memberi
-2 unit lagi, sehingga `3 + 2 = 5`. Karena assignment mengganti nilai variabel,
-`isi_air = 5` menyimpan **jumlah akhir**, bukan menambahkan 5 unit baru.
+Bawa lima unit air ke penanda Pos 1. Challenge selesai saat pemain tiba dengan
+persediaan tersebut. Tidak ada pengisian atau assignment ulang. Materi menjelaskan
+bahwa nilai variabel tetap tersimpan selama perjalanan.
 
-### Challenge 3 — Memasok Air ke Pos 2
+### Challenge 3 - Pasok Air ke Pos 2
 
-Pemain pergi ke Pos 2 dan memberikan seluruh muatan kepada penjaga pos.
+Bawa persediaan ke penanda Pos 2 dan gunakan:
 
 ```python
 air_pos = isi_air
 ```
 
-Efek:
+Game menyerahkan lima unit dan mengosongkan tangki sebagai aturan misi.
+Assignment Python sendiri hanya menyalin nilai.
 
-```text
-Nilai isi_air diberikan ke persediaan Pos 2. Setelah berhasil, isi_air pemain menjadi 0.
-```
+### Evaluasi
 
-Pemain kemudian mengikuti jalan ke kanan sampai petak **FINISH** di ujung map.
-Ini menjadi tahap evaluasi akhir setelah ketiga challenge selesai. Hasil
-badge ditentukan oleh persentase permainan. Semua challenge dan evaluasi yang
-selesai membuka Level 2 tanpa batas nilai minimum.
-Pengosongan `isi_air` adalah aturan game saat air
-diserahkan; assignment Python biasa hanya menyalin nilai.
-
----
+Capai FINISH setelah tiga challenge selesai. Tidak ada kisi-kisi pada evaluasi.
+Checkpoint C2 membawa 5 unit dari pompa; checkpoint C3 membawa 5 unit dari Pos 1.
 
 # Level 2 — Hutan Gambut Berasap
 
@@ -152,83 +111,41 @@ kedua.
 
 ---
 
-# Level 3 — Suaka Bekantan
+# Level 3 - Operasi Penyelamatan Satwa
 
-Implementasi mengikuti **Modul-PyroRescue.pdf, BAB III, halaman 18–23**.
-Rancangan lama berdasarkan `ukuran_api` diganti dengan Boolean `api_padam`.
+Acuan aktif: [Alur Gameplay Level 3 Lengkap](PyroRescue_Alur_Gameplay_Level_3_Lengkap.md).
+Dokumen ini menggantikan alur lama satu habitat dan assignment status_bekantan.
 
-## Misi dan kondisi
+- Kapasitas tangki 5. C1 mengambil 4, api pertama memakai 2; C2 isi ulang 5,
+  api kedua memakai 3; C3 isi ulang 5 untuk evaluasi dengan 4 semprotan.
+- Semua pengisian Level 3 memakai satu pompa di persimpangan tengah. Pompa
+  dekat rumah evakuasi tidak digunakan atau ditampilkan. Petak pompa (22,18)
+  bertanda biru dan petak keputusan persimpangan (24,18) bertanda merah.
+- C1: pos, pompa, keputusan jalur, pemadaman, keputusan penyelamatan, antar ke pos.
+- C2: menara, pemeriksaan air kurang/cukup/sama, isi ulang, pemadaman dengan
+  percabangan dan for, if bersarang untuk satwa, antar ke pos.
+- C3: pengamatan utara, keputusan jembatan, jalur alternatif, pemeriksaan
+  hewan/api/jalur bersarang, isi ulang, checkpoint evaluasi. Bekantan ketiga belum dievakuasi.
+- Evaluasi: uji jalur berbahaya, satwa bebas, air kurang, air cukup, dan api
+  sudah padam. Seluruh kasus wajib lolos sebelum kode mengubah map.
+- Bekantan mengikuti pemain, tetapi baru dihitung selamat saat tiba di pos.
+  FINISH hanya menyelesaikan level ketika tiga api padam, tiga satwa di pos,
+  dan evaluasi lulus.
 
-Pemain memadamkan api habitat, memeriksa keselamatan bekantan, lalu menentukan
-status dengan `if/else`. Sistem game memperbarui `api_padam` setelah semprotan;
-pemain tidak dapat mengisi variabel kondisi ini sendiri.
+Gerakan maju/atas berarti utara peta; mundur/bawah berarti selatan. Contoh
+mundur(2) pada pemeriksaan air di dokumen sumber disesuaikan menjadi mundur(1)
+karena hanya satu petak aman tersedia di selatan api kedua. Konsep keputusan
+serta pengujian batas air sama dengan kebutuhan tetap dipertahankan.
 
-Map sementara menggunakan `level3-map.png` dan `shadow_level3.png` (1600 × 1200).
-Pohon terbakar, pompa, karakter, marker, serta animasi dipakai kembali dari Level 2.
-Pose bekantan dibaca dari `objects/Bekantan.png`. Story Level 2 dipakai sementara
-sesuai permintaan; pembelajaran dan misi di PyroPad tetap materi Level 3.
+Checkpoint disimpan ketika submisi berganti. Reset memulihkan posisi, air,
+api, dan satwa dari checkpoint submisi, termasuk satwa yang sudah diantar.
+Akun menyimpan snapshot JSON melalui /progress/level3-checkpoint; tamu hanya
+menyimpan state sesi. Penyelesaian challenge tetap memakai endpoint progres
+lama. Nilai percobaan/hint ikut snapshot; HP habis mengulang Level 3 dari awal.
 
-### Challenge 1 — Memadamkan Api di Habitat
+Story dan dialog Level 3 memakai komandan.png di kanan dan mission-guide.png
+sebagai karakter pemain di kiri. Bantuan evaluasi tidak memuat solusi lengkap.
 
-Di titik biru pompa, ambil 3 unit melalui `isi_air = 3`. Kapasitas tangki 6 unit.
-Datangi titik merah api di pulau tengah dan gunakan:
+Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai. Run mengembalikan kamera mengikuti pemain. Potret dialog ditampilkan setengah badan.
 
-```python
-jumlah_semprot = 3
-for i in range(jumlah_semprot):
-    semprot()
-```
-
-Setiap semprotan memakai satu unit air. Setelah 3 semprotan, sistem mengubah
-`api_padam` menjadi `True`. Semprotan kurang dapat dilanjutkan pada Run berikutnya.
-Semprotan berlebih ditolak sebelum aksi dijalankan.
-
-### Challenge 2 — Memeriksa Kondisi dengan if
-
-Api dari C1 tetap padam. Dari penanda api, turun dua petak ke penanda bekantan.
-
-```python
-if api_padam:
-    status_bekantan = "aman"
-```
-
-HUD menampilkan `BEKANTAN: AMAN`. Jika kondisi False, blok if dilewati.
-
-### Challenge 3 — Dua Jalur dengan if/else
-
-Tetap di penanda bekantan dan tentukan tindakan untuk kedua keadaan:
-
-```python
-if api_padam:
-    status_bekantan = "selamat"
-else:
-    status_bekantan = "tunggu"
-```
-
-Kedua cabang divalidasi, tetapi hanya cabang sesuai kondisi aktual yang dijalankan.
-C1–C3 memakai habitat yang sama; api tidak dinyalakan ulang saat pindah challenge.
-
-### Evaluasi — Penyelamatan Lengkap
-
-Ikuti jembatan ke pompa di pulau tengah, lalu turun ke pulau bawah. Siapkan 4 unit
-air. Api terakhir membutuhkan 4 semprotan. Di titik merah evaluasi, tulis satu
-program dengan variabel `jumlah_semprot`, `for/range(jumlah_semprot)`, dan
-`if/else` setelah perulangan. Program yang berhasil menjalankan empat semprotan
-dan menghasilkan status `selamat`. Pemain kemudian turun satu petak ke FINISH.
-
-Jika semprotan kurang, percabangan membaca False dan menghasilkan `tunggu`.
-Gunakan Ulangi untuk memperbaiki program lengkap dari checkpoint evaluasi.
-Gerakan serta pengisian pompa boleh dijalankan terpisah. Selama evaluasi, materi,
-kamus, autocomplete, dan Hint tidak tersedia.
-
-## Checkpoint dan hasil
-
-- C1: posisi awal, tangki kosong, api habitat menyala.
-- C2: penanda api habitat, api padam, status tunggu.
-- C3: penanda bekantan, api padam, status aman.
-- Evaluasi: penanda pompa kedua, tangki kosong, api evaluasi menyala.
-
-Reset hanya mengulang challenge aktif. Akun menyimpan empat tahap secara
-berurutan; bintang diberikan menurut nilai setelah evaluasi dan FINISH. Tamu tidak
-menyimpan progres. Level 3 terbuka setelah Level 2 selesai untuk akun dan selalu
-tersedia dalam mode tamu. Hasil akhir menampilkan penyelesaian ketiga level.
+Habitat terakhir: pulau utara dengan pondok kayu, titik coding (29,5), checkpoint (29,6).

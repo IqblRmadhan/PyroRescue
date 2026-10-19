@@ -90,8 +90,8 @@ export function isLevel2WaterTargetComplete(challengeNumber, water, definitions 
     return Number(challengeNumber) === 4 ? water >= target : water === target;
 }
 
-export function getPumpAnimationCycleCount(amount) {
-    return Number.isSafeInteger(amount) && amount > 0 ? amount : 0;
+export function getPumpAnimationCycleCount(amount, currentWater = 0) {
+    return Number.isSafeInteger(amount) && amount > 0 ? Math.max(0, amount - currentWater) : 0;
 }
 
 export function getFirePresentation(number, challengeNumber, sprays, definitions = challenges) {

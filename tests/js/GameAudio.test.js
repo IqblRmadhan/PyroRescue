@@ -23,6 +23,7 @@ function createStorage(initial = {}) {
 test('the game exposes every audio cue used by the interface and both levels', () => {
     assert.deepEqual(audioCueNames, [
         'uiClick',
+        'typing',
         'storyNext',
         'run',
         'clear',

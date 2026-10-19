@@ -18,7 +18,9 @@ class MainMenuCarouselTest extends TestCase
             ->assertSee('data-level="1"', false)
             ->assertSee('data-level="2"', false)
             ->assertSee('data-level="3"', false)
-            ->assertSee('aria-hidden="true" inert', false)
+            ->assertSee('data-level-image', false)
+            ->assertSee('data-level-href="'.route('game.level1').'"', false)
+            ->assertSee('aria-hidden="true"', false)
             ->assertSee(route('game.level1'), false)
             ->assertSee(route('game.level2'), false);
     }

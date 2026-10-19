@@ -1,99 +1,94 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import CodeValidator from '../../resources/js/game/CodeValidator.js';
-import { resolveBekantanStatus } from '../../resources/js/game/Level3Validator.js';
-import { createLevel3Suggestions } from '../../resources/js/game/CodeAutocomplete.js';
-import { getGuideInstruction, explainExecutedCommands } from '../../resources/js/game/MissionGuide.js';
-
-const validator = new CodeValidator();
-const loop = (count) => `jumlah_semprot = ${count}\nfor i in range(jumlah_semprot):\n    semprot()`;
-const branch = 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"';
-const validate = (code, challenge = 4) => validator.validateConditional(code, challenge === 4 ? 4 : 3, challenge);
-
-test('Level 3 accepts the module solutions and keeps runtime branch after sprays', () => {
-    assert.equal(validate(loop(3), 1).conceptValid, true);
-    assert.equal(validate('if api_padam:\n    status_bekantan = "aman"', 2).conceptValid, true);
-    assert.equal(validate(branch, 3).conceptValid, true);
-    const result = validate(`isi_air = 4\nbawah(7)\n${loop(4)}\n${branch}\nbawah(1)`);
-    assert.equal(result.syntaxValid, true);
-    assert.equal(result.conceptValid, true);
-    const commands = result.actions.commands;
-    assert.equal(commands[0].type, 'setWater');
-    assert.equal(commands.filter((command) => command.type === 'spray').length, 4);
-    assert.deepEqual(commands.at(-2), { type: 'conditional', whenTrue: 'selamat', whenFalse: 'tunggu', evaluationCountValid: true });
-    assert.equal(commands.at(-1).type, 'move');
-    assert.equal(result.missionSuccess, false, 'only the live scene can establish success');
+import * as level3 from '../../resources/js/game/Level3Validator.js';
+const parse = (code) => level3.validateLevel3(code, 4, 4);
+const commands = (code) => { const result = parse(code); assert.equal(result.syntaxValid, true, result.message); return result.actions.commands; };
+const evaluation = `if jalur_aman:
+    if hewan_terjebak:
+        if api_padam:
+            selamatkan_hewan()
+        else:
+            if isi_air >= kebutuhan_air:
+                for hitungan in range(kebutuhan_air):
+                    semprot()
+                if api_padam:
+                    selamatkan_hewan()
+                else:
+                    mundur(1)
+            else:
+                mundur(1)
+    else:
+        lanjut_patroli()
+else:
+    kanan(2)`;
+test('accepts nested evaluation and checks every scenario including equal water', () => {
+    const ast = commands(evaluation);
+    assert.equal(typeof level3.validateLevel3Behavior, 'function');
+    assert.equal(level3.validateLevel3Behavior(ast, 'evaluation').valid, true);
+    assert.equal(level3.validateLevel3Behavior(commands(evaluation.replace('>=', '>')), 'evaluation').valid, false);
+    assert.equal(parse(evaluation).features.hasLoop, true);
 });
-
-test('both branches use real fire state and if without else preserves existing status', () => {
-    const command = validate(branch, 3).actions.commands[0];
-    assert.equal(resolveBekantanStatus(command, true, 'tunggu'), 'selamat');
-    assert.equal(resolveBekantanStatus(command, false, 'aman'), 'tunggu');
-    assert.equal(resolveBekantanStatus({ whenTrue: 'aman', whenFalse: null }, false, 'tunggu'), 'tunggu');
-    assert.equal(validate(`${loop(2)}\n${branch}`).conceptValid, true, 'too few sprays must reach the False branch');
-});
-
-test('evaluation checks jumlah_semprot = 4, not only the expanded spray total', () => {
-    const result = validate(`jumlah_semprot = 2\nfor i in range(jumlah_semprot):\n    semprot()\n    semprot()\n${branch}`);
-    assert.equal(result.actions.sprayCount, 4);
-    assert.equal(result.actions.commands.at(-1).evaluationCountValid, false);
-    assert.equal(validate(`${loop(4)}\n${branch}`).actions.commands.at(-1).evaluationCountValid, true);
-});
-
-test('movement and pump runs do not require the full mission program', () => {
-    for (const challenge of [1, 2, 3, 4]) {
-        assert.equal(validate('kanan(2)\nbawah(1)', challenge).conceptValid, true);
-    }
-    assert.equal(validate('isi_air = 4').conceptValid, true);
-});
-
-test('checks concept in both branches and rejects attempts to skip integration', () => {
-    for (const code of [
-        'semprot()\nsemprot()\nsemprot()',
-        'for i in range(3):\n    semprot()',
-    ]) assert.equal(validate(code, 1).conceptValid, false, code);
-    assert.equal(validate('status_bekantan = "aman"', 2).syntaxValid, false);
-    assert.equal(validate('if api_padam:\n    status_bekantan = "selamat"', 3).conceptValid, false);
-    assert.equal(validate(branch.replace('"tunggu"', '"selamat"'), 3).conceptValid, false);
-    assert.equal(validate(branch).conceptValid, false);
-    assert.equal(validate(loop(4)).conceptValid, false);
-    assert.equal(validate(`${branch}\n${loop(4)}`).conceptValid, false);
-    assert.equal(validate(`${loop(4)}\n${branch}\n${branch}`).conceptValid, false);
-});
-
-test('unsafe syntax, fake conditions, bad indentation and oversized programs return no actions', () => {
-    for (const code of [
-        'api_padam = True', 'api_padam = "True"', 'import os', '__import__("os").system("echo test")',
-        'exec("print(1)")', 'if True:\n    status_bekantan = "selamat"',
-        'if api_padam = True:\n    status_bekantan = "aman"',
-        'if api_padam\n    status_bekantan = "aman"', 'else:\n    status_bekantan = "tunggu"',
-        'if api_padam:\nstatus_bekantan = "aman"',
-        'if api_padam:\n    status_bekantan = "selamat"\nelse:\n  status_bekantan = "tunggu"',
-        'if api_padam:\n    import os', 'kanan(121)', 'kanan(9007199254740992)', 'isi_air = 7',
-        'for i in range(jumlah_semprot):\n    semprot()',
-        'jumlah_semprot = 3\nfor api_padam in range(jumlah_semprot):\n    semprot()',
-        'jumlah_semprot = 120\nfor i in range(jumlah_semprot):\n    semprot()\n    semprot()',
-        'kanan(1)\n'.repeat(121),
-    ]) {
-        const result = validate(code);
-        assert.equal(result.syntaxValid, false, code);
-        assert.equal(result.actions, null, code);
+test('checks route, water, rescue, nested and habitat behavior', () => {
+    const examples = {
+        route: 'if jalur_aman:\n  maju(3)\nelse:\n  kanan(2)',
+        water: 'if isi_air >= kebutuhan_air:\n  for j in range(kebutuhan_air):\n    semprot()\nelse:\n  mundur(1)',
+        rescue: 'if api_padam:\n  selamatkan_hewan()\nelse:\n  mundur(1)',
+        nested: 'if hewan_terjebak:\n  if api_padam:\n    selamatkan_hewan()\n  else:\n    mundur(1)\nelse:\n  lanjut_patroli()',
+        habitat: 'if hewan_terjebak:\n  if api_padam:\n    if jalur_aman:\n      selamatkan_hewan()\n    else:\n      kiri(2)\n  else:\n    mundur(1)\nelse:\n  lanjut_patroli()',
+    };
+    for (const [kind, code] of Object.entries(examples)) {
+        assert.equal(level3.validateLevel3Behavior(commands(code), kind).valid, true, kind);
+        assert.equal(level3.validateLevel3Behavior(commands('maju(1)'), kind).valid, false, kind);
     }
 });
-
-test('comments, CRLF, single quotes, and consistent indentation are supported', () => {
-    const code = `# evaluasi\r\n${loop(4)}\n\n${branch}`.replaceAll('"', "'");
-    assert.equal(validate(code).conceptValid, true);
+test('awaits live actions before reevaluating conditions', async () => {
+    const state = { isi_air: 1, kebutuhan_air: 1, api_padam: false };
+    const actions = [];
+    await level3.executeLevel3Program(commands('semprot()\nif api_padam:\n  selamatkan_hewan()'), state, async (action) => {
+        await Promise.resolve();
+        actions.push(action.type);
+        if (action.type === 'spray') { state.isi_air = 0; state.api_padam = true; }
+    });
+    assert.deepEqual(actions, ['spray', 'branch', 'rescue']);
+    assert.equal(state.isi_air, 0);
+});
+test('simulates water and fire and accepts integer locals and aliases', async () => {
+    const state = { isi_air: 0, kebutuhan_air: 2, api_padam: false };
+    await level3.executeLevel3Program(commands('isi_air = 5\njumlah = 2\nfor n in range(jumlah):\n  semprot()'), state);
+    assert.equal(state.isi_air, 3);
+    assert.equal(state.api_padam, true);
+    commands('atas(1)\nbawah(1)\nmaju(1)\nmundur(1)');
+});
+test('rejects unsafe code, malformed hidden branches, world writes and capacity overflow', () => {
+    for (const code of ['api_padam = True', 'jalur_aman = 1', 'kebutuhan_air = 1', 'isi_air = 6', 'import os', '__proto__ = 2', 'for isi_air in range(2):\n  semprot()', 'if api_padam:\n  semprot()\nelse:\n  os.system("x")', 'if api_padam\n  semprot()', 'if api_padam:\nsemprot()', 'maju(1);semprot()', 'maju(-1)', 'if api_padam:\n\tsemprot()']) {
+        assert.equal(parse(code).syntaxValid, false, code);
+    }
+});
+test('stops bounded execution and fails missing locals without hanging', async () => {
+    assert.equal(parse('maju(121)').syntaxValid, false);
+    assert.equal(parse('for i in range(120):\n  for j in range(120):\n    maju(1)').syntaxValid, false);
+    assert.equal(parse('for i in range(tidak_ada):\n  semprot()').syntaxValid, false);
+    await assert.rejects(level3.executeLevel3Program(commands('semprot()'), { isi_air: 0, kebutuhan_air: 2, api_padam: false }), /air/i);
 });
 
-test('Level 3 teaching and evaluation match the current state', () => {
-    assert.match(getGuideInstruction({ levelNumber: 3, challengeNumber: 2, state: { atHabitat: true } }), /aman/);
-    assert.match(getGuideInstruction({ levelNumber: 3, challengeNumber: 3, state: { atHabitat: true } }), /tunggu/);
-    assert.deepEqual(createLevel3Suggestions(4, 4), []);
-    assert.deepEqual(explainExecutedCommands({ levelNumber: 3, challengeNumber: 4, commands: [{ type: 'spray' }] }), []);
-    for (const challenge of [1, 2, 3]) {
-        for (const suggestion of createLevel3Suggestions(3, challenge)) {
-            assert.ok(!suggestion.value.includes('isi_air = 6'));
-        }
-    }
+test('rejects incorrect decisions even if their live happy path would succeed', () => {
+    const wrong = evaluation.replaceAll('mundur(1)', 'semprot()');
+    assert.equal(level3.validateLevel3Behavior(commands(wrong), 'evaluation').valid, false);
+    const result = level3.validateLevel3Behavior(commands(evaluation.replace('kanan(2)', 'maju(3)')), 'evaluation');
+    assert.equal(result.valid, false);
+    assert.match(result.message, /Kasus A/);
+});
+test('stops when scene rejects an action and never executes later commands', async () => {
+    const seen = [];
+    await assert.rejects(level3.executeLevel3Program(commands('maju(3)\nsemprot()'), {}, (action) => {
+        seen.push(action.type);
+        return false;
+    }), /dihentikan/);
+    assert.deepEqual(seen, ['move']);
+});
+test('runtime budget still bounds locals changed inside a loop', async () => {
+    const ast = commands('jumlah = 1\nfor i in range(2):\n  maju(jumlah)\n  jumlah = 120');
+    const seen = [];
+    await assert.rejects(level3.executeLevel3Program(ast, {}, (action) => { seen.push(action); }), /120/);
+    assert.equal(seen.length, 120);
 });

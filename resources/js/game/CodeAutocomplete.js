@@ -1,4 +1,4 @@
-export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) {
+export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) {
     // Empat arah memakai format yang sama; hanya nama dan contoh yang berbeda.
     const movements = [
         { direction: 'atas', exampleSteps: 3 },
@@ -18,7 +18,7 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
         parameterDescription: 'Jumlah petak, berupa bilangan bulat minimal 1.',
     }));
 
-    if (challengeNumber === 4) return movementSuggestions;
+    if (challengeNumber === 4 || challengeNumber === 2) return movementSuggestions;
 
     if (challengeNumber === 3) {
         return [
@@ -45,9 +45,7 @@ export function createLevel1Suggestions(requiredWater = 3, challengeNumber = 1) 
             selectionStart: 10,
             selectionLength: String(requiredWater).length,
             kind: 'Assignment variabel',
-            description: challengeNumber === 1
-                ? 'isi_air adalah nama variabel; tanda = menyimpan nilai angka di sebelah kanan. Di penanda pompa, kode ini mengisi tangki.'
-                : 'Kamu membawa 3 unit dan Pos 1 memberi 2 unit: 3 + 2 = 5. isi_air = 5 menyimpan jumlah akhir dengan mengganti nilai lama 3, bukan menambah 5 lagi. Jalankan di penanda Pos 1.',
+            description: 'isi_air adalah nama variabel; tanda = menyimpan nilai angka di sebelah kanan. Di penanda pompa, kode ini mengisi tangki.',
             example: `isi_air = ${requiredWater}`,
             parameter: 'angka',
             parameterDescription: 'Jumlah air yang diminta pada challenge saat ini.',
@@ -97,37 +95,26 @@ export function createLevel2Suggestions(requiredCount, challengeNumber) {
 
 export function createLevel3Suggestions(requiredCount, challengeNumber) {
     if (challengeNumber === 4) return [];
-    const suggestions = createLevel2Suggestions(requiredCount, 3).map((suggestion) => ({ ...suggestion }));
-    suggestions[4] = {
-        label: 'isi_air = angka', value: 'isi_air = 3', selectionStart: 10, selectionLength: 1,
-        kind: 'Assignment variabel', description: 'Mengganti isi tangki di titik biru pompa. Tangki menampung maksimal 6 unit.',
-        example: 'isi_air = 3', parameter: 'angka', parameterDescription: 'Siapkan 3 unit air untuk api habitat.',
-    };
-    if (challengeNumber === 1) return suggestions;
-    return [
-        ...suggestions.slice(0, 4),
-        {
-            label: 'if api_padam:',
-            value: challengeNumber === 2 ? 'if api_padam:\n    status_bekantan = "aman"'
-                : 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"',
-            selectionStart: 3, selectionLength: 9,
-            kind: 'Percabangan Python',
-            description: 'Memeriksa Boolean dari game. True berarti api padam, False berarti masih menyala. else dijalankan hanya ketika kondisi if salah.',
-            example: 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"',
-            parameter: 'api_padam', parameterDescription: 'Nilai kondisi dibaca setelah aksi sebelumnya selesai. Jangan mengganti nilainya sendiri.',
-        },
-        {
-            label: 'status_bekantan = teks', value: `status_bekantan = "${challengeNumber === 2 ? 'aman' : 'selamat'}"`,
-            selectionStart: 19, selectionLength: challengeNumber === 2 ? 4 : 7,
-            kind: 'Assignment dalam percabangan', description: 'Simpan status di dalam blok if atau else dengan indentasi yang konsisten.',
-            example: '    status_bekantan = "aman"', parameter: 'teks', parameterDescription: 'aman untuk C2; selamat atau tunggu untuk C3.',
-        },
-        ...(challengeNumber === 3 ? [{
-            label: 'else:', value: 'else:\n    status_bekantan = "tunggu"', selectionStart: 0, selectionLength: 0,
-            kind: 'Cabang alternatif', description: 'Letakkan sejajar dengan if. Blok ini berjalan jika api_padam False.',
-            example: 'else:\n    status_bekantan = "tunggu"', parameter: 'tanpa kondisi', parameterDescription: 'else bukan kondisi baru.',
-        }] : []),
+    const basics = createLevel2Suggestions(requiredCount, 3).map(item => ({ ...item }));
+    basics[4] = { label: 'isi_air = angka', value: 'isi_air = 5', selectionStart: 10, selectionLength: 1,
+        kind: 'Assignment', description: 'Mengganti isi tangki hanya di pompa. Kapasitas 5 unit.',
+        example: 'isi_air = 5', parameter: '0?5', parameterDescription: 'Ikuti jumlah yang diminta submisi.' };
+    const commands = [
+        ['maju(1)', 'Gerak ke atas peta. Alias atas().'],
+        ['mundur(1)', 'Gerak ke bawah peta. Alias bawah().'],
+        ['if api_padam:', 'Periksa apakah api telah padam. Isi blok di baris berikutnya dengan indentasi.'],
+        ['if jalur_aman:', 'Periksa keamanan jalur yang sedang diamati.'],
+        ['if hewan_terjebak:', 'Periksa apakah satwa membutuhkan pertolongan.'],
+        ['if isi_air >= kebutuhan_air:', 'Air sama banyak dengan kebutuhan juga mencukupi.'],
+        ['else:', 'Alternatif jika kondisi if salah. Sejajarkan dengan if pasangannya.'],
+        ['selamatkan_hewan()', 'Hanya bekerja di dekat satwa ketika api padam dan akses aman.'],
+        ['lanjut_patroli()', 'Lanjutkan perjalanan ketika hewan tidak terjebak.'],
     ];
+    return [...basics, ...commands.map(([value, description]) => ({
+        label: value, value, description, kind: 'Keputusan dan aksi', example: value,
+        selectionStart: value.length, selectionLength: 0,
+        parameter: 'Kondisi dari game', parameterDescription: 'Kondisi dunia dibaca dari HUD dan tidak dapat ditimpa pemain.',
+    }))];
 }
 
 // Ambil baris tempat kursor berada, tanpa menghapus spasi di awal baris.

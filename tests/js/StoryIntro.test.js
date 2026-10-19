@@ -51,6 +51,22 @@ test('story text appears one character at a time and completes after the final c
     assert.equal(completed, 1);
 });
 
+test('typewriter emits a restrained typing cue for non-space characters', () => {
+    const timers = createFakeTimers();
+    const typedCharacters = [];
+    const typewriter = new storyModule.StoryTypewriter({
+        schedule: timers.schedule,
+        cancelSchedule: timers.cancel,
+        onCharacter: character => typedCharacters.push(character),
+        soundEvery: 2,
+    });
+
+    typewriter.start('A pi!', () => {});
+    for (let index = 0; index < 5; index += 1) timers.runNext();
+
+    assert.deepEqual(typedCharacters, ['A', 'i']);
+});
+
 test('typewriter can reveal the full sentence immediately and cancel pending timers', () => {
     assert.equal(typeof storyModule.StoryTypewriter, 'function');
     const timers = createFakeTimers();
@@ -106,8 +122,8 @@ test('story action button reflects typing, navigation, and final mission states'
         isLastSlide: true,
         levelNumber: '2',
     }), {
-        label: 'MULAI MISI',
-        ariaLabel: 'Mulai misi Level 2',
+        label: 'TIBA DI LOKASI',
+        ariaLabel: 'Tiba di lokasi Level 2',
         action: 'start',
     });
 });

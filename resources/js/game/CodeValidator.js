@@ -154,10 +154,10 @@ export default class CodeValidator {
             const movementMatch = line.match(/^(atas|bawah|kanan|kiri)[ \t]*\([ \t]*(0|[1-9][0-9]*)[ \t]*\)$/);
 
             if (waterAssignment) {
-                if (challengeNumber >= 3) {
+                if (challengeNumber >= 2) {
                     result.message = challengeNumber === 4
                         ? 'Pada evaluasi, gunakan perintah gerak menuju FINISH.'
-                        : 'Pada Challenge 3, gunakan nilai isi_air yang sudah disiapkan di Challenge 2.';
+                        : 'Air sudah diisi di pompa. Tidak perlu mengubah isi_air lagi; lanjutkan ke pos tujuan.';
                     return result;
                 }
 
@@ -165,12 +165,6 @@ export default class CodeValidator {
 
                 if (!Number.isSafeInteger(water)) {
                     result.message = 'Jumlah air terlalu besar. Gunakan bilangan bulat yang lebih kecil.';
-                    return result;
-                }
-
-                if (challengeNumber === 2 && water !== requiredWater) {
-                    result.message = `Di Pos 1, jumlah akhir harus tepat ${requiredWater} unit (3 dari pompa + 2 bantuan). Nilai ${water} tidak dapat diisi.`;
-                    result.syntaxValid = true;
                     return result;
                 }
 

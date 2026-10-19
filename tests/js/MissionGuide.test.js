@@ -1,13 +1,35 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { getGuideInstruction, explainExecutedCommands, GuideDialogue } from '../../resources/js/game/MissionGuide.js';
+import {
+    getChallengeBridge,
+    getGuideInstruction,
+    explainExecutedCommands,
+    GuideDialogue,
+} from '../../resources/js/game/MissionGuide.js';
+
+test('challenge conversations connect the previous technique to the next concept', () => {
+    const loopBridge = getChallengeBridge(2, 1);
+    assert.match(loopBridge.message, /100/);
+    assert.match(loopBridge.message, /semprot\(\).*100 kali/s);
+    assert.match(loopBridge.message, /for.*range\(\)/s);
+    assert.deepEqual(loopBridge.analogy.rows.map(row => row.label), [
+        'Baru dilakukan', 'Masalah', 'Solusi berikutnya',
+    ]);
+
+    for (const levelNumber of [1, 2, 3]) {
+        for (const challengeNumber of [1, 2, 3]) {
+            assert.ok(getChallengeBridge(levelNumber, challengeNumber));
+        }
+        assert.equal(getChallengeBridge(levelNumber, 4), null);
+    }
+});
 
 test('Level 1 guidance follows the current location and delivered water', () => {
     const instruction = (challengeNumber, state) => getGuideInstruction({ levelNumber: 1, challengeNumber, state });
     assert.match(instruction(1, {}), /Pergi ke pompa/);
-    assert.match(instruction(1, { atPump: true }), /isi_air = 3/);
+    assert.match(instruction(1, { atPump: true }), /isi_air = 5/);
     assert.match(instruction(2, { water: 3 }), /Pergi ke Pos 1/);
-    assert.match(instruction(2, { water: 3, atPost1: true }), /isi_air = 5/);
+    assert.match(instruction(2, { water: 5, atPost1: true }), /Pemeriksaan Pos 1 selesai/);
     assert.match(instruction(3, { water: 5 }), /Pergi ke Pos 2/);
     assert.match(instruction(3, { water: 5, atPost2: true }), /air_pos = isi_air/);
     assert.match(instruction(3, { water: 0, postWater: 5 }), /FINISH/);

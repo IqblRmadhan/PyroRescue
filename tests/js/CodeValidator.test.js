@@ -29,23 +29,15 @@ test('isi_air must contain exactly the amount requested by Challenge 1', () => {
     }
 });
 
-test('Challenge 2 updates isi_air from 3 to exactly 5', () => {
-    const result = validator.validateVariable('kanan(2)\natas(6)\nkanan(8)\nisi_air = 5', 5, 2);
-
-    assert.equal(result.syntaxValid, true);
-    assert.equal(result.missionSuccess, true);
-    assert.deepEqual(result.actions.commands.at(-1), { type: 'setWater', amount: 5 });
-
-    const wrongAmount = validator.validateVariable('isi_air = 3', 5, 2);
-    assert.equal(wrongAmount.syntaxValid, true);
-    assert.equal(wrongAmount.conceptValid, false);
-    assert.equal(wrongAmount.missionSuccess, false);
-    assert.equal(wrongAmount.actions, null);
-    for (const amount of [0, 4, 6, 9]) {
-        const rejected = validator.validateVariable(`isi_air = ${amount}`, 5, 2);
-        assert.equal(rejected.conceptValid, false);
-        assert.equal(rejected.actions, null);
-        assert.match(rejected.message, /tepat 5 unit/);
+test('Challenge 2 only travels to Pos 1 without reassigning water', () => {
+    const movement = validator.validateVariable('atas(2)\nkanan(8)\nbawah(1)', 5, 2);
+    assert.equal(movement.syntaxValid, true);
+    assert.equal(movement.conceptValid, true);
+    assert.ok(movement.actions.commands.every(command => command.type === 'move'));
+    for (const amount of [3, 5]) {
+        const result = validator.validateVariable('isi_air = ' + amount, 5, 2);
+        assert.equal(result.actions, null);
+        assert.match(result.message, /Tidak perlu mengubah/);
     }
 });
 
