@@ -10,6 +10,22 @@
 .page-loader__hint { margin-top: 8px; color: #c7dbe3; font-size: 13px; }
 .page-loader__progress { width: min(220px, 80%); height: 5px; margin-top: 22px; overflow: hidden; border-radius: 5px; background: #8ab3c45b; }
 .page-loader__progress span { display: block; width: 35%; height: 100%; border-radius: inherit; background: #f6ca78; animation: page-loader-progress 1.1s ease-in-out infinite alternate; }
+.page-loader__eyebrow, .page-loader__route { display: none; }
+.page-loader--menu { background: radial-gradient(circle at 50% 31%, #277867 0, #164f59 35%, #102f44 70%, #0a2236 100%); }
+.page-loader--menu::before { opacity: .42; background: linear-gradient(to bottom, transparent 45%, #0c304163 74%, #0b2a3de0), url('/assets/tiles/game_bg.webp') center / cover no-repeat; }
+.page-loader--menu .page-loader__content { width: min(440px, 100%); padding: 22px 20px 30px; border: 1px solid #c4dcba50; border-radius: 20px; background: linear-gradient(#123e4eeb, #0b2b3eeb); box-shadow: 0 24px 70px #061c2cb3, inset 0 0 0 5px #ffffff0a; }
+.page-loader--menu .page-loader__eyebrow { display: inline-block; margin-bottom: 13px; padding: 7px 14px; color: #f8d68c; border: 1px solid #e4c88085; border-radius: 20px; background: #102d3ebd; font-size: 10px; font-weight: 900; letter-spacing: .22em; }
+.page-loader--menu .page-loader__content > img { width: 190px; margin-bottom: 4px; }
+.page-loader--menu .page-loader__track { width: min(310px, 100%); height: 194px; border-bottom: 4px solid #d4aa6b; background: radial-gradient(ellipse at 50% 86%, #4baa7c4d, transparent 65%); }
+.page-loader--menu .page-loader__track::before { position: absolute; right: 0; bottom: 0; left: 0; height: 30px; content: ''; background: repeating-linear-gradient(110deg, transparent 0 18px, #b6dca577 19px 21px, transparent 22px 40px); opacity: .5; }
+.page-loader--menu strong { margin-top: 22px; color: #fff2d3; }
+.page-loader--menu .page-loader__hint { color: #bde0d3; }
+.page-loader--menu .page-loader__route { display: flex; justify-content: space-between; gap: 10px; width: min(300px, 100%); margin-top: 22px; color: #ddede1; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
+.page-loader--menu .page-loader__route span { display: grid; justify-items: center; gap: 7px; }
+.page-loader--menu .page-loader__route span::before { width: 8px; height: 8px; content: ''; border: 2px solid #f3d488; border-radius: 50%; background: #173b4b; box-shadow: 0 0 0 4px #f3d48820; }
+.page-loader--menu .page-loader__route span:first-child::before { background: #f3d488; }
+.page-loader--menu .page-loader__progress { width: min(300px, 100%); height: 7px; margin-top: 13px; background: #d3ead238; }
+.page-loader--menu .page-loader__progress span { background: linear-gradient(90deg, #79d3a4, #ffe0a0); }
 .is-page-loading { overflow: hidden !important; }
 @keyframes page-loader-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes page-loader-run { to { background-position-x: -720px; } }

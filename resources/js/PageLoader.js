@@ -10,21 +10,24 @@ export function initPageLoader() {
         overlay.setAttribute('aria-live', 'polite');
         overlay.innerHTML = `
             <div class="page-loader__content">
+                <span class="page-loader__eyebrow">MENU UTAMA</span>
                 <img src="/assets/ui/logo-pyrorescue.png" alt="PyroRescue" width="210" height="70">
                 <div class="page-loader__track" aria-hidden="true"><span class="page-loader__runner"></span></div>
                 <strong>Menyiapkan petualanganmu...</strong>
                 <span class="page-loader__hint">Pemadam sedang menuju misi berikutnya</span>
+                <div class="page-loader__route" aria-hidden="true"><span>MASUK</span><span>PETA</span><span>MISI</span></div>
                 <div class="page-loader__progress" aria-hidden="true"><span></span></div>
             </div>`;
         document.body.append(overlay);
     }
 
     let navigating = false;
-    function show(title, hint) {
+    function show(title, hint, variant = 'default') {
         if (navigating) return false;
         navigating = true;
         if (title) overlay.querySelector('strong').textContent = title;
         if (hint) overlay.querySelector('.page-loader__hint').textContent = hint;
+        overlay.classList.toggle('page-loader--menu', variant === 'menu');
         overlay.hidden = false;
         document.body.classList.add('is-page-loading');
         return true;
@@ -32,6 +35,7 @@ export function initPageLoader() {
     function hide() {
         navigating = false;
         overlay.hidden = true;
+        overlay.classList.remove('page-loader--menu');
         document.body.classList.remove('is-page-loading');
     }
     window.addEventListener('pageshow', event => {
@@ -41,7 +45,7 @@ export function initPageLoader() {
     document.addEventListener('click', event => {
         if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         const link = event.target.closest?.('a[href]');
-        if (!link || link.hasAttribute('download') || (link.target && link.target !== '_self')) return;
+        if (!link || link.hasAttribute('download') || link.hasAttribute('data-no-page-loader') || (link.target && link.target !== '_self')) return;
         const destination = new URL(link.href, location.href);
         if (destination.origin !== location.origin || destination.protocol !== 'http:' && destination.protocol !== 'https:') return;
         if (destination.pathname === location.pathname && destination.search === location.search) return;
@@ -55,7 +59,12 @@ export function initPageLoader() {
     document.addEventListener('submit', event => {
         if (event.defaultPrevented || !event.target.matches('.auth-page form')) return;
         event.preventDefault();
-        if (show()) window.setTimeout(() => HTMLFormElement.prototype.submit.call(event.target), transitionDuration);
+        const goingToMenu = event.target.dataset.loaderDestination === 'menu';
+        if (show(goingToMenu ? 'Menu utama sedang disiapkan' : undefined,
+            goingToMenu ? 'Membuka peta petualanganmu' : undefined,
+            goingToMenu ? 'menu' : 'default')) {
+            window.setTimeout(() => HTMLFormElement.prototype.submit.call(event.target), goingToMenu ? 900 : transitionDuration);
+        }
     });
 
     return { show, hide };

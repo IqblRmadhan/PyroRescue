@@ -45,7 +45,15 @@
                     <button class="adventure-carousel__arrow adventure-carousel__arrow--previous" type="button" data-carousel-previous aria-label="Lihat level sebelumnya"><span aria-hidden="true">‹</span><small>Sebelumnya</small></button>
                     <div class="adventure-carousel__viewport"><div class="adventure-islands" data-carousel-track>
                         @foreach($cards as $number => $card)
-                            @php $level = $levels[$number]; $position = ($number - $selectedLevel + 3) % 3; @endphp
+                            @php
+                                $level = $levels[$number];
+                                $position = ($number - $selectedLevel + 3) % 3;
+                                $levelStatus = '';
+                                if (!$level['unlocked']) $levelStatus = 'TERKUNCI';
+                                elseif ($level['completed']) $levelStatus = 'SELESAI';
+                                elseif (!$level['playable']) $levelStatus = 'SEGERA HADIR';
+                                elseif ($isGuest) $levelStatus = 'MISI TERSEDIA';
+                            @endphp
                             <article class="adventure-level {{ !$level['unlocked'] ? 'adventure-level--locked' : '' }} {{ $number === 2 ? 'adventure-level--two' : ($number === 3 ? 'adventure-level--three' : '') }} {{ $position === 0 ? 'is-current' : ($position === 1 ? 'is-next' : 'is-previous') }}" data-level="{{ $number }}" aria-labelledby="level-{{ $number }}-title" @if($position !== 0) aria-hidden="true" @endif>
                                 <button class="adventure-level__image-wrap" type="button" data-level-image
                                         data-level-title="Level {{ $number }}: {{ $card['title'] }}"
@@ -53,9 +61,14 @@
                                         aria-label="{{ $position === 0 ? ($level['unlocked'] && $level['playable'] ? 'Mainkan Level '.$number : 'Level '.$number.' belum dapat dimainkan') : 'Pilih Level '.$number }}"
                                         @if($position !== 0) tabindex="-1" @endif>
                                     <img src="{{ asset('assets/menu/'.$card['image']) }}" alt="">
+                                    @if(!$isGuest && !$level['unlocked'])
+                                        <span class="adventure-level__lock-icon" aria-hidden="true">
+                                            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M14 20v-6a10 10 0 0 1 20 0v6" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><rect x="9" y="20" width="30" height="23" rx="4" fill="currentColor"/><circle cx="24" cy="30" r="3" fill="#143442"/><path d="M24 32v5" stroke="#143442" stroke-width="3" stroke-linecap="round"/></svg>
+                                        </span>
+                                    @endif
                                 </button>
                                 <div class="adventure-level__copy">
-                                    <span class="adventure-level__number">LEVEL 0{{ $number }} · {{ !$level['unlocked'] ? 'TERKUNCI' : ($level['completed'] ? 'SELESAI' : ($level['playable'] ? 'MISI TERSEDIA' : 'SEGERA HADIR')) }}</span>
+                                    <span class="adventure-level__number">LEVEL 0{{ $number }}{{ $levelStatus ? ' · '.$levelStatus : '' }}</span>
                                     <h2 id="level-{{ $number }}-title">{{ $card['title'] }}</h2><p>{{ $card['description'] }}</p>
                                     @if(!$level['unlocked'])
                                         <span class="adventure-level__lock">🔒 Selesaikan semua misi di Level {{ $number - 1 }}</span>

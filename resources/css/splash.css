@@ -9,9 +9,13 @@
 .splash-skip:focus { top: 8px; }
 .splash-nav { position: sticky; top: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; gap: 24px; min-height: 88px; padding: 12px max(32px, calc((100vw - 1280px) / 2)); border-bottom: 1px solid #9cc6da2b; background: #121f30f2; backdrop-filter: blur(18px); }
 .splash-brand { width: 194px; height: auto; }
-.splash-nav nav { display: flex; gap: 34px; }
+.splash-nav nav { display: flex; align-items: center; gap: 34px; }
 .splash-nav nav a { color: #c9d8d4; font-size: 14px; padding: 12px 0; }
 .splash-nav nav a:hover, .splash-text-link:hover { color: #ffcf7a; }
+.splash-nav nav a[aria-current="page"] { color: #ffcf7a; }
+.splash-nav__actions { display: flex; align-items: center; gap: 10px; }
+.splash-register { padding: 10px 15px; color: #d4e4dd; font-size: 14px; font-weight: 700; }
+.splash-register:hover { color: #ffcf7a; }
 .splash-login { padding: 11px 22px; border: 1px solid #9bb4c46b; border-radius: 8px; color: #f5f4e4; font-weight: 700; font-size: 14px; }
 .splash-login:hover { background: #36566f; }
 .splash-login span { margin-left: 16px; color: #ffd17a; }
@@ -70,6 +74,7 @@
     .splash-nav nav { order: 3; justify-content: center; width: 100%; gap: 32px; }
     .splash-nav nav a { padding: 8px 0; font-size: 12px; }
     .splash-login { padding: 8px 15px; font-size: 12px; }
+    .splash-register { padding: 8px; font-size: 12px; }
     .splash-container { width: calc(100% - 40px); }
     .splash-hero__grid { grid-template-columns: 1fr; padding-top: 38px; gap: 20px; }
     .splash-hero__copy { max-width: 540px; }

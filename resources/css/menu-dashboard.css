@@ -1,6 +1,9 @@
 /* Bagian pendamping menu; ukuran dan posisi pulau carousel tetap dari app.css. */
 .main-menu-page { min-width: 0; overflow-x: clip; }
 .main-menu-page .adventure-topbar__links { gap: clamp(12px, 2vw, 28px); }
+.main-menu-page .adventure-level__image-wrap { position: relative; }
+.adventure-level__lock-icon { position: absolute; z-index: 2; top: 50%; left: 50%; display: grid; place-items: center; width: clamp(64px, 8vw, 94px); aspect-ratio: 1; color: #ffda87; border: 3px solid #f8d78d; border-radius: 50%; background: #103344e8; box-shadow: 0 0 0 7px #0a2938aa, 0 15px 24px #061b2ab8, inset 0 0 18px #ffd37b26; transform: translate(-50%, -50%); pointer-events: none; }
+.adventure-level__lock-icon svg { width: 52%; height: 52%; filter: drop-shadow(0 2px 2px #061b2a); }
 .main-menu-page .adventure-account { gap: 12px; }
 .main-menu-page .menu-music-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 115px; padding: 8px 10px; color: #f8d88f; border-color: #c29850; background: #18394a; white-space: nowrap; }
 .main-menu-page .menu-music-toggle:hover, .main-menu-page .menu-music-toggle.is-playing { background: #24536a; }

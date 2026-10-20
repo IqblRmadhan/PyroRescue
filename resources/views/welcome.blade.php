@@ -12,8 +12,8 @@
     <a class="splash-skip" href="#beranda">Lewati navigasi</a>
     <header class="splash-nav">
         <a href="#beranda" aria-label="PyroRescue, ke beranda"><img class="splash-brand" src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="220" height="62"></a>
-        <nav aria-label="Navigasi utama"><a href="#tentang">Tentang</a><a href="#materi">Materi</a></nav>
-        <a class="splash-login" href="{{ route('login') }}">Masuk <span aria-hidden="true">↗</span></a>
+        <nav aria-label="Navigasi utama"><a href="#beranda" aria-current="page">Beranda</a><a href="#tentang">Tentang</a><a href="#materi">Materi</a></nav>
+        <div class="splash-nav__actions"><a class="splash-register" href="{{ route('register') }}" data-no-page-loader>Daftar</a><a class="splash-login" href="{{ route('login') }}" data-no-page-loader>Masuk <span aria-hidden="true">↗</span></a></div>
     </header>
     <main id="beranda">
         <section class="splash-hero" aria-labelledby="hero-title">
@@ -22,7 +22,7 @@
                     <span class="splash-kicker"><i aria-hidden="true"></i> MISI KECIL. PERUBAHAN BESAR.</span>
                     <h1 id="hero-title">Belajar Python.<br><em>Jadi pahlawan<br>hutan.</em></h1>
                     <p>Hutan Kalimantan membutuhkanmu. Jelajahi petanya, tulis kode pertamamu, dan bantu pemadam menyelesaikan misi penyelamatan.</p>
-                    <div class="splash-actions"><a class="splash-button" href="{{ route('login') }}"><span aria-hidden="true">▶</span> Mulai Petualangan</a><a class="splash-text-link" href="#tentang">Kenali PyroRescue ↓</a></div>
+                    <div class="splash-actions"><a class="splash-button" href="{{ route('login') }}" data-no-page-loader><span aria-hidden="true">▶</span> Mulai Petualangan</a><a class="splash-text-link" href="#tentang">Kenali PyroRescue ↓</a></div>
                     <p class="splash-hero__note">Baru belajar coding? Mulai dari satu baris sederhana.</p>
                     <div class="splash-hero__tags"><span>Python untuk pemula</span><span>Misi interaktif</span><span>Nuansa Kalimantan</span></div>
                 </div>
@@ -54,7 +54,7 @@
                 <article><img src="{{ asset('assets/ui/concept-conditional.png') }}" alt="" loading="lazy" width="80" height="80"><span>03 / PERCABANGAN · SEGERA HADIR</span><h3>Tentukan pilihanmu</h3><p>Kenali if dan else untuk memilih tindakan berdasarkan kondisi yang kamu temui.</p><code>if isi_air &gt; 0:</code></article>
             </div>
         </section>
-        <section class="splash-invite splash-container" aria-labelledby="invite-title"><div><span class="splash-kicker">GILIRANMU MENGAMBIL PERAN</span><h2 id="invite-title">Hutan menunggu pahlawan berikutnya.</h2><p>Mulai dari satu misi, satu baris kode, dan rasa ingin tahu.</p></div><a class="splash-button" href="{{ route('login') }}">Mulai Petualangan →</a></section>
+        <section class="splash-invite splash-container" aria-labelledby="invite-title"><div><span class="splash-kicker">GILIRANMU MENGAMBIL PERAN</span><h2 id="invite-title">Hutan menunggu pahlawan berikutnya.</h2><p>Mulai dari satu misi, satu baris kode, dan rasa ingin tahu.</p></div><a class="splash-button" href="{{ route('login') }}" data-no-page-loader>Mulai Petualangan →</a></section>
     </main>
     <footer class="splash-footer splash-container"><a href="#beranda"><img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="155" height="44"></a><p>Belajar Python. Selamatkan hutan Kalimantan.</p><a href="#beranda">Kembali ke atas ↑</a></footer>
 </body>

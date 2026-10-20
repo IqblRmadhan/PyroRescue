@@ -28,13 +28,12 @@
                     <span class="auth-form-eyebrow">SELAMAT DATANG KEMBALI</span>
                     <h1 id="login-title" tabindex="-1">Masuk ke petualangan.</h1>
                     <p class="auth-form-intro">Masuk untuk melanjutkan misi penyelamatan dan belajar Python dari progres terakhirmu.</p>
-                    <div class="auth-form-highlights" aria-label="Yang menantimu di PyroRescue"><span>✦ Misi hutan</span><span>✦ Kode Python</span></div>
 
                     @if (session('status'))
                         <p class="auth-notice" role="status">{{ session('status') }}</p>
                     @endif
 
-                    <form method="POST" action="{{ route('login.store') }}" class="auth-fields">
+                    <form method="POST" action="{{ route('login.store') }}" class="auth-fields" data-loader-destination="menu">
                         @csrf
                         <div class="auth-field">
                             <label for="login-email">Email</label>
@@ -50,7 +49,7 @@
                     </form>
 
                     <div class="auth-separator"><span>atau</span></div>
-                    <form method="POST" action="{{ route('login.guest') }}">
+                    <form method="POST" action="{{ route('login.guest') }}" data-loader-destination="menu">
                         @csrf
                         <button class="auth-guest" type="submit">Main sebagai Tamu</button>
                     </form>
@@ -64,9 +63,8 @@
                     <span class="auth-form-eyebrow">JADI PENJAGA HUTAN</span>
                     <h1 id="register-title" tabindex="-1">Buat akun baru.</h1>
                     <p class="auth-form-intro">Buat akun untuk menyimpan perjalanan belajarmu dan kembali ke misi kapan saja.</p>
-                    <div class="auth-form-highlights" aria-label="Keuntungan membuat akun"><span>✦ Simpan progres</span><span>✦ Lanjutkan misi</span></div>
 
-                    <form method="POST" action="{{ route('register.store') }}" class="auth-fields">
+                    <form method="POST" action="{{ route('register.store') }}" class="auth-fields" data-loader-destination="menu">
                         @csrf
                         <div class="auth-field">
                             <label for="register-name">Nama pengguna</label>
@@ -96,19 +94,7 @@
             <section class="auth-scene" aria-label="Ilustrasi hutan dan rawa Kalimantan">
                 <div class="auth-scene__light" aria-hidden="true"></div>
                 <div class="auth-scene__mascot" aria-hidden="true"></div>
-                <div class="auth-scene__topics" aria-label="Materi petualangan"><span>01 · Variabel</span><span>02 · Perulangan</span></div>
-                <div class="auth-scene__copy auth-scene__copy--register" @if ($initialMode === 'login') aria-hidden="true" inert @endif>
-                    <span class="auth-scene__eyebrow">PYRORESCUE</span>
-                    <h2>Sudah siap kembali?</h2>
-                    <p>Petualangan menjaga hutan dan rawa Kalimantan menantimu.</p>
-                    <a class="auth-scene__button" href="{{ route('login') }}" data-auth-switch>Masuk <span aria-hidden="true">→</span></a>
-                </div>
-                <div class="auth-scene__copy auth-scene__copy--login" @if ($initialMode === 'register') aria-hidden="true" inert @endif>
-                    <span class="auth-scene__eyebrow">PYRORESCUE</span>
-                    <h2>Mulai kisahmu di sini.</h2>
-                    <p>Jadilah penjaga hutan dan belajar Python lewat misi seru.</p>
-                    <a class="auth-scene__button" href="{{ route('register') }}" data-auth-switch>Buat Akun <span aria-hidden="true">→</span></a>
-                </div>
+                <a class="auth-scene__create-account" href="{{ route('register') }}" data-auth-switch @if ($initialMode === 'register') hidden @endif>Buat Akun <span aria-hidden="true">→</span></a>
             </section>
         </div>
     </main>
@@ -123,22 +109,18 @@
                 login: stage.querySelector('.auth-form-panel--login'),
                 register: stage.querySelector('.auth-form-panel--register'),
             };
-            const sceneCopies = {
-                login: stage.querySelector('.auth-scene__copy--login'),
-                register: stage.querySelector('.auth-scene__copy--register'),
-            };
+            const createAccountLink = stage.querySelector('.auth-scene__create-account');
             let focusTimer;
 
             function showMode(mode, updateHistory = true) {
                 if (mode === stage.dataset.mode) return;
 
                 stage.dataset.mode = mode;
+                createAccountLink.hidden = mode !== 'login';
                 for (const name of ['login', 'register']) {
                     const inactive = name !== mode;
                     panels[name].inert = inactive;
                     panels[name].setAttribute('aria-hidden', String(inactive));
-                    sceneCopies[name].inert = inactive;
-                    sceneCopies[name].setAttribute('aria-hidden', String(inactive));
                 }
 
                 const otherMode = mode === 'login' ? 'register' : 'login';
