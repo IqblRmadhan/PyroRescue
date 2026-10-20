@@ -91,29 +91,27 @@ test('the extended road connects Pos 2 to the last finish tile', () => {
     assert.equal(level1Map.finish.column - level1Map.post2Action.column, 15);
 });
 
-test('water pump is beside the road but does not occupy a walkable tile', () => {
-    assert.deepEqual(level1Map.pump, { column: 5, row: 20 });
-    assert.deepEqual(level1Map.waterAction, { column: 6, row: 20 });
+test('water pump faces right beside the lower road interaction tile', () => {
+    assert.deepEqual(level1Map.pump, { column: 7, row: 24 });
+    assert.deepEqual(level1Map.waterAction, { column: 6, row: 24 });
+    assert.equal(level1Map.pumpDirection, 'right');
     assert.equal(isWalkable(level1Map.pump.column, level1Map.pump.row), false);
     assert.equal(isWalkable(level1Map.waterAction.column, level1Map.waterAction.row), true);
-    assert.equal(isOnTile(6, 20, level1Map.waterAction), true);
-    assert.equal(isOnTile(6, 21, level1Map.waterAction), false);
+    assert.equal(isOnTile(6, 24, level1Map.waterAction), true);
+    assert.equal(isOnTile(6, 23, level1Map.waterAction), false);
 });
 
-test('Pos 1 interaction point is on the middle-left road', () => {
-    assert.deepEqual(level1Map.post1Action, { column: 14, row: 19 });
-    assert.deepEqual(level1Map.post1Npc, { column: 16, row: 19 });
+test('Pos 1 character and marker align with the lower checkpoint', () => {
+    assert.deepEqual(level1Map.post1Action, { column: 17, row: 20 });
+    assert.deepEqual(level1Map.post1Npc, { column: 17, row: 19 });
+    assert.deepEqual(level1Map.post1Sign, { x: 700, y: 635 });
     assert.equal(isWalkable(level1Map.post1Action.column, level1Map.post1Action.row), true);
-    assert.equal(isOnTile(14, 19, level1Map.post1Action), true);
+    assert.equal(isOnTile(17, 20, level1Map.post1Action), true);
     assert.equal(isWalkable(level1Map.post1Npc.column, level1Map.post1Npc.row), false);
 });
 
 test('the road from the pump to Pos 1 is fully walkable', () => {
-    for (let column = level1Map.waterAction.column; column <= 6; column += 1) {
-        assert.equal(isWalkable(column, level1Map.waterAction.row), true, `${column},${level1Map.waterAction.row}`);
-    }
-
-    for (let row = level1Map.waterAction.row; row >= level1Map.post1Action.row; row -= 1) {
+    for (let row = level1Map.waterAction.row; row >= 18; row -= 1) {
         assert.equal(isWalkable(6, row), true, `6,${row}`);
     }
 
@@ -121,12 +119,20 @@ test('the road from the pump to Pos 1 is fully walkable', () => {
         assert.equal(isWalkable(column, 18), true, `${column},18`);
     }
 
-    assert.equal(isWalkable(14, level1Map.post1Action.row), true, '14,19');
+    for (let row = 18; row <= 20; row += 1) {
+        assert.equal(isWalkable(14, row), true, `14,${row}`);
+    }
+
+    for (let column = 14; column <= level1Map.post1Action.column; column += 1) {
+        assert.equal(isWalkable(column, 20), true, `${column},20`);
+    }
 });
 
 test('Pos 2 and the route from Pos 1 are fully walkable', () => {
     assert.deepEqual(level1Map.post2Action, { column: 24, row: 11 });
-    assert.deepEqual(level1Map.post2Npc, { column: 26, row: 10 });
+    assert.deepEqual(level1Map.post2Npc, { column: 25, row: 10 });
+    assert.equal(level1Map.post2NpcOffsetY, 20);
+    assert.deepEqual(level1Map.post2Sign, { x: 920, y: 280 });
     assert.equal(isWalkable(level1Map.post2Npc.column, level1Map.post2Npc.row), false);
 
     for (let row = 18; row <= 20; row += 1) {

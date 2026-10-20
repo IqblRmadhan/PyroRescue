@@ -14,13 +14,11 @@ import {
 test('Level 1 uses the final map filename without a version suffix', () => {
     assert.equal(level1MapImage, 'maps/level1-map.webp');
     assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map.webp')), true);
-    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map.png')), true);
-    assert.equal(existsSync(path.join(process.cwd(), 'public/assets/maps/level1-map-v2.png')), false);
     assert.ok(statSync(path.join(process.cwd(), 'public/assets/maps/level1-map.webp')).size < 2_000_000);
 });
 
 test('level map shadow uses the dedicated Level 1 image', () => {
-    assert.equal(level1MapShadowImage, 'maps/shadow_level1.png');
+    assert.equal(level1MapShadowImage, 'maps/shadow_level1.webp');
 });
 
 test('level map shadow fills the complete 1600 by 1200 map', () => {

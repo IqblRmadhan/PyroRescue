@@ -95,8 +95,11 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Awan bergerak di atas map dengan bayangan yang tampak di tanah. Awan digambar
   di belakang karakter serta penanda misi agar tidak menutupinya.
 - Map Level 1 memakai `level1-map.webp` berukuran 1600 × 1200 di browser.
-  `level1-map.png` tetap disimpan sebagai gambar sumber asli.
   Grid mengikuti jalan baru; FINISH berada 15 petak ke kanan dari Pos 2.
+- Pompa Level 1 berada di `(7,24)`, menghadap kanan di samping penanda biru `(6,24)`.
+  NPC Pos 1 berada di `(17,19)` dengan penanda merah `(17,20)`. NPC Pos 2
+  berada di `(25,10)` dengan offset visual 20 piksel ke bawah. Label Pos 2
+  berada di atas tenda pada `x = 920`.
 - Petak FINISH Level 1 memakai ubin kecil bermotif kotak-kotak di jalan tanpa
   label dan marker merah. Pemain menginjak ubin setelah menyerahkan air untuk
   membuka hasil nilai, badge, dan tautan Level 2 setelah seluruh misi selesai.
@@ -112,12 +115,15 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - `/game/2` memakai layout PyroPad yang sama, dengan materi `semprot()` dan
   `for/range`. Level tersedia dari menu utama dan hasil Level 1.
 - `Level2Map.js` mengikuti jalan pada `level2-map.webp` berukuran 1600 × 1200.
-  `level2-map.png` tetap disimpan sebagai gambar sumber asli.
   Tiga titik latihan berada di tengah, kanan atas, dan kanan bawah. Titik
   evaluasi berada dekat FINISH di bagian bawah peta.
+- `level2-maps.webp` menjadi foreground transparan pada depth 6. Layer ini
+  selalu berada di atas sprite api dan frame padam, tetapi tetap di bawah
+  marker, pompa, karakter, dan label. Level 3 tidak memuat foreground ini.
 - Pompa Phaser ditempatkan di dekat jalan setelah jembatan tanpa bidang rumput
   atau lapisan latar tambahan. Sprite pompa Level 1 digunakan ulang;
-  pemain mengambil enam unit dengan `isi_air = 6` di penanda bawah pompa.
+  pompa berada di `(740,240)`, menghadap kanan, dengan penanda biru `(17,5)`.
+  Pemain mengambil enam unit dengan `isi_air = 6` di penanda tersebut.
   HUD menampilkan sisa isi tangki, dan setiap `semprot()` memakai satu unit.
 - `Level2Assets.js` membaca setiap sprite api sebagai lima frame 200 × 200:
   empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
@@ -125,6 +131,10 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   Sprite C1 untuk area tengah (2 semprotan), C2 kanan atas (1 semprotan),
   dan C3 kanan bawah (3 semprotan). Evaluasi memakai `LEVEL2-EVAL.png`
   (3 semprotan).
+- Visual api C2 berada di `(1450,245)` dengan label yang terpusat pada
+  `x = 1450`, sedangkan penanda interaksinya tetap pada jalan `(34,4)`.
+- Visual api C3 berada di `(1470,780)` dengan penanda interaksi tetap pada
+  jalan `(38,17)`.
 - Marker evaluasi berada pada petak jalan `(24,27)`, dua petak di atas FINISH.
   Label EVALUASI berada pada posisi `(1100,1080)`.
 - Setiap pompa memiliki titik biru, sedangkan api memiliki titik merah pada
@@ -212,7 +222,7 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 Tombol terakhir cerita memakai teks **Tiba di Lokasi**. Setelah peta siap, awal
 Challenge 1 menampilkan tiga langkah persiapan yang menyatu dengan misi:
 menemukan pompa, memahami sequence gerakan, lalu menjalankan kerangka
-`atas(...)`, `kanan(...)`, dan `atas(...)` di PyroPad. Setelah pemain menutup
+`atas(...)` dan `kanan(...)` di PyroPad. Setelah pemain menutup
 langkah terakhir, fokus langsung berpindah ke PyroPad tanpa dialog tambahan.
 
 Tur lengkap **Cara Bermain** tetap dapat dibuka dari bawah halaman. Tur ini

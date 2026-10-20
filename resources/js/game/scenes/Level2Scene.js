@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 import { enableDebugTeleport } from '../DebugTeleport.js';
 import { firefighterAnimations } from '../Level1Assets.js';
 import {
+    addLevel2MapForeground,
     addLevel2MapShadow,
+    getLevel2MapForegroundImage,
     level2Assets,
     level2MapImage,
     level2MapShadowImage,
@@ -43,6 +45,9 @@ export default class Level2Scene extends Phaser.Scene {
         this.assets = settings.assets ?? level2Assets;
         this.mapImage = settings.mapImage ?? level2MapImage;
         this.mapShadowImage = settings.mapShadowImage ?? level2MapShadowImage;
+        this.mapForegroundImage = settings.mapForegroundImage === undefined
+            ? getLevel2MapForegroundImage(settings.sceneKey ?? 'Level2Scene')
+            : settings.mapForegroundImage;
         this.isWalkable = settings.isWalkable ?? isLevel2Walkable;
         this.debugWorldToTile = settings.worldToTile ?? level2WorldToTile;
         this.debugIsWalkable = settings.debugIsWalkable ?? this.isWalkable;
@@ -68,6 +73,9 @@ export default class Level2Scene extends Phaser.Scene {
         }
         this.load.image('level2Map', `${this.assetBaseUrl}/${this.mapImage}`);
         this.load.image('level2Shadow', `${this.assetBaseUrl}/${this.mapShadowImage}`);
+        if (this.mapForegroundImage) {
+            this.load.image('level2Foreground', `${this.assetBaseUrl}/${this.mapForegroundImage}`);
+        }
     }
 
     create() {
@@ -173,6 +181,9 @@ export default class Level2Scene extends Phaser.Scene {
             this.fireMarkers[number] = this.add.sprite(marker.x, marker.y, getMarkerTexture('fire'), 'pulse1')
                 .setDisplaySize(24, 24).setDepth(7).play('level2-marker');
         }
+        if (this.mapForegroundImage) {
+            this.mapForeground = addLevel2MapForeground(this, this.map.width, this.map.height);
+        }
         const finishTile = getLevel2FinishVisual(this.map).tile;
         const finish = level2TileToWorld(finishTile.column, finishTile.row);
         this.playerShadow = this.add.ellipse(0, 0, 24, 6, 0x172b1b, 0.24).setDepth(8);
@@ -182,9 +193,10 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     drawPumpStation() {
-        const { x, y, spriteOffsetX = 0, action } = this.map.pump;
-        this.pump = this.add.sprite(x + spriteOffsetX, y, 'waterPump', 'idle')
-            .setOrigin(0.5, 0.9).setDisplaySize(52, 52).setDepth(7);
+        const { x, y, action, direction } = this.map.pump;
+        this.pump = this.add.sprite(x, y, 'waterPump', 'idle')
+            .setOrigin(0.5, 0.9).setDisplaySize(52, 52)
+            .setFlipX(direction === 'right').setDepth(7);
         this.pumpLabel = addPumpLabel(this, x, y);
         const marker = level2TileToWorld(action.column, action.row);
         const markerSize = getChallengeMarkerStyle(1, 1, 'pump').size;

@@ -23,7 +23,7 @@ class Level3PageTest extends TestCase
         $this->get('/main-menu')->assertOk()->assertSee(route('game.level3'), false);
         $this->get('/game/3')->assertOk()->assertSee('Suaka Bekantan')
             ->assertSee('data-level="3"', false)->assertSee('data-progress-url=""', false)
-            ->assertSee('assets/maps/level3-map.png')->assertDontSee('assets/story/level2/')
+            ->assertSee('assets/maps/level3-map.webp')->assertDontSee('assets/story/level2/')
             ->assertSee('assets/characters/komandan.png')->assertSee('assets/characters/mission-guide.png')
             ->assertSee('story-portrait--commander')->assertSee('story-portrait--player')
             ->assertSee('data-speaker="commander"', false)->assertSee('data-speaker="player"', false)

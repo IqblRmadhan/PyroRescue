@@ -23,11 +23,23 @@ export const level2Assets = {
 };
 
 export const level2MapImage = 'maps/level2-map.webp';
-export const level2MapShadowImage = 'maps/shadow_level2.png';
+export const level2MapForegroundImage = 'maps/level2-maps.webp';
+export const level2MapShadowImage = 'maps/shadow_level2.webp';
+
+export function getLevel2MapForegroundImage(sceneKey) {
+    return sceneKey === 'Level2Scene' ? level2MapForegroundImage : null;
+}
 
 export function addLevel2MapShadow(scene, width, height) {
     return scene.add.image(0, 0, 'level2Shadow')
         .setOrigin(0)
         .setDisplaySize(width, height)
         .setDepth(0);
+}
+
+export function addLevel2MapForeground(scene, width, height) {
+    return scene.add.image(0, 0, 'level2Foreground')
+        .setOrigin(0)
+        .setDisplaySize(width, height)
+        .setDepth(6);
 }

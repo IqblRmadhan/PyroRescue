@@ -4,6 +4,21 @@ import { readFileSync, existsSync } from 'node:fs';
 import { level3Map, isLevel3Walkable, level3WorldToTile } from '../../resources/js/game/Level3Map.js';
 import { level3Assets, level3MapImage, level3MapShadowImage } from '../../resources/js/game/Level3Assets.js';
 
+function readWebpDimensions(image) {
+    assert.equal(image.toString('ascii', 0, 4), 'RIFF');
+    assert.equal(image.toString('ascii', 8, 12), 'WEBP');
+
+    const chunkType = image.toString('ascii', 12, 16);
+    if (chunkType === 'VP8X') {
+        return [image.readUIntLE(24, 3) + 1, image.readUIntLE(27, 3) + 1];
+    }
+    if (chunkType === 'VP8 ') {
+        return [image.readUInt16LE(26) & 0x3fff, image.readUInt16LE(28) & 0x3fff];
+    }
+
+    throw new Error(`Unsupported WebP chunk: ${chunkType}`);
+}
+
 test('every Level 3 interaction and checkpoint is reachable from the start', () => {
     const visited = new Set();
     const queue = [level3Map.start];
@@ -33,10 +48,10 @@ test('Level 3 uses only the central pump and converts debug clicks to grid tiles
     assert.notDeepEqual(level3Map.pump.action, level3Map.crossing);
 });
 
-test('map and shadow align and all asset frames stay within original PNGs', () => {
+test('map and shadow align and all asset frames stay within their source images', () => {
     for (const file of [level3MapImage, level3MapShadowImage]) {
-        const png = readFileSync(`public/assets/${file}`);
-        assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1600, 1200]);
+        const webp = readFileSync(`public/assets/${file}`);
+        assert.deepEqual(readWebpDimensions(webp), [1600, 1200]);
     }
     for (const asset of Object.values(level3Assets)) {
         assert.equal(existsSync(`public/assets/${asset.file}`), true, asset.file);

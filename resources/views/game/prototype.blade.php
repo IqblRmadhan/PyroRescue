@@ -6,10 +6,10 @@
     $levelTitle = $isLevel3 ? 'Suaka Bekantan' : ($isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar');
     $storyScenes = $isLevel3
         ? [
-            ['image' => 'assets/maps/level3-map.png', 'alt' => 'Pulau dan jembatan di Suaka Bekantan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'Beberapa bekantan masih terjebak. Sebagian jalur tertutup asap. Padamkan tiga titik api dan antar tiga bekantan ke pos penyelamatan. Periksa kondisi sebelum bertindak.'],
-            ['image' => 'assets/maps/level3-map.png', 'alt' => 'Jalur menuju pos penyelamatan', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Saya akan memeriksa jalur, persediaan air, dan keadaan satwa. Bekantan harus saya antar kembali ke pos setelah api padam.'],
-            ['image' => 'assets/maps/level3-map.png', 'alt' => 'Peta operasi untuk belajar percabangan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'if menjalankan tindakan saat kondisi True. else memilih alternatif saat False. Akhiri dengan titik dua dan beri indentasi pada tindakan. Kondisi berasal dari dunia game; periksa sebelum mengambil keputusan.'],
-            ['image' => 'assets/maps/level3-map.png', 'alt' => 'Anggota PyroRescue bersiap menuju pondok', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Siap! Saya menuju pondok, mengisi empat unit air, lalu memilih jalur aman. Dengan if/else, saya akan memeriksa setiap kemungkinan sebelum memulai penyelamatan.'],
+            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Pulau dan jembatan di Suaka Bekantan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'Beberapa bekantan masih terjebak. Sebagian jalur tertutup asap. Padamkan tiga titik api dan antar tiga bekantan ke pos penyelamatan. Periksa kondisi sebelum bertindak.'],
+            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Jalur menuju pos penyelamatan', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Saya akan memeriksa jalur, persediaan air, dan keadaan satwa. Bekantan harus saya antar kembali ke pos setelah api padam.'],
+            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Peta operasi untuk belajar percabangan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'if menjalankan tindakan saat kondisi True. else memilih alternatif saat False. Akhiri dengan titik dua dan beri indentasi pada tindakan. Kondisi berasal dari dunia game; periksa sebelum mengambil keputusan.'],
+            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Anggota PyroRescue bersiap menuju pondok', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Siap! Saya menuju pondok, mengisi empat unit air, lalu memilih jalur aman. Dengan if/else, saya akan memeriksa setiap kemungkinan sebelum memulai penyelamatan.'],
         ]
         : ($isLevel2
         ? [

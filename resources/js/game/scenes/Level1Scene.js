@@ -276,6 +276,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.pump = this.add.sprite(pumpPosition.x, pumpPosition.y, 'waterPump', 'idle')
             .setOrigin(0.5, 0.9)
             .setDisplaySize(pumpDisplaySize, pumpDisplaySize)
+            .setFlipX(level1Map.pumpDirection !== 'left')
             .setDepth(7);
         this.pumpLabel = addPumpLabel(this, pumpPosition.x, pumpPosition.y);
         this.add.ellipse(post1NpcPosition.x, post1NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
@@ -287,11 +288,18 @@ export default class Level1Scene extends Phaser.Scene {
             'idle-1',
         ).setOrigin(0.5, 0.9).setScale(npcPost1Scale).setDepth(9)
             .play('npc-post1-idle');
-        this.add.ellipse(post2NpcPosition.x, post2NpcPosition.y + 4, 28, 7, 0x172b1b, 0.22)
+        this.add.ellipse(
+            post2NpcPosition.x,
+            post2NpcPosition.y + level1Map.post2NpcOffsetY + 4,
+            28,
+            7,
+            0x172b1b,
+            0.22,
+        )
             .setDepth(8);
         this.npcPost2 = this.add.sprite(
             post2NpcPosition.x,
-            post2NpcPosition.y,
+            post2NpcPosition.y + level1Map.post2NpcOffsetY,
             'npcPost2',
             'idle-1',
         ).setOrigin(0.5, 0.9).setScale(npcPost2Scale).setDepth(9)

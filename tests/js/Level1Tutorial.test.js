@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+    level1SequenceStarterCode,
     level1SequenceTutorialSteps,
     level1TutorialSteps,
 } from '../../resources/js/game/Level1Tutorial.js';
@@ -9,7 +10,9 @@ test('opening tutorial teaches movement sequences before the first mission', () 
     assert.equal(level1SequenceTutorialSteps.length, 3);
     assert.equal(level1SequenceTutorialSteps[0].mapFocus, 'water');
     assert.equal(level1SequenceTutorialSteps[1].target, '#code-editor');
-    assert.match(level1SequenceTutorialSteps[1].text, /atas\(\.\.\.\).*kanan\(\.\.\.\).*atas\(\.\.\.\)/s);
+    assert.equal(level1SequenceStarterCode, 'atas(...)\nkanan(...)');
+    assert.match(level1SequenceTutorialSteps[1].text, /atas\(\.\.\.\).*kanan\(\.\.\.\)/s);
+    assert.doesNotMatch(level1SequenceTutorialSteps[1].text, /lalu atas\(\.\.\.\)/);
     assert.equal(level1SequenceTutorialSteps[2].target, '.game-buttons');
     assert.match(level1SequenceTutorialSteps[2].nextLabel, /coba/i);
 });

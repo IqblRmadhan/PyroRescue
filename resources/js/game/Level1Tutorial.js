@@ -67,7 +67,7 @@ export const level1TutorialSteps = [
     },
 ];
 
-export const level1SequenceStarterCode = 'atas(...)\nkanan(...)\natas(...)';
+export const level1SequenceStarterCode = 'atas(...)\nkanan(...)';
 
 export const level1SequenceTutorialSteps = [
     {
@@ -82,14 +82,14 @@ export const level1SequenceTutorialSteps = [
         target: '#code-editor',
         eyebrow: '02 / SEQUENCE',
         title: 'Susun urutan perjalanan',
-        text: 'PyroPad sudah berisi kerangka atas(...), kanan(...), lalu atas(...). Ganti setiap ... dengan jumlah petak yang tepat. Setiap baris dijalankan dari atas ke bawah.',
+        text: 'PyroPad sudah berisi kerangka atas(...), lalu kanan(...). Ganti setiap ... dengan jumlah petak yang tepat. Setiap baris dijalankan dari atas ke bawah.',
         note: 'Urutan perintah disebut sequence. Jika urutannya berubah, jalur yang ditempuh karakter juga berubah.',
     },
     {
         target: '.game-buttons',
         eyebrow: '03 / COBA LANGSUNG',
         title: 'Jalankan sequence',
-        text: 'Tekan Run Code setelah ketiga angka terisi. Karakter akan mengikuti urutanmu menuju titik biru. Sesampainya di pompa, PyroPad akan memberi kisi-kisi berikutnya.',
+        text: 'Tekan Run Code setelah kedua angka terisi. Karakter akan mengikuti urutanmu menuju titik biru. Sesampainya di pompa, PyroPad akan memberi kisi-kisi berikutnya.',
         note: 'Checklist Challenge 1 akan tercentang sambil kamu bermain. Cara Bermain di bawah halaman dapat dibuka kembali kapan saja.',
         nextLabel: 'Coba sequence',
     },

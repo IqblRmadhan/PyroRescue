@@ -61,31 +61,37 @@ test('evaluation marker and label sit one step higher beside the final fire', ()
 
 test('C2 is the upper-right fire and C3 is the lower-right fire', () => {
     assert.deepEqual(level2Map.fires[2].action, { column: 34, row: 4 });
+    assert.deepEqual(
+        { x: level2Map.fires[2].x, y: level2Map.fires[2].y },
+        { x: 1450, y: 245 },
+    );
     assert.deepEqual(level2Map.fires[2].label, {
-        x: 1370,
+        x: 1450,
         y: 50,
         placement: 'above',
     });
     assert.deepEqual(level2Map.fires[3].action, { column: 38, row: 17 });
+    assert.deepEqual(
+        { x: level2Map.fires[3].x, y: level2Map.fires[3].y },
+        { x: 1470, y: 780 },
+    );
     assert.equal(level2Map.fires[2].y < level2Map.fires[3].y, true);
 });
 
 test('the pump can be reached from the starting road before C1', () => {
-    assert.deepEqual(level2Map.pump.action, { column: 15, row: 5 });
+    assert.deepEqual(level2Map.pump.action, { column: 17, row: 5 });
     assert.deepEqual(
         { x: level2Map.pump.x, y: level2Map.pump.y },
-        { x: 620, y: 180 },
+        { x: 740, y: 240 },
     );
-    assert.equal(level2Map.pump.spriteOffsetX, -4);
-    assert.equal(level2Map.pump.x + level2Map.pump.spriteOffsetX, 616);
-    assert.equal(isLevel2Walkable(15, 5), true);
+    assert.equal(level2Map.pump.direction, 'right');
+    assert.equal(isLevel2Walkable(17, 5), true);
     assert.equal(isLevel2Walkable(17, 8), true);
     assert.equal(level2Map.pump.capacity, 6);
 });
 
-test('C1 is moved down and C3 is moved right by one grid tile', () => {
+test('C1 stays aligned with its lowered visual position', () => {
     assert.equal(level2Map.fires[1].y, 475);
-    assert.equal(level2Map.fires[3].x, 1450);
 });
 
 test('evaluation tree fills the marked brown clearing at the same scale as other fires', () => {

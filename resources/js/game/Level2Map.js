@@ -1,4 +1,4 @@
-// Petak 40 piksel mengikuti pusat jalan pada level2-map.png (1600 x 1200).
+// Petak 40 piksel mengikuti pusat jalan pada level2-map.webp (1600 x 1200).
 const walkableTiles = new Set();
 function road(column, row, endColumn, endRow) {
     for (let x = column; x <= endColumn; x += 1) {
@@ -24,16 +24,16 @@ export const level2Map = {
     width: 1600, height: 1200, tileSize: 40, columns: 40, rows: 30,
     start: { column: 0, row: 5, direction: 'east' },
     evaluationStart: { column: 38, row: 20, direction: 'south' },
-    pump: { x: 620, y: 180, spriteOffsetX: -4, action: { column: 15, row: 5 }, capacity: 6 },
+    pump: { x: 740, y: 240, action: { column: 17, row: 5 }, direction: 'right', capacity: 6 },
     evaluationPump: { x: 1480, y: 840, action: { column: 38, row: 20 }, capacity: 6 },
     finish: { column: 24, row: 29 },
     fires: {
         1: { x: 900, y: 475, size: 180, action: { column: 19, row: 8 }, direction: 'east' },
         2: {
-            x: 1410, y: 205, size: 190, action: { column: 34, row: 4 },
-            direction: 'north', label: { x: 1370, y: 50, placement: 'above' },
+            x: 1450, y: 245, size: 190, action: { column: 34, row: 4 },
+            direction: 'north', label: { x: 1450, y: 50, placement: 'above' },
         },
-        3: { x: 1450, y: 780, size: 225, action: { column: 38, row: 17 }, direction: 'west' },
+        3: { x: 1470, y: 780, size: 225, action: { column: 38, row: 17 }, direction: 'west' },
         4: {
             x: 1100,
             y: 1220,

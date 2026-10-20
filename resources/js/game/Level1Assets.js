@@ -255,9 +255,8 @@ export const level1Assets = {
     },
 };
 
-// Gambar asli tetap di level1-map.png; versi WebP lebih cepat dimuat browser.
 export const level1MapImage = 'maps/level1-map.webp';
-export const level1MapShadowImage = 'maps/shadow_level1.png';
+export const level1MapShadowImage = 'maps/shadow_level1.webp';
 
 export function addLevel1MapShadow(scene, width, height) {
     return scene.add.image(0, 0, 'levelMapShadow')

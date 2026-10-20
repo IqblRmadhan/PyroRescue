@@ -21,5 +21,5 @@ export const level3Assets = {
     },
 };
 
-export const level3MapImage = 'maps/level3-map.png';
-export const level3MapShadowImage = 'maps/shadow_level3.png';
+export const level3MapImage = 'maps/level3-map.webp';
+export const level3MapShadowImage = 'maps/shadow_level3.webp';
