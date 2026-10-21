@@ -38,6 +38,8 @@ class Level1PageTest extends TestCase
             ->assertSee('aria-label="Matikan efek suara dan karakter"', false)
             ->assertSee('id="game-container"', false)
             ->assertSee('id="code-editor"', false)
+            ->assertSee('class="code-editor-frame"', false)
+            ->assertSee(asset('assets/ui/pyropad.png'), false)
             ->assertSee('id="tutorial-open"', false)
             ->assertSee('id="level1-tutorial"', false)
             ->assertSee('CARA BERMAIN')

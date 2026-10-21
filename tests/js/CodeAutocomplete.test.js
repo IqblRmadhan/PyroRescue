@@ -1,11 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
+import CodeAutocomplete, {
     applyAutocompleteSuggestion,
     createLevel1Suggestions,
     getAutocompleteMatches,
     getCompletionContext,
 } from '../../resources/js/game/CodeAutocomplete.js';
+
+function createEditor(value, caret = value.length) {
+    return {
+        value,
+        selectionStart: caret,
+        selectionEnd: caret,
+        dispatchedInput: false,
+        setSelectionRange(start, end) {
+            this.selectionStart = start;
+            this.selectionEnd = end;
+        },
+        dispatchEvent() {
+            this.dispatchedInput = true;
+        },
+        setAttribute() {},
+        removeAttribute() {},
+    };
+}
 
 test('autocomplete filters commands from the current prefix', () => {
     const suggestions = createLevel1Suggestions(2);
@@ -90,5 +108,74 @@ test('assignment completion selects the whole number, including multiple digits'
 test('autocomplete does not suggest commands after an argument or unsupported syntax', () => {
     for (const query of ['atas(', 'isi_air =', 'ka1', 'print(', 'tidak_ada']) {
         assert.deepEqual(getAutocompleteMatches(createLevel1Suggestions(), query), []);
+    }
+});
+
+test('Tab inserts four spaces and stays inside the code editor', () => {
+    const editor = createEditor('for i in range(3):\n');
+    const autocomplete = Object.create(CodeAutocomplete.prototype);
+    autocomplete.editor = editor;
+    autocomplete.list = { hidden: true };
+    autocomplete.helpPanel = null;
+    autocomplete.previewedIndex = -1;
+    let prevented = false;
+
+    autocomplete.handleKeydown({
+        key: 'Tab',
+        shiftKey: false,
+        ctrlKey: false,
+        preventDefault() { prevented = true; },
+    });
+
+    assert.equal(prevented, true);
+    assert.equal(editor.value, 'for i in range(3):\n    ');
+    assert.equal(editor.selectionStart, editor.value.length);
+    assert.equal(editor.dispatchedInput, true);
+});
+
+test('Shift+Tab removes one indentation level from the active line', () => {
+    const editor = createEditor('for i in range(3):\n    semprot()', 25);
+    const autocomplete = Object.create(CodeAutocomplete.prototype);
+    autocomplete.editor = editor;
+    autocomplete.list = { hidden: true };
+    autocomplete.helpPanel = null;
+    autocomplete.previewedIndex = -1;
+    let prevented = false;
+
+    autocomplete.handleKeydown({
+        key: 'Tab',
+        shiftKey: true,
+        ctrlKey: false,
+        preventDefault() { prevented = true; },
+    });
+
+    assert.equal(prevented, true);
+    assert.equal(editor.value, 'for i in range(3):\nsemprot()');
+    assert.equal(editor.selectionStart, 21);
+});
+
+test('Enter after a colon starts the next line with four additional spaces', () => {
+    for (const [value, expected] of [
+        ['for i in range(3):', 'for i in range(3):\n    '],
+        ['    if api_padam:', '    if api_padam:\n        '],
+    ]) {
+        const editor = createEditor(value);
+        const autocomplete = Object.create(CodeAutocomplete.prototype);
+        autocomplete.editor = editor;
+        autocomplete.list = { hidden: true };
+        autocomplete.helpPanel = null;
+        autocomplete.previewedIndex = -1;
+        let prevented = false;
+
+        autocomplete.handleKeydown({
+            key: 'Enter',
+            shiftKey: false,
+            ctrlKey: false,
+            preventDefault() { prevented = true; },
+        });
+
+        assert.equal(prevented, true);
+        assert.equal(editor.value, expected);
+        assert.equal(editor.selectionStart, expected.length);
     }
 });

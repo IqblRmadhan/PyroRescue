@@ -157,7 +157,7 @@ export default class StoryIntro {
 
     resumeAudio() {
         if (gameAudio.isMusicMuted() && gameAudio.isEffectsMuted()) return;
-        void gameAudio.unlock().then((ready) => { this.audioReady = ready; });
+        void gameAudio.prepareCue('typing').then((ready) => { this.audioReady = ready; });
     }
 
     showSlide(index) {

@@ -49,6 +49,10 @@ export function getLevel2FinishVisual(map) {
     return { tile: map.finish };
 }
 
+export function getMapGridStyle() {
+    return { width: 1, color: 0x17382d, alpha: 0.22 };
+}
+
 export function isLevel2Walkable(column, row) {
     return walkableTiles.has(`${column},${row}`);
 }

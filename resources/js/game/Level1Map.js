@@ -55,7 +55,7 @@ export const level1Map = {
     post2Action: { column: 24, row: 11 },
     post2Npc: { column: 25, row: 10 },
     post2NpcOffsetY: 20,
-    post2Sign: { x: 920, y: 280 },
+    post2Sign: { x: 960, y: 280 },
     finish: { column: 39, row: 11 },
 };
 

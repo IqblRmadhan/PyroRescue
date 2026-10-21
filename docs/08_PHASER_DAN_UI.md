@@ -72,6 +72,10 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Dialog menggunakan elemen HTML `dialog` di luar layout game agar tetap di
   bawah viewport dan tidak ikut zoom workspace. Fokus keyboard berada di dalam
   dialog; setelah instruksi ditutup, fokus kembali ke editor dan game aktif lagi.
+- Pada layar laptop/desktop mulai lebar 901 piksel, workspace memakai tepat
+  `100dvh` tanpa scroll halaman. Header, map, PyroPad, dan footer Level 1 dibagi
+  dalam grid adaptif; map serta panel mengisi sisa tinggi viewport. Mode mobile
+  tetap memakai layout vertikal yang dapat di-scroll.
 - Panel masuk dengan animasi naik, karakter bergerak pelan, dan pergantian pesan
   memakai transisi geser/fade. Klik berulang dikunci selama transisi. Preferensi
   `prefers-reduced-motion` mematikan animasi. Escape melakukan aksi yang sama

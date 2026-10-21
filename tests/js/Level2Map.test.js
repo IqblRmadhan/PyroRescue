@@ -3,6 +3,22 @@ import assert from 'node:assert/strict';
 import * as Level2Map from '../../resources/js/game/Level2Map.js';
 import { isLevel2Walkable, level2Map } from '../../resources/js/game/Level2Map.js';
 
+test('Level 3 and Level 2 use the same subtle map grid', () => {
+    assert.equal(typeof Level2Map.getMapGridStyle, 'function');
+    if (!Level2Map.getMapGridStyle) return;
+
+    assert.deepEqual(Level2Map.getMapGridStyle('Level3Scene'), {
+        width: 1,
+        color: 0x17382d,
+        alpha: 0.22,
+    });
+    assert.deepEqual(Level2Map.getMapGridStyle('Level2Scene'), {
+        width: 1,
+        color: 0x17382d,
+        alpha: 0.22,
+    });
+});
+
 test('Level 2 finish presentation contains only the shared checkered tile', () => {
     assert.equal(typeof Level2Map.getLevel2FinishVisual, 'function');
     assert.deepEqual(Level2Map.getLevel2FinishVisual(level2Map), {

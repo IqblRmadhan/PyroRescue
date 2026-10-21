@@ -302,6 +302,62 @@ test('physical audio loading does not block resume and retries failed files', as
     assert.equal(attempts.get('ui-click.wav'), 2);
 });
 
+test('typing cue can be prepared before the rest of the cold audio cache finishes', async () => {
+    const started = [];
+    class FakeAudioContext {
+        constructor() {
+            this.state = 'suspended';
+            this.currentTime = 0;
+            this.destination = {};
+        }
+
+        createGain() {
+            return {
+                gain: { value: 1, setTargetAtTime() {} },
+                connect() {},
+            };
+        }
+
+        createBufferSource() {
+            return {
+                buffer: null,
+                connect() {},
+                start() { started.push(this.buffer.fileName); },
+                stop() {},
+            };
+        }
+
+        async decodeAudioData(data) { return data; }
+        async resume() { this.state = 'running'; }
+        async close() { this.state = 'closed'; }
+    }
+
+    let releaseOtherFiles;
+    const otherFilesGate = new Promise((resolve) => { releaseOtherFiles = resolve; });
+    const fetchFile = async (url) => {
+        const fileName = url.split('/').pop();
+        if (fileName !== 'typing.wav') await otherFilesGate;
+        return {
+            ok: true,
+            async arrayBuffer() { return { fileName }; },
+        };
+    };
+    const audio = new GameAudio({
+        storage: createStorage(),
+        engineFactory: () => createWebAudioEngine({
+            AudioContextClass: FakeAudioContext,
+            fetchFile,
+            baseUrl: '/audio',
+        }),
+    });
+
+    assert.equal(await audio.prepareCue('typing'), true);
+    assert.equal(audio.play('typing'), true);
+    assert.deepEqual(started, ['typing.wav']);
+
+    releaseOtherFiles();
+});
+
 test('fire proximity starts one looping fire track and stops it when the player leaves', async () => {
     const started = [];
     const stopped = [];

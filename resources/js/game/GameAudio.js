@@ -183,6 +183,11 @@ export function createWebAudioEngine({
         preload() {
             return loadAssets();
         },
+        preloadCue(name) {
+            const fileName = getAudioFileName(name);
+            if (!fileName) return false;
+            return loadBuffer(name, fileName);
+        },
         async resume() {
             if (context.state !== 'running') await context.resume();
         },
@@ -265,6 +270,18 @@ export class GameAudio {
             if (!this.engine.preload) return true;
             await this.engine.preload();
             return true;
+        } catch {
+            return false;
+        }
+    }
+
+    async prepareCue(name) {
+        if (!audioCueSet.has(name) || this.effectsMuted) return false;
+        if (!await this.unlock()) return false;
+
+        try {
+            if (!this.engine?.preloadCue) return true;
+            return await this.engine.preloadCue(name);
         } catch {
             return false;
         }

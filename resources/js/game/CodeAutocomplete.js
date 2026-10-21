@@ -158,6 +158,42 @@ export function applyAutocompleteSuggestion(value, context, suggestion) {
     };
 }
 
+export function applyEditorIndentation(value, selectionStart, selectionEnd, outdent = false) {
+    if (!outdent) {
+        const indentation = '    ';
+        const nextValue = value.slice(0, selectionStart) + indentation + value.slice(selectionEnd);
+        const caret = selectionStart + indentation.length;
+
+        return { value: nextValue, selectionStart: caret, selectionEnd: caret };
+    }
+
+    const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+    const indentationLength = value.slice(lineStart).match(/^ {1,4}/)?.[0].length ?? 0;
+    if (indentationLength === 0) return { value, selectionStart, selectionEnd };
+
+    return {
+        value: value.slice(0, lineStart) + value.slice(lineStart + indentationLength),
+        selectionStart: Math.max(lineStart, selectionStart - indentationLength),
+        selectionEnd: Math.max(lineStart, selectionEnd - indentationLength),
+    };
+}
+
+export function applyEditorAutoIndent(value, selectionStart, selectionEnd) {
+    const lineStart = value.lastIndexOf('\n', selectionStart - 1) + 1;
+    const beforeCaret = value.slice(lineStart, selectionStart);
+    if (!beforeCaret.trimEnd().endsWith(':')) return null;
+
+    const currentIndentation = beforeCaret.match(/^[ \t]*/)?.[0] ?? '';
+    const insertion = `\n${currentIndentation}    `;
+    const caret = selectionStart + insertion.length;
+
+    return {
+        value: value.slice(0, selectionStart) + insertion + value.slice(selectionEnd),
+        selectionStart: caret,
+        selectionEnd: caret,
+    };
+}
+
 export default class CodeAutocomplete {
     constructor(editor, list, suggestions, helpPanel = null, referenceList = null) {
         this.editor = editor;
@@ -211,6 +247,36 @@ export default class CodeAutocomplete {
             return;
         }
 
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            const indentation = applyEditorIndentation(
+                this.editor.value,
+                this.editor.selectionStart,
+                this.editor.selectionEnd,
+                event.shiftKey,
+            );
+            this.editor.value = indentation.value;
+            this.editor.setSelectionRange(indentation.selectionStart, indentation.selectionEnd);
+            this.editor.dispatchEvent(new Event('input', { bubbles: true }));
+            this.hide();
+            return;
+        }
+
+        if (event.key === 'Enter' && this.list.hidden) {
+            const indentation = applyEditorAutoIndent(
+                this.editor.value,
+                this.editor.selectionStart,
+                this.editor.selectionEnd,
+            );
+            if (!indentation) return;
+
+            event.preventDefault();
+            this.editor.value = indentation.value;
+            this.editor.setSelectionRange(indentation.selectionStart, indentation.selectionEnd);
+            this.editor.dispatchEvent(new Event('input', { bubbles: true }));
+            return;
+        }
+
         if (this.list.hidden) {
             return;
         }
@@ -224,7 +290,7 @@ export default class CodeAutocomplete {
             return;
         }
 
-        if (event.key === 'Enter' || event.key === 'Tab') {
+        if (event.key === 'Enter') {
             event.preventDefault();
             this.choose(this.activeIndex);
             return;

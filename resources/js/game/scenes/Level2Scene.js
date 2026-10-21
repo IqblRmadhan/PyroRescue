@@ -10,6 +10,7 @@ import {
     level2MapShadowImage,
 } from '../Level2Assets.js';
 import {
+    getMapGridStyle,
     getLevel2FinishVisual,
     isLevel2Walkable,
     level2Map,
@@ -147,8 +148,9 @@ export default class Level2Scene extends Phaser.Scene {
         this.waterLayer = this.add.tileSprite(0, 0, 1600, 1200, 'waterTerrain', 'water')
             .setOrigin(0).setTileScale(0.45).setAlpha(waterLayerAlpha).setDepth(1);
         this.add.image(0, 0, 'level2Map').setOrigin(0).setDepth(2);
-        const isLevel3 = this.sys.settings.key === 'Level3Scene';
-        const grid = this.add.graphics().setDepth(3).lineStyle(isLevel3 ? 1.5 : 1, 0x17382d, isLevel3 ? 0.48 : 0.22);
+        const gridStyle = getMapGridStyle(this.sys.settings.key);
+        const grid = this.add.graphics().setDepth(3)
+            .lineStyle(gridStyle.width, gridStyle.color, gridStyle.alpha);
         for (let x = 0; x <= 1600; x += 40) grid.lineBetween(x, 0, x, 1200);
         for (let y = 0; y <= 1200; y += 40) grid.lineBetween(0, y, 1600, y);
     }

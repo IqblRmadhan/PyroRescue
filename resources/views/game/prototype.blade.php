@@ -207,6 +207,7 @@
                 <div class="panel-content">
                     <label class="sr-only" for="code-editor">Kode Python untuk PyroPad</label>
                     <div class="code-editor-wrapper">
+                        <img class="code-editor-frame" src="{{ asset('assets/ui/pyropad.png') }}" alt="" aria-hidden="true">
                         <div class="code-editor-screen">
                             <div class="code-line-numbers" aria-hidden="true">
                                 <div id="code-line-numbers-content">1.</div>
