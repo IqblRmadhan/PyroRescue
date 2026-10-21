@@ -10,17 +10,17 @@ const guideAnalogies = {
             intro: 'Bayangkan variabel sebagai tangki yang diberi nama agar isinya dapat dikenali.',
             rows: [
                 { label: 'Nama tangki', text: 'isi_air', type: 'question' },
-                { label: 'Nilai yang disimpan', text: '5 unit air', type: 'answer' },
-                { label: 'Hasil', text: 'Nama isi_air sekarang mewakili angka 5.', type: 'yes' },
+                { label: 'Nilai yang disimpan', text: '3 unit air', type: 'answer' },
+                { label: 'Hasil', text: 'Nama isi_air sekarang mewakili angka 3.', type: 'yes' },
             ],
         },
         2: {
-            title: 'Persediaan Tetap Terbawa',
-            intro: 'Seperti membawa tangki di kendaraan: isinya tidak hilang hanya karena berpindah tempat.',
+            title: 'Pertambahan Persediaan',
+            intro: 'Nilai lama dibaca lebih dulu, lalu hasil pertambahan disimpan kembali.',
             rows: [
-                { label: 'Sebelum berangkat', text: 'Tangki berisi 5 unit.', type: 'question' },
-                { label: 'Selama perjalanan', text: 'Tidak perlu mengisi atau mengganti nilainya lagi.', type: 'answer' },
-                { label: 'Saat tiba', text: 'isi_air tetap bernilai 5.', type: 'yes' },
+                { label: 'Nilai lama', text: 'isi_air berisi 3 unit.', type: 'question' },
+                { label: 'Hitung', text: '3 + 2 menghasilkan 5.', type: 'answer' },
+                { label: 'Simpan ulang', text: 'isi_air sekarang bernilai 5.', type: 'yes' },
             ],
         },
         3: {
@@ -29,7 +29,7 @@ const guideAnalogies = {
             rows: [
                 { label: 'Baca', text: 'Lihat nilai yang tersimpan dalam isi_air.', type: 'question' },
                 { label: 'Salin', text: 'Catat nilai yang sama ke air_pos.', type: 'answer' },
-                { label: 'Aturan game', text: 'Setelah diserahkan, tangki pemain dikosongkan.', type: 'yes' },
+                { label: 'Ubah sumber', text: 'Tulis isi_air = 0 untuk mengosongkan tangki.', type: 'yes' },
             ],
         },
         4: {
@@ -100,23 +100,23 @@ function bridge(title, message, previous, problem, next) {
 const challengeBridges = {
     1: {
         1: bridge(
-            'Nilai Tetap Dibawa',
-            'Tangki sudah berisi 5 liter air yang tersimpan dalam isi_air. Saat kendaraan berpindah ke Pos 1, nilainya tetap ikut terbawa. Jadi kita tidak perlu menulis isi_air = 5 lagi.',
-            'Menyimpan 5 unit air ke variabel isi_air.',
-            'Bagaimana menjaga nilai itu selama perjalanan?',
-            'Bawa variabel yang sama ke Pos 1 tanpa mengisinya ulang.',
+            'Tambahkan Persediaan',
+            'Tangki menyimpan 3 unit dalam isi_air. Di Pos 1, tulis isi_air = isi_air + 2. Python membaca 3, menghitung 3 + 2 = 5, lalu menyimpan 5 kembali. Operator lain: - untuk mengurangi, * mengalikan, / membagi, // bagi bulat, dan % sisa bagi. PyroPad Level 1 hanya menerima penjumlahan ini.',
+            'Menyimpan 3 unit air ke variabel isi_air.',
+            'Bagaimana menambah 2 unit tanpa melupakan nilai lama?',
+            'Baca isi_air, tambah 2, lalu simpan hasilnya ke isi_air.',
         ),
         2: bridge(
             'Gunakan Nilai yang Sudah Ada',
-            'Lima unit air masih tersimpan dalam isi_air. Daripada menulis angka 5 lagi saat menyerahkan air, kita dapat membaca nilai yang sudah ada lalu menyalinnya ke air_pos.',
-            'Membawa isi_air tanpa mengubah nilainya.',
-            'Bagaimana Pos 2 menerima nilai yang sama tanpa mengetik ulang angkanya?',
-            'Gunakan air_pos = isi_air untuk membaca dan menyalin nilai.',
+            'Hasil penjumlahan 5 tersimpan dalam isi_air. Di Pos 2, air_pos = isi_air menyalin nilai itu; isi_air tetap 5 karena penyalinan tidak menghapus sumber. Lalu isi_air = 0 mengubah isi tangki. Jalankan kedua baris berurutan.',
+            'Menambah isi_air dari 3 menjadi 5.',
+            'Bagaimana Pos 2 menerima 5 unit sambil mengosongkan tangki?',
+            'Salin ke air_pos, kemudian ubah isi_air menjadi 0.',
         ),
         3: bridge(
             'Pemeriksaan Misi',
             'Air sudah disimpan, dibawa, lalu diserahkan dengan variabel. Sekarang ikuti jalan menuju FINISH agar seluruh rangkaian misi diperiksa.',
-            'Menyerahkan nilai isi_air kepada air_pos.',
+            'Menyalin nilai isi_air ke air_pos lalu mengubah isi_air menjadi 0.',
             'Apakah seluruh urutan pengiriman sudah selesai?',
             'Capai FINISH untuk menjalankan evaluasi akhir.',
         ),
@@ -184,17 +184,18 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
         }
         if (challengeNumber === 1) {
             return state.atPump
-                ? 'Kamu sudah di pompa! Tulis isi_air = 5 untuk menyimpan 5 unit air di tangki.'
+                ? 'Kamu sudah di pompa! Tulis isi_air = 3 untuk menyimpan 3 unit air di tangki.'
                 : 'Pergi ke pompa air di tepi sungai. Gunakan perintah gerak untuk mencapai penandanya.';
         }
         if (challengeNumber === 2) {
+            if (state.water === 5) return 'Penjumlahan selesai. isi_air sekarang 5; lanjutkan pengiriman ke Pos 2.';
             return state.atPost1
-                ? 'Pemeriksaan Pos 1 selesai. Lima unit air tetap tersimpan; lanjutkan pengiriman ke Pos 2.'
-                : 'Pergi ke Pos 1 sambil membawa 5 unit air dari pompa. Capai penandanya untuk melapor.';
+                ? 'Di Pos 1, baca 3 unit dalam isi_air lalu tambah 2: isi_air = isi_air + 2.'
+                : 'Pergi ke Pos 1 sambil membawa 3 unit air dari pompa. Di sana kamu akan menambah 2 unit.';
         }
-        if (state.postWater === level1Challenges[3].requiredWater) return 'Air diterima Pos 2. Lanjutkan evaluasi dengan menuju FINISH.';
+        if (state.hasDeliveredWater) return 'Air diterima Pos 2, tangki kosong. Lanjutkan evaluasi dengan menuju FINISH.';
         return state.atPost2
-            ? 'Kamu tiba di Pos 2. Tulis air_pos = isi_air untuk memasok air dari tangkimu.'
+            ? 'Di Pos 2, salin air_pos = isi_air lalu ubah isi_air = 0. Tulis kedua baris berurutan.'
             : 'Pergi ke Pos 2. Bawa 5 unit air untuk diserahkan kepada penjaga pos.';
     }
 
@@ -263,7 +264,12 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
             const branch = command.fireOut ? 'if' : command.whenFalse === null ? 'tidak ada blok' : 'else';
             messages.push(`api_padam bernilai ${command.fireOut ? 'True' : 'False'}, sehingga ${branch} dijalankan. Status bekantan sekarang "${command.status}". if memeriksa kondisi; assignment di dalam blok menyimpan status.`);
         } else if (command.type === 'transferWater') {
-            messages.push(`air_pos = isi_air menyalin nilai ${water} dari isi_air ke air_pos. Di game, Pos 2 menerima air dan tangkimu dikosongkan. Pengosongan tangki adalah aturan game; assignment Python biasa tidak mengosongkan variabel asal.`);
+            messages.push(`air_pos = isi_air menyalin nilai ${water} ke air_pos. isi_air masih ${water}; assignment Python tidak menghapus variabel asal.`);
+        } else if (command.type === 'addWater') {
+            messages.push(`isi_air = isi_air + ${command.amount} membaca nilai lama ${water}, menghitung ${water} + ${command.amount} = ${water + command.amount}, lalu menyimpan hasilnya kembali ke isi_air.`);
+            water += command.amount;
+        } else if (command.type === 'clearWater') {
+            messages.push(`isi_air = 0 mengganti nilai ${water} menjadi 0. air_pos tetap menyimpan ${water} unit yang diserahkan ke Pos 2.`);
             water = 0;
         } else if (command.type === 'spray') {
             let count = 1;

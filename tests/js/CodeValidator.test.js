@@ -17,7 +17,7 @@ test('isi_air with the required amount completes the variable challenge', () => 
 });
 
 test('isi_air must contain exactly the amount requested by Challenge 1', () => {
-    for (const water of [0, 2, 4, 10]) {
+    for (const water of [0, 2, 4, 5]) {
         const result = validator.validateVariable(`isi_air = ${water}`, 3);
 
         assert.equal(result.syntaxValid, true);
@@ -27,36 +27,38 @@ test('isi_air must contain exactly the amount requested by Challenge 1', () => {
             commands: [{ type: 'setWater', amount: water }],
         });
     }
+    assert.equal(validator.validateVariable('isi_air = 10', 3).syntaxValid, false);
 });
 
-test('Challenge 2 only travels to Pos 1 without reassigning water', () => {
-    const movement = validator.validateVariable('atas(2)\nkanan(8)\nbawah(1)', 5, 2);
-    assert.equal(movement.syntaxValid, true);
-    assert.equal(movement.conceptValid, true);
-    assert.ok(movement.actions.commands.every(command => command.type === 'move'));
-    for (const amount of [3, 5]) {
-        const result = validator.validateVariable('isi_air = ' + amount, 5, 2);
-        assert.equal(result.actions, null);
-        assert.match(result.message, /Tidak perlu mengubah/);
+test('Challenge 2 adds two units to the saved water at Pos 1', () => {
+    const result = validator.validateVariable('atas(2)\nkanan(8)\nbawah(1)\nisi_air = isi_air + 2', 5, 2);
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.conceptValid, true);
+    assert.equal(result.missionSuccess, true);
+    assert.deepEqual(result.actions.commands.at(-1), { type: 'addWater', amount: 2 });
+    for (const code of ['isi_air = 5', 'isi_air = isi_air + 3', 'isi_air += 2']) {
+        assert.equal(validator.validateVariable(code, 5, 2).syntaxValid, false, code);
     }
 });
 
-test('Challenge 3 transfers the existing isi_air value to Pos 2', () => {
+test('Challenge 3 copies the saved tank value and then clears the tank', () => {
     const result = validator.validateVariable(
-        'kanan(6)\natas(7)\nkanan(4)\nair_pos = isi_air',
+        'kanan(6)\natas(7)\nkanan(4)\nair_pos = isi_air\nisi_air = 0',
         5,
         3,
     );
 
     assert.equal(result.syntaxValid, true);
     assert.equal(result.missionSuccess, true);
-    assert.deepEqual(result.actions.commands.at(-1), { type: 'transferWater' });
+    assert.deepEqual(result.actions.commands.slice(-2), [{ type: 'transferWater' }, { type: 'clearWater' }]);
 
     for (const invalidCode of [
         'isi_air = 5',
         'air_pos = 5',
+        'air_pos = isi_air',
         'air_pos_2 = isi_air',
         'air_pos = isi_air\nair_pos = isi_air',
+        'isi_air = 0\nair_pos = isi_air',
     ]) {
         const invalidResult = validator.validateVariable(invalidCode, 5, 3);
         assert.equal(invalidResult.syntaxValid, false, invalidCode);
@@ -189,13 +191,16 @@ test('Level 1 rejects split identifiers, split numbers, and unexpected indentati
     assert.equal(validator.validateVariable('air_pos = isi_ air', 5, 3).syntaxValid, false);
 });
 
-test('Level 1 action limit includes assignment and transfer in either order', () => {
-    for (const [assignment, challenge] of [['isi_air = 3', 1], ['air_pos = isi_air', 3]]) {
-        for (const steps of [119, 120]) {
+test('Level 1 action limit includes assignments and transfer', () => {
+    for (const [assignment, challenge, allowedSteps] of [
+        ['isi_air = 3', 1, 119],
+        ['air_pos = isi_air\nisi_air = 0', 3, 118],
+    ]) {
+        for (const steps of [allowedSteps, allowedSteps + 1]) {
             for (const code of [`kanan(${steps})\n${assignment}`, `${assignment}\nkanan(${steps})`]) {
                 const result = validator.validateVariable(code, 3, challenge);
-                assert.equal(result.syntaxValid, steps === 119, code);
-                if (steps === 119) assert.equal(result.actions.commands.length, 120);
+                assert.equal(result.syntaxValid, steps === allowedSteps, code);
+                if (steps === allowedSteps) assert.equal(result.actions.commands.length, 120);
                 else assert.equal(result.actions, null);
             }
         }

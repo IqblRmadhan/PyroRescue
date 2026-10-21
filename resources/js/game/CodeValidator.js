@@ -138,7 +138,9 @@ export default class CodeValidator {
         };
         const commands = [];
         let hasWaterAssignment = false;
+        let hasAddition = false;
         let hasPostAssignment = false;
+        let hasClearedWater = false;
         let water = 0;
 
         for (const line of lines) {
@@ -151,13 +153,31 @@ export default class CodeValidator {
                 return result;
             }
             const waterAssignment = line.match(/^isi_air[ \t]*=[ \t]*(0|[1-9][0-9]*)$/);
+            const waterAddition = line.match(/^isi_air[ \t]*=[ \t]*isi_air[ \t]*\+[ \t]*(0|[1-9][0-9]*)$/);
             const movementMatch = line.match(/^(atas|bawah|kanan|kiri)[ \t]*\([ \t]*(0|[1-9][0-9]*)[ \t]*\)$/);
 
+            if (waterAddition) {
+                if (challengeNumber !== 2 || hasAddition || Number(waterAddition[1]) !== 2) {
+                    result.message = 'Di Pos 1, tambahkan tepat 2 unit dengan isi_air = isi_air + 2.';
+                    return result;
+                }
+                hasAddition = true;
+                commands.push({ type: 'addWater', amount: 2 });
+                continue;
+            }
+
             if (waterAssignment) {
+                if (challengeNumber === 3 && Number(waterAssignment[1]) === 0 && hasPostAssignment && !hasClearedWater) {
+                    hasClearedWater = true;
+                    commands.push({ type: 'clearWater' });
+                    continue;
+                }
                 if (challengeNumber >= 2) {
                     result.message = challengeNumber === 4
                         ? 'Pada evaluasi, gunakan perintah gerak menuju FINISH.'
-                        : 'Air sudah diisi di pompa. Tidak perlu mengubah isi_air lagi; lanjutkan ke pos tujuan.';
+                        : challengeNumber === 2
+                            ? 'Gunakan isi_air = isi_air + 2 agar nilai lama dibaca sebelum ditambah.'
+                            : 'Salin nilai ke air_pos dahulu, lalu kosongkan tangki dengan isi_air = 0.';
                     return result;
                 }
 
@@ -165,6 +185,10 @@ export default class CodeValidator {
 
                 if (!Number.isSafeInteger(water)) {
                     result.message = 'Jumlah air terlalu besar. Gunakan bilangan bulat yang lebih kecil.';
+                    return result;
+                }
+                if (water > 5) {
+                    result.message = 'Kapasitas tangki Level 1 maksimal 5 unit air.';
                     return result;
                 }
 
@@ -179,7 +203,7 @@ export default class CodeValidator {
                     return result;
                 }
 
-                if (hasPostAssignment) {
+                if (hasPostAssignment || hasClearedWater) {
                     result.message = 'Cukup tulis air_pos = isi_air satu kali.';
                     return result;
                 }
@@ -211,25 +235,37 @@ export default class CodeValidator {
             }
 
             result.message = challengeNumber === 4
-                ? 'Pada evaluasi, gunakan perintah gerak untuk mencapai FINISH.' : challengeNumber === 3
-                ? 'Gunakan hanya perintah gerak dan air_pos = isi_air.'
-                : 'Gunakan hanya perintah gerak dan isi_air = angka.';
+                ? 'Pada evaluasi, gunakan perintah gerak untuk mencapai FINISH.'
+                : challengeNumber === 3
+                    ? 'Gunakan perintah gerak, lalu air_pos = isi_air dan isi_air = 0 di Pos 2.'
+                    : challengeNumber === 2
+                        ? 'Gunakan perintah gerak, lalu isi_air = isi_air + 2 di Pos 1.'
+                        : 'Gunakan hanya perintah gerak dan isi_air = angka.';
+            return result;
+        }
+
+        if (challengeNumber === 3 && hasPostAssignment !== hasClearedWater) {
+            result.message = 'Di Pos 2, tulis air_pos = isi_air lalu isi_air = 0 dalam satu Run.';
             return result;
         }
 
         result.syntaxValid = true;
         result.conceptValid = true;
         result.missionSuccess = challengeNumber === 4 ? commands.length > 0 : challengeNumber === 3
-            ? hasPostAssignment
-            : hasWaterAssignment && water === requiredWater;
+            ? hasPostAssignment && hasClearedWater
+            : challengeNumber === 2 ? hasAddition : hasWaterAssignment && water === requiredWater;
         result.actions = { water, commands };
 
         if (challengeNumber === 4) {
             result.message = 'Kode valid. Ikuti jalan sampai petak FINISH.';
         } else if (challengeNumber === 3) {
             result.message = hasPostAssignment
-                ? 'Kode valid. Persediaan isi_air akan diberikan ke Pos 2.'
-                : 'Kode valid. Bergeraklah ke Pos 2, lalu tulis air_pos = isi_air.';
+                ? 'Kode valid. Nilai isi_air disalin ke air_pos, lalu isi_air dikosongkan.'
+                : 'Kode valid. Bergeraklah ke Pos 2, lalu salin air_pos = isi_air dan kosongkan isi_air = 0.';
+        } else if (challengeNumber === 2) {
+            result.message = hasAddition
+                ? 'Kode valid. Tambahkan 2 unit ke nilai isi_air yang sudah tersimpan.'
+                : 'Kode valid. Di Pos 1, tulis isi_air = isi_air + 2.';
         } else if (!hasWaterAssignment) {
             result.message = 'Kode valid. Pemadam menjalankan urutan gerakanmu.';
         } else if (result.missionSuccess) {

@@ -10,6 +10,11 @@ test('instruction code stays inline instead of becoming separate full-width bloc
     ]);
 });
 
+test('Pos 1 arithmetic assignment stays together as one readable code snippet', () => {
+    const parts = tokenizeGuideMessage('Di Pos 1 tulis isi_air = isi_air + 2 untuk menambah air.');
+    assert.deepEqual(parts.filter(part => part.type === 'code').map(part => part.text), ['isi_air = isi_air + 2']);
+});
+
 test('Level 1 challenges receive field analogies and marker scaffolds', () => {
     const variable = getGuidePresentation({
         levelNumber: 1, challengeNumber: 1, state: { atPump: true, water: 0 },
@@ -17,11 +22,11 @@ test('Level 1 challenges receive field analogies and marker scaffolds', () => {
     assert.match(variable.analogy.title, /Tangki/);
     assert.equal(variable.code, 'isi_air = ...');
 
-    const persistence = getGuidePresentation({
-        levelNumber: 1, challengeNumber: 2, state: { atPost1: true, water: 5 },
+    const addition = getGuidePresentation({
+        levelNumber: 1, challengeNumber: 2, state: { atPost1: true, water: 3 },
     });
-    assert.match(persistence.analogy.title, /Persediaan/);
-    assert.equal(persistence.code, '');
+    assert.match(addition.analogy.title, /Pertambahan/);
+    assert.equal(addition.code, 'isi_air = isi_air + ...');
 });
 
 test('Level 2 loop challenges explain repetition with boxed steps', () => {

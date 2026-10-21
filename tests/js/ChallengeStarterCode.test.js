@@ -10,8 +10,7 @@ test('evaluations never provide scaffolds even at coding markers', () => {
 test('training scaffolds appear at coding locations, with blanks for player answers', () => {
     for (const level of [1,2,3]) assert.equal(starter(level,1,{}),null);
     for (const challenge of [1,2,3]) {
-        if (challenge === 2) assert.equal(starter(1,challenge,{atLocation:true}),null);
-        else assert.match(starter(1,challenge,{atLocation:true}).code,/\.\.\./);
+        assert.match(starter(1,challenge,{atLocation:true}).code,/\.\.\./);
         assert.match(starter(2,challenge,{atFire:true}).code,/\.\.\./);
     }
     for (const [challenge,steps] of [[1,[1,2,3,4]],[2,[1,2,3,4]],[3,[1,3,4]]]) {

@@ -3,8 +3,8 @@
 ## Splash / halaman awal
 
 - `welcome.blade.php` menampilkan logo dan karakter pemadam PyroRescue,
-  pengenalan game, materi, serta ajakan memulai petualangan. Navbar mengarah
-  ke Tentang dan Materi; tombol Masuk menuju portal login.
+  pengenalan game, profil pengembang Iqbal dan Indra di bagian Tentang, materi,
+  serta ajakan memulai petualangan. Tombol Masuk menuju portal login.
 - `splash.css` membatasi gaya pada kelas splash agar tampilan game tidak berubah.
 - `PageLoader.js` menampilkan karakter pemadam berlari selama perpindahan
   halaman dari splash dan portal login/register. Aset animasi memakai frame
@@ -18,13 +18,14 @@
 
 ## Menu, progres, dan pencapaian
 
-- Navbar menu mengarah ke Petualangan, Progres, Pencapaian, dan Modul.
+- Navbar menu mengarah ke Petualangan dan Modul. Tautan profil pemain membuka
+  progres, pencapaian, identitas akun, serta pengaturan audio dan tampilan.
   Carousel tetap memakai ketiga gambar pulau semula dan tombol panahnya;
   navigasi angka di bawah carousel dihapus.
 - Akun baru memulai dari Level 1. Level berikutnya terbuka setelah seluruh
   challenge dan evaluasi level sebelumnya selesai, tanpa syarat nilai minimum.
   Tamu tidak memiliki kunci prasyarat.
-- `PlayerProgress` menghitung status level, bintang, dan lima pencapaian dari
+- `PlayerProgress` menghitung status level, bintang, dan sembilan pencapaian dari
   `user_level_progress`. Kolom `completed_challenges` menyimpan checkpoint
   terakhir; `score` menyimpan nilai terbaik dan `stars` menyimpan rating 0–3
   untuk kualitas badge, bukan syarat kelulusan.
@@ -46,18 +47,18 @@ perintah. Pada layar kecil, map dan PyroPad disusun vertikal.
 Pemandu tampil sebagai dialog di bagian bawah layar, dengan karakter besar di
 kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuka.
 
-- `LearningPanel.js` membaca materi dari `Level*Challenges.js` untuk ketiga level. Pada Level 1: membuat variabel,
-  menjaga nilai selama perjalanan, lalu memakai nilainya.
+- `LearningPanel.js` membaca materi dari `Level*Challenges.js` untuk ketiga level. Pada Level 1: menyimpan 3 unit,
+  menambah 2 unit di Pos 1, lalu menyalin 5 unit dan mengosongkan tangki di Pos 2.
 - Setelah Run gerakan selesai tepat di penanda challenge Level 1, kode gerakan
-  diganti satu kali dengan `isi_air = ...` atau `air_pos = ...` sesuai challenge.
+  diganti satu kali dengan `isi_air = ...`, `isi_air = isi_air + ...`, atau dua baris `air_pos = ...` dan `isi_air = ...` sesuai challenge.
   Melewati penanda biru atau merah tidak mengganti kode. Isian juga tidak menimpa
   kode baru yang sedang diketik pemain selama gerakan berjalan.
 - Kamus perintah tersedia di popup Baca Materi. Klik tombol
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
-- `air_pos = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
-  adalah aturan game, bukan perilaku assignment Python.
+- `air_pos = isi_air` menyalin nilai tanpa menghapus nilai asal. `isi_air = 0`
+  secara eksplisit mengosongkan tangki setelah penyalinan.
 - Tombol Hint biru, Ulangi merah, dan Suara hijau berada di kanan atas peta.
   Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
 - `MissionGuide.js` menentukan arahan menurut posisi dan keadaan misi terkini:
@@ -187,7 +188,7 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   memindahkan pemain ke petak jalan serta menolak petak yang tidak dapat diinjak.
   Teleport ke petak biasa tidak membuka dialog perjalanan. Jika pemain mendarat
   tepat pada titik interaksi aktif, game tetap memberikan respons titik tersebut;
-  Pos 1 Level 1 juga menyelesaikan Challenge 2 karena tugasnya cukup dikunjungi.
+  Pos 1 Level 1 hanya menyelesaikan Challenge 2 setelah kode pertambahan yang benar dijalankan.
 - Kabut menutup jembatan utara dari persimpangan selama keputusan jalur C1
   belum diselesaikan. Gerakan biasa tertahan; program keputusan yang benar
   dapat melewatinya dan menghilangkan kabut secara otomatis. Kabut digambar
@@ -488,4 +489,4 @@ Kisi-kisi PyroPad: ChallengeStarterCode.js menyediakan kerangka dengan ... untuk
 
 Penyempurnaan arahan: checklist submisi diberi nomor, papan MISI dihapus (marker merah tetap ada), grid Level 3 memakai garis 1,5 px beropasitas 0,48. Arahan perjalanan hanya menjelaskan lokasi dan tujuan; instruksi serta kerangka kode muncul setelah tiba pada penanda pengerjaan. Potongan kode dialog memakai blok pre/code dengan textContent. Pengisian pompa hanya menganimasikan tambahan air, bukan seluruh isi akhir. Habitat terakhir dipindah ke pulau berpondok: penanda (29,5), checkpoint (29,6).
 
-Level 1 terbaru: isi 5 unit sekali di pompa. Pos 1 cukup dikunjungi dengan air tetap 5; tidak ada assignment ulang. Pos 2 menerima air melalui air_pos = isi_air.
+Level 1 terbaru: isi 3 unit di pompa. Di Pos 1 tambahkan 2 dengan `isi_air = isi_air + 2`. Di Pos 2 salin 5 unit melalui `air_pos = isi_air`, lalu ubah `isi_air = 0` dalam satu Run. Nilai akhir hanya mengatur kualitas lencana; seluruh challenge dan evaluasi yang selesai membuka level berikutnya.

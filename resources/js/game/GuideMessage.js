@@ -27,7 +27,7 @@ function appendAnalogy(root, analogy) {
 }
 
 export function tokenizeGuideMessage(message) {
-    const pattern = /(?:\b(?:isi_air|air_pos|jumlah_semprot|status_bekantan)\s*=\s*(?:\d+|isi_air|"[^"]*"))|(?:\b(?:if|else|for)\b)|(?:\b[a-z_]+\([^\n()]*\))|(?:\b(?:api_padam|hewan_terjebak|jalur_aman|isi_air|kebutuhan_air)\s*(?:>=|<=|==|>|<)\s*\w+)/g;
+    const pattern = /(?:\b(?:isi_air|air_pos|jumlah_semprot|status_bekantan)\s*=\s*(?:\d+|isi_air(?:\s*\+\s*\d+)?|"[^"]*"))|(?:\b(?:if|else|for)\b)|(?:\b[a-z_]+\([^\n()]*\))|(?:\b(?:api_padam|hewan_terjebak|jalur_aman|isi_air|kebutuhan_air)\s*(?:>=|<=|==|>|<)\s*\w+)/g;
     const parts = [];
     let offset = 0;
     for (const match of String(message).matchAll(pattern)) {

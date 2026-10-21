@@ -34,6 +34,9 @@
     background: #050b0f;
 }
 
+.level-story.story-entering { animation: story-enter 650ms ease-out both; }
+@keyframes story-enter { from { opacity: 0; } to { opacity: 1; } }
+
 .level-story[hidden],
 .story-slide[hidden] {
     display: none;
@@ -305,6 +308,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+    .level-story.story-entering { animation: none; }
     .story-slide.is-active,
     .story-next__arrow,
     .story-is-typing .story-slide.is-active .story-dialogue p::after {

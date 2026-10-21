@@ -1,6 +1,7 @@
 /* Bagian pendamping menu; ukuran dan posisi pulau carousel tetap dari app.css. */
 .main-menu-page { min-width: 0; overflow-x: clip; }
 .main-menu-page .adventure-topbar__links { gap: clamp(12px, 2vw, 28px); }
+.menu-profile-lock { font-size: .8em; }
 .main-menu-page .adventure-level__image-wrap { position: relative; }
 .adventure-level__lock-icon { position: absolute; z-index: 2; top: 50%; left: 50%; display: grid; place-items: center; width: clamp(64px, 8vw, 94px); aspect-ratio: 1; color: #ffda87; border: 3px solid #f8d78d; border-radius: 50%; background: #103344e8; box-shadow: 0 0 0 7px #0a2938aa, 0 15px 24px #061b2ab8, inset 0 0 18px #ffd37b26; transform: translate(-50%, -50%); pointer-events: none; }
 .adventure-level__lock-icon svg { width: 52%; height: 52%; filter: drop-shadow(0 2px 2px #061b2a); }
@@ -10,7 +11,8 @@
 .menu-music-toggle__icon { display: inline-block; color: #ffd573; font: 24px/1 Georgia, serif; }
 .menu-music-toggle.is-playing .menu-music-toggle__icon { animation: menu-note-bounce 800ms ease-in-out infinite alternate; }
 @keyframes menu-note-bounce { to { transform: translateY(-3px) rotate(7deg); } }
-.menu-player { display: flex; align-items: center; gap: 9px; }
+.menu-player { display: flex; align-items: center; gap: 9px; color: #f5f1df; text-decoration: none; }
+.menu-player:hover .menu-player__avatar { border-color: #ffdb8d; background: #315d65; }
 .menu-player__avatar { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid #a7baca77; border-radius: 10px; background: #27445a; color: #ffdc83; font-weight: 800; }
 .menu-player small { display: block; margin-top: 3px; color: #91afbd; font-size: 10px; }
 .menu-flash { margin: 0; padding: 16px 24px; background: #fff0c9; color: #5d4224; text-align: center; }
@@ -90,6 +92,7 @@
 .menu-guest-banner__eyebrow { display: block; margin-bottom: 7px; color: #ffd37b; font-size: 10px; font-weight: 800; letter-spacing: .16em; }
 .menu-guest-banner p, .menu-resources p { max-width: 710px; margin: 12px 0 0; color: #c1d3d9; font-size: 13px; line-height: 1.8; }
 .menu-resources { margin-top: 55px; }
+.main-menu-page .menu-resources { margin-top: 0; }
 .menu-resources h2 { font-size: 26px; }
 .menu-button { display: inline-flex; justify-content: center; flex-shrink: 0; padding: 13px 20px; color: #152f42; border: 1px solid #ffe2a6; border-radius: 7px; background: #f4c56b; box-shadow: 0 3px 0 #95652e; font-size: 13px; font-weight: 800; text-decoration: none; }
 .menu-button:hover { background: #ffdb91; transform: translateY(-2px); }
@@ -149,7 +152,8 @@
     .main-menu-page .menu-music-toggle [data-menu-music-label] { display: none; }
 }
 @media (max-width: 440px) {
-    .main-menu-page .menu-player { display: none; }
+    .main-menu-page .menu-player { display: flex; }
+    .main-menu-page .menu-player > span:last-child { display: none; }
     .main-menu-page .adventure-account { gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -62,14 +62,14 @@ test('autocomplete can show every supported Level 1 command', () => {
     assert.equal(suggestions[0].parameter, 'angka');
 });
 
-test('Challenge 3 autocomplete offers variable transfer instead of a new water value', () => {
+test('Challenge 3 autocomplete offers both copying and clearing the tank', () => {
     const suggestions = createLevel1Suggestions(5, 3);
 
-    assert.equal(suggestions.length, 5);
-    assert.equal(suggestions.at(-1).value, 'air_pos = isi_air');
-    assert.equal(suggestions.at(-1).kind, 'Assignment variabel');
-    assert.equal(suggestions.at(-1).example, 'air_pos = isi_air');
-    assert.equal(suggestions.some(({ value }) => value.startsWith('isi_air =')), false);
+    assert.equal(suggestions.length, 6);
+    assert.equal(suggestions.at(-2).value, 'air_pos = isi_air');
+    assert.equal(suggestions.at(-2).kind, 'Assignment variabel');
+    assert.equal(suggestions.at(-2).example, 'air_pos = isi_air');
+    assert.equal(suggestions.at(-1).value, 'isi_air = 0');
 });
 
 test('every movement keeps its direction, example and editable step number', () => {

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, starsForFinish, badgeForScore, canFinishLevel } from '../../resources/js/game/GameScore.js';
+import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForScore, starsForFinish, badgeForScore, canFinishLevel, getLevelCompletionMessage } from '../../resources/js/game/GameScore.js';
 
 test('wrong code and blocked movement reduce score without dropping below zero', () => {
     assert.equal(deductScore(100, CODE_ERROR_PENALTY), 95);
@@ -38,4 +38,10 @@ test('finish gives stars only after evaluation, at the exact percentage threshol
     assert.equal(starsForFinish(85, false), 2);
     assert.equal(starsForFinish(70, false), 1);
     assert.equal(starsForFinish(69, false), 0);
+});
+
+test('completed level feedback opens the next level even with zero stars', () => {
+    assert.match(getLevelCompletionMessage(1, 0), /Level 2 terbuka/);
+    assert.match(getLevelCompletionMessage(1, 0), /Tuntas/);
+    assert.match(getLevelCompletionMessage(2, 100), /Level 3 terbuka/);
 });

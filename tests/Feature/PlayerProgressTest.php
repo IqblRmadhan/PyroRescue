@@ -46,16 +46,17 @@ class PlayerProgressTest extends TestCase
         }
         $response->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('totalStars', 6)->assertJsonPath('earnedAchievements', 6);
         $this->assertSame(2, UserLevelProgress::where('user_id', $user->id)->where('status', 'completed')->count());
-        $this->get('/main-menu')->assertOk()->assertSee('<strong>6</strong><span>/ 9</span>', false)->assertDontSee('Selesaikan semua misi di Level 2');
+        $this->get('/main-menu')->assertOk()->assertSee(route('profile'), false);
+        $this->get('/profile')->assertOk()->assertSee('<strong>6</strong> / 9 bintang', false);
         $this->post('/logout');
         $this->post('/login', ['email' => $user->email, 'password' => 'password'])->assertRedirect(route('main-menu'));
-        $this->get('/main-menu')->assertOk()->assertSee('<strong>6</strong><span>/ 9</span>', false);
+        $this->get('/profile')->assertOk()->assertSee('<strong>6</strong> / 9 bintang', false);
         $this->actingAs(User::factory()->create());
         $this->get('/game/2')->assertRedirect(route('main-menu'));
-        $this->get('/main-menu')->assertOk()->assertSee('<strong>0</strong><span>/ 9</span>', false);
+        $this->get('/profile')->assertOk()->assertSee('<strong>0</strong> / 9 bintang', false);
     }
 
-    public function test_finish_requires_all_challenges_and_one_star_to_unlock_next_level(): void
+    public function test_finish_requires_all_challenges_but_no_minimum_score_to_unlock_next_level(): void
     {
         $this->actingAs(User::factory()->create());
         foreach ([1, 2, 3] as $challenge) {
@@ -64,10 +65,10 @@ class PlayerProgressTest extends TestCase
         $this->get('/game/2')->assertRedirect(route('main-menu'));
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4])->assertUnprocessable();
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 69])
-            ->assertOk()->assertJsonPath('levels.2.unlocked', false)->assertJsonPath('levels.1.stars', 0)
+            ->assertOk()->assertJsonPath('levels.2.unlocked', true)->assertJsonPath('levels.1.stars', 0)
             ->assertJsonPath('levels.1.completed', true)->assertJsonPath('achievements.2.tier', 'Tuntas');
         $this->get('/game/1')->assertOk()->assertSee('data-resume-challenge="1"', false);
-        $this->get('/game/2')->assertRedirect(route('main-menu'));
+        $this->get('/game/2')->assertOk();
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 70])
             ->assertOk()->assertJsonPath('levels.2.unlocked', true)->assertJsonPath('levels.1.stars', 1);
         $this->get('/game/2')->assertOk();
@@ -79,7 +80,7 @@ class PlayerProgressTest extends TestCase
             $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => $challenge])->assertOk();
         }
         $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => 4, 'score' => 69])
-            ->assertOk()->assertJsonPath('levels.3.unlocked', false)->assertJsonPath('levels.2.completed', true);
+            ->assertOk()->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('levels.2.completed', true);
         $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => 4, 'score' => 70])
             ->assertOk()->assertJsonPath('levels.3.unlocked', true)->assertJsonPath('levels.2.stars', 1);
         $this->postJson('/progress/challenge', ['level' => 1, 'challenge' => 4, 'score' => 10])
@@ -95,7 +96,7 @@ class PlayerProgressTest extends TestCase
     public function test_guests_have_no_level_locks_and_never_write_progress(): void
     {
         $this->post('/login/guest');
-        $this->get('/main-menu')->assertOk()->assertDontSee('Selesaikan semua misi di Level 1')->assertDontSee('Selesaikan semua misi di Level 2')->assertSee('Mode Bebas');
+        $this->get('/main-menu')->assertOk()->assertDontSee('Selesaikan semua misi di Level 1')->assertDontSee('Selesaikan semua misi di Level 2')->assertSee('Mode tamu');
         $this->get('/game/2')->assertOk()->assertSee('data-progress-url=""', false);
         $this->postJson('/progress/challenge', ['level' => 2, 'challenge' => 4])->assertOk()->assertJsonPath('saved', false);
         $this->assertDatabaseCount('user_level_progress', 0);

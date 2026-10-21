@@ -26,7 +26,7 @@ import {
     GuideDialogue,
 } from './MissionGuide.js';
 import { Level1Tutorial, level1SequenceStarterCode } from './Level1Tutorial.js';
-import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForFinish, badgeForScore, canFinishLevel } from './GameScore.js';
+import { CODE_ERROR_PENALTY, COLLISION_PENALTY, deductScore, starsForFinish, badgeForScore, canFinishLevel, getLevelCompletionMessage } from './GameScore.js';
 
 // 1. Ambil elemen halaman dan siapkan data challenge yang sedang dimainkan.
 const validator = new CodeValidator();
@@ -52,7 +52,8 @@ const guideProgress = document.getElementById('guide-progress');
 const guideNextLabel = document.getElementById('guide-next-label');
 const guideCopy = feedback.querySelector('.mission-guide__copy');
 const guideStage = feedback.querySelector('.mission-guide__stage');
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const reducedMotion = { get matches() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    || document.documentElement.classList.contains('pref-reduced-motion'); } };
 let guideTransitioning = false;
 const guideDialogue = new GuideDialogue();
 const hintText = document.getElementById('hint-text');
@@ -392,7 +393,8 @@ function isTargetComplete(targetKey, state) {
     }
 
     return targetKey === 'transfer'
-        && state.postWater === challengeDefinitions[currentChallenge].requiredWater;
+        && state.postWater === challengeDefinitions[currentChallenge].requiredWater
+        && state.hasDeliveredWater;
 }
 
 // Dipanggil setelah Run gerakan selesai, bukan saat melewati penanda di tengah jalan.
@@ -531,17 +533,14 @@ function configureChallenge({ updateScene = true } = {}) {
 function showLevelResult(missionComplete = true) {
     const badge = badgeForScore(levelNumber, score);
     const stars = starsForFinish(score, missionComplete);
-    resultCanAdvance = missionComplete && stars >= 1;
+    resultCanAdvance = missionComplete;
     levelCompleted = true;
     hideFeedback();
     resultEyebrow.textContent = missionComplete ? 'MISI SELESAI' : 'FINISH TERCAPAI';
     resultTitle.textContent = missionComplete ? `Level ${levelNumber} berhasil!` : 'Misi belum tuntas';
-    resultSubtitle.textContent = !missionComplete
-        ? 'Kamu tiba di FINISH, tetapi masih ada challenge atau evaluasi yang belum selesai. Maksimal 2 bintang; main lagi untuk membuka level berikutnya.'
-        : isLevel3 ? 'Tiga api padam, tiga bekantan di pos, dan evaluasi lulus. PyroRescue selesai!'
-            : !resultCanAdvance ? 'Semua challenge selesai, tetapi nilaimu belum mencapai 70%. Main lagi untuk membuka level berikutnya.'
-            : levelNumber < 3 ? `Semua challenge dan evaluasi selesai. Level ${levelNumber + 1} terbuka!`
-                : 'Semua challenge dan evaluasi selesai. Penyelamatan tuntas!';
+    resultSubtitle.textContent = missionComplete
+        ? getLevelCompletionMessage(levelNumber, score)
+        : 'Masih ada tugas yang perlu diselesaikan sebelum level selesai.';
     resultRating.textContent = badge.title;
     document.getElementById('result-tier').textContent = badge.tier;
     document.getElementById('result-score').textContent = `${score}%`;
@@ -729,7 +728,9 @@ async function runCode() {
                 completedChallenges.add(currentChallenge);
                 if (progressSync) void progressSync.save(currentChallenge);
             }
-            showLevelResult(false);
+            const reminder = 'FINISH belum dapat menyelesaikan level. Selesaikan challenge dan evaluasi aktif, lalu kembali ke FINISH.';
+            guideDialogue.start([{ message: reminder, state: 'instruction' }]);
+            renderGuide(true);
             return;
         }
         if (outcome.missionSuccess) scene.markChallengeComplete();

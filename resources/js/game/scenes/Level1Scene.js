@@ -42,7 +42,7 @@ export default class Level1Scene extends Phaser.Scene {
     }) {
         super('Level1Scene');
         this.challengeNumber = 1;
-        this.requiredWater = 5;
+        this.requiredWater = 3;
         this.postWater = 0;
         this.hasDeliveredWater = false;
         this.assetBaseUrl = assetBaseUrl;
@@ -387,7 +387,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     setChallenge(challengeNumber) {
         this.challengeNumber = challengeNumber;
-        this.requiredWater = 5;
+        this.requiredWater = challengeNumber === 1 ? 3 : 5;
         for (const [number, marker] of Object.entries(this.actionMarkers)) {
             const activeChallenge = this.hasDeliveredWater ? 4 : challengeNumber;
             const markerType = Number(number) === 1 ? 'pump' : 'action';
@@ -435,11 +435,31 @@ export default class Level1Scene extends Phaser.Scene {
                 continue;
             }
 
+            if (command.type === 'addWater') {
+                const result = this.addWaterAtPost(command.amount);
+                if (!result.success) return { status: 'error', missionSuccess: false, message: result.message };
+                onCommandComplete(command);
+                continue;
+            }
+
             if (command.type === 'transferWater') {
                 const result = await this.transferWaterToPost();
                 if (!result.success) {
                     return { status: 'error', missionSuccess: false, message: result.message };
                 }
+                onCommandComplete(command);
+                continue;
+            }
+
+            if (command.type === 'clearWater') {
+                if (this.challengeNumber !== 3 || !this.postWater
+                    || !isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action)) {
+                    return { status: 'error', missionSuccess: false, message: 'Salin air_pos = isi_air di Pos 2 sebelum mengosongkan tangki.' };
+                }
+                this.setWater(0);
+                this.hasDeliveredWater = true;
+                this.finishTile.setAlpha(1);
+                this.publishState();
                 onCommandComplete(command);
             }
         }
@@ -457,11 +477,11 @@ export default class Level1Scene extends Phaser.Scene {
             return {
                 status: 'success',
                 missionSuccess: true,
-                message: `Pemeriksaan Pos 1 selesai. Persediaan tetap ${this.water} unit. Antar ke Pos 2.`,
+                message: `Pertambahan berhasil! isi_air sekarang ${this.water} unit. Antar ke Pos 2.`,
             };
         }
 
-        if (this.challengeNumber === 3 && this.postWater === this.requiredWater) {
+        if (this.challengeNumber === 3 && this.hasDeliveredWater && this.postWater === this.requiredWater) {
             return {
                 status: 'success',
                 missionSuccess: true,
@@ -491,13 +511,25 @@ export default class Level1Scene extends Phaser.Scene {
 
         if (this.challengeNumber === 2) {
             if (isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
-                return `Kamu tiba di Pos 1 dengan ${this.water} unit. Lanjutkan ke Pos 2.`;
+                return `Kamu tiba di Pos 1 dengan ${this.water} unit. Tambah 2 dengan isi_air = isi_air + 2.`;
             }
 
             return `Bawa ${this.water} unit air ke penanda Pos 1 untuk melapor.`;
         }
 
-        return 'Pergi ke Pos 2 dan berikan seluruh persediaan dengan air_pos = isi_air.';
+        return 'Pergi ke Pos 2. Salin air_pos = isi_air, lalu ubah isi_air = 0.';
+    }
+
+    addWaterAtPost(amount) {
+        if (this.challengeNumber !== 2 || !isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
+            return { success: false, message: 'Berdirilah di penanda Pos 1 untuk menambah persediaan.' };
+        }
+        if (this.water !== 3 || amount !== 2) {
+            return { success: false, message: 'Pos 1 menerima tangki berisi 3 unit, lalu menambah 2 unit menjadi 5.' };
+        }
+        this.setWater(this.water + amount);
+        this.onAudio('water');
+        return { success: true };
     }
 
     async fillWater(amount) {
@@ -552,10 +584,7 @@ export default class Level1Scene extends Phaser.Scene {
             'npc-post2-idle',
         );
         this.postWater = this.water;
-        this.water = 0;
         this.onAudio('water');
-        this.hasDeliveredWater = true;
-        this.finishTile.setAlpha(1);
         this.publishState();
         this.setPlayerIdle(previousDirection);
 
@@ -635,6 +664,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.onStateChange({
             water: this.water ?? 0,
             postWater: this.postWater ?? 0,
+            hasDeliveredWater: this.hasDeliveredWater,
             requiredWater: this.requiredWater,
             challengeNumber: this.challengeNumber,
             atPump: isOnTile(this.playerColumn, this.playerRow, level1Map.waterAction),
@@ -711,7 +741,7 @@ export default class Level1Scene extends Phaser.Scene {
 
         const checkpoints = {
             1: { ...level1Map.start, water: 0 },
-            2: { ...level1Map.waterAction, direction: 'north', water: 5 },
+            2: { ...level1Map.waterAction, direction: 'north', water: 3 },
             3: { ...level1Map.post1Action, direction: 'east', water: 5 },
             4: { ...level1Map.post2Action, direction: 'east', water: 0, postWater: 5 },
         };

@@ -4,6 +4,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MainMenuController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\ProgressController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Level3CheckpointController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,10 @@ Route::view('/game-test', 'game.prototype')->name('game.test');
 
 Route::middleware('player')->group(function () {
     Route::get('/main-menu', [MainMenuController::class, 'index'])->name('main-menu');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::patch('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/download-modul', function () {
         return response()->download(
             public_path('assets/modules/Modul-PyroRescue.pdf'),

@@ -17,20 +17,19 @@
 .auth-page .auth-guest { min-height: 48px; }
 .auth-page .auth-scene__mascot { top: 50%; margin-top: -98px; }
 .auth-page .auth-scene__light { top: 50%; margin-top: -125px; }
-.auth-scene__create-account { position: absolute; z-index: 4; top: calc(50% + 145px); left: 50%; display: inline-flex; align-items: center; justify-content: center; gap: 11px; min-width: 168px; min-height: 45px; padding: 10px 23px; color: #fff9e8; border: 2px solid #f7d588; border-radius: 24px; background: #0c3745cf; font-size: 14px; font-weight: 900; text-decoration: none; white-space: nowrap; box-shadow: 0 6px 18px #061f2d99; transform: translateX(-50%); transition: background .2s ease, box-shadow .2s ease; }
-.auth-scene__create-account:hover { background: #20695a; box-shadow: 0 8px 22px #061f2dbb; }
-.auth-scene__create-account:focus-visible { outline: 3px solid #f9c967; outline-offset: 4px; }
-.auth-scene__create-account[hidden] { display: none; }
+.auth-scene__switch { position: absolute; z-index: 4; top: calc(50% + 145px); left: 50%; display: inline-flex; align-items: center; justify-content: center; gap: 11px; min-width: 168px; min-height: 45px; padding: 10px 23px; color: #fff9e8; border: 2px solid #f7d588; border-radius: 24px; background: #0c3745cf; font-size: 14px; font-weight: 900; text-decoration: none; white-space: nowrap; box-shadow: 0 6px 18px #061f2d99; transform: translateX(-50%); transition: background .2s ease, box-shadow .2s ease; }
+.auth-scene__switch:hover { background: #20695a; box-shadow: 0 8px 22px #061f2dbb; }
+.auth-scene__switch:focus-visible { outline: 3px solid #f9c967; outline-offset: 4px; }
 @media (max-width: 760px) {
     .auth-page .auth-stage { min-height: 870px; }
     .auth-page .auth-stage[data-mode="login"] { min-height: 825px; }
     .auth-page .auth-scene__mascot { top: 22px; margin-top: 0; left: 50%; }
     .auth-page .auth-scene__light { top: 10px; margin-top: 0; left: 50%; }
-    .auth-scene__create-account { top: auto; bottom: 10px; min-height: 38px; padding: 7px 17px; font-size: 12px; }
+    .auth-scene__switch { top: auto; bottom: 10px; min-height: 38px; padding: 7px 17px; font-size: 12px; }
     .auth-page .auth-form-content h1 { font-size: clamp(28px, 6vw, 35px); }
 }
 @media (prefers-reduced-motion: reduce) {
-    .auth-scene__create-account { transition: none; }
+    .auth-scene__switch { transition: none; }
 }
 @media (max-width: 440px) {
     .auth-page .auth-stage { min-height: 970px; }

@@ -18,7 +18,18 @@ export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) 
         parameterDescription: 'Jumlah petak, berupa bilangan bulat minimal 1.',
     }));
 
-    if (challengeNumber === 4 || challengeNumber === 2) return movementSuggestions;
+    if (challengeNumber === 4) return movementSuggestions;
+
+    if (challengeNumber === 2) {
+        const value = 'isi_air = isi_air + 2';
+        return [...movementSuggestions, {
+            label: 'isi_air = isi_air + 2', value,
+            selectionStart: value.length - 1, selectionLength: 1,
+            kind: 'Pertambahan variabel',
+            description: 'Di Pos 1, baca 3 unit yang tersimpan dalam isi_air, tambahkan 2, lalu simpan hasil 5 ke nama yang sama.',
+            example: value, parameter: '2', parameterDescription: 'Tambahan dua unit di Pos 1.',
+        }];
+    }
 
     if (challengeNumber === 3) {
         return [
@@ -29,10 +40,17 @@ export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) 
                 selectionStart: 17,
                 selectionLength: 0,
                 kind: 'Assignment variabel',
-                description: 'Menyimpan nilai isi_air ke air_pos. Di penanda Pos 2, game menyerahkan air lalu mengosongkan tangki. Dalam Python biasa, assignment ini tidak mengubah isi_air.',
+                description: 'Menyalin nilai 5 dari isi_air ke air_pos. Nilai asal tetap 5 sampai kamu menjalankan isi_air = 0 pada baris berikutnya.',
                 example: 'air_pos = isi_air',
                 parameter: 'isi_air',
                 parameterDescription: 'Variabel berisi jumlah air yang sedang dibawa pemain.',
+            },
+            {
+                label: 'isi_air = 0', value: 'isi_air = 0',
+                selectionStart: 10, selectionLength: 1,
+                kind: 'Mengubah variabel',
+                description: 'Setelah air_pos = isi_air, simpan 0 ke isi_air untuk mengosongkan tangki.',
+                example: 'isi_air = 0', parameter: '0', parameterDescription: 'Tangki kosong setelah penyerahan.',
             },
         ];
     }

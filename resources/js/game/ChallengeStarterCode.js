@@ -4,9 +4,10 @@ export function getChallengeStarterCode(level, challenge, state = {}) {
     let code;
     let key = `${level}:${challenge}`;
     if (level === 1) {
-        if (challenge === 2) return null;
         if (!state.atLocation) return null;
-        code = challenge === 3 ? 'air_pos = ...' : 'isi_air = ...';
+        code = challenge === 1 ? 'isi_air = ...'
+            : challenge === 2 ? 'isi_air = isi_air + ...'
+                : 'air_pos = ...\nisi_air = ...';
     } else if (level === 2) {
         if (state.atPump) {
             key += ':pump';

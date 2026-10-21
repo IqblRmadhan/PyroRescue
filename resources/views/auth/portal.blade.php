@@ -94,7 +94,7 @@
             <section class="auth-scene" aria-label="Ilustrasi hutan dan rawa Kalimantan">
                 <div class="auth-scene__light" aria-hidden="true"></div>
                 <div class="auth-scene__mascot" aria-hidden="true"></div>
-                <a class="auth-scene__create-account" href="{{ route('register') }}" data-auth-switch @if ($initialMode === 'register') hidden @endif>Buat Akun <span aria-hidden="true">→</span></a>
+                <a class="auth-scene__switch" href="{{ $initialMode === 'register' ? route('login') : route('register') }}" data-auth-switch><span data-auth-scene-label>{{ $initialMode === 'register' ? 'Masuk ke Akun' : 'Buat Akun' }}</span> <span aria-hidden="true">→</span></a>
             </section>
         </div>
     </main>
@@ -109,14 +109,15 @@
                 login: stage.querySelector('.auth-form-panel--login'),
                 register: stage.querySelector('.auth-form-panel--register'),
             };
-            const createAccountLink = stage.querySelector('.auth-scene__create-account');
+            const sceneSwitchLink = stage.querySelector('.auth-scene__switch');
             let focusTimer;
 
             function showMode(mode, updateHistory = true) {
                 if (mode === stage.dataset.mode) return;
 
                 stage.dataset.mode = mode;
-                createAccountLink.hidden = mode !== 'login';
+                sceneSwitchLink.href = mode === 'login' ? registerUrl : loginUrl;
+                sceneSwitchLink.querySelector('[data-auth-scene-label]').textContent = mode === 'login' ? 'Buat Akun' : 'Masuk ke Akun';
                 for (const name of ['login', 'register']) {
                     const inactive = name !== mode;
                     panels[name].inert = inactive;

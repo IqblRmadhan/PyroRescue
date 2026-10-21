@@ -26,6 +26,12 @@ export function badgeForScore(levelNumber, score) {
     };
 }
 
+export function getLevelCompletionMessage(levelNumber, score) {
+    const tier = badgeForScore(levelNumber, score).tier;
+    const outcome = levelNumber < 3 ? `Level ${levelNumber + 1} terbuka!` : 'Penyelamatan tuntas!';
+    return `Semua challenge dan evaluasi selesai. ${outcome} Lencana ${tier} diraih; nilai hanya menentukan kualitas lencana.`;
+}
+
 export function canFinishLevel(completedChallenges, currentChallenge, outcome, levelNumber = 1) {
     const completedTraining = [1, 2, 3].every(number => completedChallenges.has(number)
         || (currentChallenge === number && outcome.missionSuccess));

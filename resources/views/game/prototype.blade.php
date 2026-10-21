@@ -199,7 +199,7 @@
                             @if($isLevel2)
                             <li><span class="target-check" aria-hidden="true"></span>Pergi ke penanda C1</li>
                             @endif
-                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>{{ $isLevel3 ? 'Ikuti penanda submisi aktif' : ($isLevel2 ? 'Padamkan api' : 'Ambil 3 air') }}</li>
+                            <li id="target-water"><span class="target-check" aria-hidden="true"></span>{{ $isLevel3 ? 'Ikuti penanda submisi aktif' : ($isLevel2 ? 'Padamkan api' : 'Ambil 3 unit air') }}</li>
                         </ul>
                     </div>
                 </section>
@@ -326,18 +326,18 @@
                     <p>Di pompa, <code>isi_air = 6</code> mengisi tangki untuk enam semprotan. Setiap <code>semprot()</code> memakai satu unit. Gunakan <code>for</code> dan <code>range()</code> untuk mengulang aksi sesuai kebutuhan api.</p>
                     @else
                     <h2>Variabel &amp; persediaan air</h2>
-                    <p>Variabel adalah nama untuk menyimpan nilai. Bayangkan label pada tangki: <code>isi_air</code> menyimpan jumlah air yang dibawa pemadam.</p>
+                    <p>Variabel adalah nama untuk menyimpan nilai. Di pompa, <code>isi_air = 3</code> mengisi tangki. Di Pos 1, <code>isi_air = isi_air + 2</code> membaca 3, menambah 2, lalu menyimpan 5. Di Pos 2, salin nilainya sebelum mengubah tangki menjadi 0.</p>
                     @endif
                     <ol class="learning-steps" aria-label="Tahapan materi">
                         <li data-lesson-step="1">1. {{ $isLevel3 ? 'if / else' : ($isLevel2 ? 'Semprot' : 'Simpan') }}</li>
-                        <li data-lesson-step="2">2. {{ $isLevel3 ? 'Perbandingan' : ($isLevel2 ? 'Ulangi' : 'Ubah') }}</li>
+                        <li data-lesson-step="2">2. {{ $isLevel3 ? 'Perbandingan' : ($isLevel2 ? 'Ulangi' : 'Tambah') }}</li>
                         <li data-lesson-step="3">3. {{ $isLevel3 ? 'if bersarang' : ($isLevel2 ? 'Variabel + for' : 'Gunakan') }}</li>
                     </ol>
                     <h3 id="lesson-title"></h3>
                     <code id="lesson-code" class="lesson-code"></code>
                     <p id="lesson-explanation"></p>
                     <p id="lesson-effect" class="lesson-effect"></p>
-                    <p class="learning-note">@if($isLevel3) <code>True</code> dan <code>False</code> ditulis tanpa tanda petik. Header <code>if</code> dan <code>else</code> diakhiri <code>:</code>; bloknya menjorok dengan indentasi konsisten. Bandingkan <code>isi_air &gt;= kebutuhan_air</code> untuk memeriksa kecukupan air. Gunakan percabangan bersarang untuk memeriksa satwa, api, dan jalur sebelum <code>selamatkan_hewan()</code>. Kondisi <code>api_padam</code>, <code>jalur_aman</code>, <code>hewan_terjebak</code>, dan <code>kebutuhan_air</code> disediakan game; kamu tidak dapat mengubahnya lewat assignment. @elseif($isLevel2) Tanda <code>=</code> menyimpan nilai air; berkurangnya air saat <code>semprot()</code> adalah aturan game. Akhiri header <code>for</code> dengan <code>:</code> dan beri empat spasi sebelum <code>semprot()</code>. @else Tanda <code>=</code> berarti menyimpan nilai di sebelah kanan ke nama di sebelah kiri. Ini bukan tanda perbandingan. @endif</p>
+                    <p class="learning-note">@if($isLevel3) <code>True</code> dan <code>False</code> ditulis tanpa tanda petik. Header <code>if</code> dan <code>else</code> diakhiri <code>:</code>; bloknya menjorok dengan indentasi konsisten. Bandingkan <code>isi_air &gt;= kebutuhan_air</code> untuk memeriksa kecukupan air. Gunakan percabangan bersarang untuk memeriksa satwa, api, dan jalur sebelum <code>selamatkan_hewan()</code>. Kondisi <code>api_padam</code>, <code>jalur_aman</code>, <code>hewan_terjebak</code>, dan <code>kebutuhan_air</code> disediakan game; kamu tidak dapat mengubahnya lewat assignment. @elseif($isLevel2) Tanda <code>=</code> menyimpan nilai air; berkurangnya air saat <code>semprot()</code> adalah aturan game. Akhiri header <code>for</code> dengan <code>:</code> dan beri empat spasi sebelum <code>semprot()</code>. @else Tanda <code>=</code> menyimpan nilai. Operator bilangan Python: <code>+</code> tambah, <code>-</code> kurang, <code>*</code> kali, <code>/</code> bagi, <code>//</code> bagi bulat, <code>%</code> sisa bagi. PyroPad Level 1 menerima <code>+</code> sesuai misi Pos 1; operator lain adalah bekal materi. @endif</p>
                 </section>
 
                 <section class="command-reference learning-card" aria-labelledby="command-reference-title">
@@ -397,7 +397,7 @@
             <ul class="level3-result-summary"><li>Titik api dipadamkan: 3/3</li><li>Bekantan diselamatkan: 3/3</li><li>Challenge selesai: 3/3</li><li>Evaluasi akhir: LULUS</li></ul>
             @endif
             <details class="level-result__learning"><summary>Bekal yang kamu kuasai</summary>
-            <p id="result-recap" class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> bersama operator perbandingan dan percabangan bersarang untuk menyelamatkan satwa. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan <code>isi_air = 5</code> sekali di pompa, menjaga persediaan saat melapor di Pos 1, lalu memakai nilainya di Pos 2. @endif</p>
+            <p id="result-recap" class="level-result__recap">@if($isLevel3) Kamu menggabungkan variabel, <code>for/range</code>, dan <code>if/else</code> bersama operator perbandingan dan percabangan bersarang untuk menyelamatkan satwa. Tiga level PyroRescue selesai! @elseif($isLevel2) Kamu memakai <code>semprot()</code>, mengulang aksi dengan <code>for/range</code>, lalu menentukan iterasi melalui <code>jumlah_semprot</code>. @else Kamu menyimpan 3 unit di <code>isi_air</code>, menambah 2 unit di Pos 1, menyalin 5 unit ke <code>air_pos</code>, lalu mengubah <code>isi_air</code> menjadi 0. @endif</p>
             </details>
             <p id="progress-sync-status" class="progress-sync-status" role="status">{{ ($saveProgress ?? false) ? 'Hasil akan tersimpan di akunmu.' : 'Mode tamu: hasil dan pencapaian tidak disimpan.' }}</p>
             <button id="progress-sync-retry" class="progress-sync-retry" type="button" hidden>Coba simpan lagi</button>

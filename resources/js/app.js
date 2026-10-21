@@ -3,11 +3,15 @@ import '../css/page-loader.css';
 import '../css/auth-refresh.css';
 import '../css/menu-dashboard.css';
 import '../css/level1-tutorial.css';
+import '../css/profile.css';
 import { initPageLoader, waitForStoryImages } from './PageLoader.js';
 import { initMenuMusic } from './game/MenuMusic.js';
+import { initPlayerPreferences } from './game/PlayerPreferences.js';
+
+initPlayerPreferences();
 
 const isGamePage = Boolean(document.getElementById('game-container'));
-const pageLoader = document.body.matches('.splash-page, .auth-page, .main-menu-page') || isGamePage
+const pageLoader = document.body.matches('.splash-page, .auth-page, .main-menu-page, .profile-page') || isGamePage
     ? initPageLoader() : null;
 if (document.body.matches('.auth-page')) {
     import('./AuthPassword.js').then(({ initAuthPassword }) => initAuthPassword());
@@ -71,6 +75,7 @@ if (isGamePage) {
     if (storyElement) {
         Promise.all([import('./game/StoryIntro.js'), waitForStoryImages(storyElement)])
             .then(([{ default: StoryIntro }]) => {
+                storyElement.classList.add('story-entering');
                 pageLoader.hide();
                 storyElement.removeAttribute('inert');
                 new StoryIntro(storyElement, { onComplete: startGame });

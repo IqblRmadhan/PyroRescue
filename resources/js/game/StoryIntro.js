@@ -130,7 +130,8 @@ export default class StoryIntro {
             return { paragraph, text };
         });
         this.typewriter = new StoryTypewriter({
-            reducedMotion: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false,
+            reducedMotion: (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false)
+                || document.documentElement.classList.contains('pref-reduced-motion'),
             onCharacter: () => {
                 if (this.audioReady) gameAudio.play('typing');
             },
@@ -259,6 +260,7 @@ export default class StoryIntro {
         window.removeEventListener('keydown', this.handleKeydown);
         document.body.classList.remove('story-is-open');
         this.root.classList.remove('story-is-typing');
+        this.root.classList.remove('story-entering');
         this.root.hidden = true;
         this.gamePage?.removeAttribute('inert');
         this.skipButton.blur();

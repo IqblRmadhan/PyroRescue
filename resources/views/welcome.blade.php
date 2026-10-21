@@ -46,6 +46,7 @@
             <div><span class="splash-kicker">SELAMAT DATANG, PENJAGA HUTAN</span><h2 id="about-title">Kode yang kamu tulis.<br>Aksi yang kamu lihat.</h2></div>
             <div><p>PyroRescue mengajakmu belajar dasar Python melalui misi penyelamatan hutan. Kamu mengarahkan pemadam dengan kode, mengumpulkan air, dan menghadapi titik api.</p><p>Pelajari materinya, coba solusimu, lalu lihat hasilnya langsung di peta. Belum berhasil? Baca feedback dan coba lagi.</p></div>
         </section>
+        <section class="splash-developers splash-container" aria-labelledby="developer-title"><div class="splash-section-head"><div><span class="splash-kicker">DI BALIK PETUALANGAN</span><h2 id="developer-title">Kenali Pengembang</h2></div><p>PyroRescue dibuat oleh Iqbal dan Indra untuk mengajak pemain belajar Python lewat misi hutan Kalimantan.</p></div><div class="splash-developers__grid"><article><span class="splash-developers__avatar" aria-hidden="true">I</span><div><span>TIM PENGEMBANG</span><h3>Iqbal</h3><p>Pengembang PyroRescue</p></div></article><article><span class="splash-developers__avatar" aria-hidden="true">I</span><div><span>TIM PENGEMBANG</span><h3>Indra</h3><p>Pengembang PyroRescue</p></div></article></div></section>
         <section class="splash-lessons splash-container" id="materi" aria-labelledby="lessons-title">
             <div class="splash-section-head"><div><span class="splash-kicker">BEKAL UNTUK MENYELAMATKAN HUTAN</span><h2 id="lessons-title">Mulai sederhana. Terus berkembang.</h2></div><p>Kenali konsep Python<br>melalui tantangan di dalam game.</p></div>
             <div class="splash-lessons__grid">
@@ -56,6 +57,6 @@
         </section>
         <section class="splash-invite splash-container" aria-labelledby="invite-title"><div><span class="splash-kicker">GILIRANMU MENGAMBIL PERAN</span><h2 id="invite-title">Hutan menunggu pahlawan berikutnya.</h2><p>Mulai dari satu misi, satu baris kode, dan rasa ingin tahu.</p></div><a class="splash-button" href="{{ route('login') }}" data-no-page-loader>Mulai Petualangan →</a></section>
     </main>
-    <footer class="splash-footer splash-container"><a href="#beranda"><img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="155" height="44"></a><p>Belajar Python. Selamatkan hutan Kalimantan.</p><a href="#beranda">Kembali ke atas ↑</a></footer>
+    <footer class="site-footer"><div><a href="#beranda"><img src="{{ asset('assets/ui/logo-pyrorescue.png') }}" alt="PyroRescue" width="165" height="48"></a><p>Belajar Python sambil menjaga hutan Kalimantan.</p></div><nav aria-label="Navigasi footer"><a href="#tentang">Tentang</a><a href="#developer-title">Pengembang</a><a href="#materi">Materi</a><a href="#beranda">Kembali ke atas ↑</a></nav><small>© {{ date('Y') }} PyroRescue · Iqbal &amp; Indra</small></footer>
 </body>
 </html>

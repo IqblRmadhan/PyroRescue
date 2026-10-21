@@ -2,6 +2,12 @@
 
 Contoh dibuat sesederhana mungkin.
 
+## Implementasi aktif
+
+Menu petualangan berada di `/main-menu`. Profil pemain berada di `/profile` dan menampilkan identitas, progres, pencapaian, serta pengaturan. `ProfileController` menerima perubahan nama/email dan kata sandi untuk akun masuk; penghapusan akun memerlukan kata sandi saat ini dan konfirmasi `HAPUS`. Tautan profil bagi tamu mengarah ke pendaftaran; akses langsung ke `/profile` juga dialihkan ke `/register`. Tamu tidak dapat mengubah atau menghapus akun. Preferensi audio dan tampilan disimpan di browser; progres dan pencapaian akun dihitung dari `PlayerProgress` di database. Route permainan aktif adalah `/game/1`, `/game/2`, dan `/game/3`; progres challenge disimpan melalui `/progress/challenge`.
+
+Contoh di bawah adalah rancangan awal, bukan daftar route aktif.
+
 ## `routes/web.php`
 
 ```php

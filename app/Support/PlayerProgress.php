@@ -24,11 +24,11 @@ class PlayerProgress
                 'score' => ($record?->score ?? 0) ?: ($completed && $record->stars === 3 ? 100 : 0),
                 'playable' => true,
             ];
-            $previousCompleted = $previousCompleted && $completed && $levels[$number]['stars'] >= 1;
+            $previousCompleted = $previousCompleted && $completed;
         }
         $achievements = [
             ['key' => 'water', 'title' => 'Pasokan Pertama', 'description' => 'Ambil air di pompa pada Challenge 1 Level 1.', 'earned' => $levels[1]['challenges'] >= 1],
-            ['key' => 'post', 'title' => 'Pasokan Pos 1', 'description' => 'Simpan tepat 5 unit air pada Challenge 2 Level 1.', 'earned' => $levels[1]['challenges'] >= 2],
+            ['key' => 'post', 'title' => 'Pasokan Pos 1', 'description' => 'Tambahkan 2 unit pada persediaan di Pos 1.', 'earned' => $levels[1]['challenges'] >= 2],
             ['key' => 'supply', 'title' => 'Ahli Variabel', 'description' => 'Selesaikan pengiriman air dan capai FINISH Level 1.', 'earned' => $levels[1]['completed']],
             ['key' => 'spark', 'title' => 'Api Pertama Padam', 'description' => 'Padamkan titik api pertama di Level 2.', 'earned' => $levels[2]['challenges'] >= 1],
             ['key' => 'loop', 'title' => 'Aksi Berulang', 'description' => 'Padamkan api Challenge 2 Level 2 menggunakan perulangan.', 'earned' => $levels[2]['challenges'] >= 2],

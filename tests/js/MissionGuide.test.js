@@ -27,12 +27,13 @@ test('challenge conversations connect the previous technique to the next concept
 test('Level 1 guidance follows the current location and delivered water', () => {
     const instruction = (challengeNumber, state) => getGuideInstruction({ levelNumber: 1, challengeNumber, state });
     assert.match(instruction(1, {}), /Pergi ke pompa/);
-    assert.match(instruction(1, { atPump: true }), /isi_air = 5/);
+    assert.match(instruction(1, { atPump: true }), /isi_air = 3/);
     assert.match(instruction(2, { water: 3 }), /Pergi ke Pos 1/);
-    assert.match(instruction(2, { water: 5, atPost1: true }), /Pemeriksaan Pos 1 selesai/);
+    assert.match(instruction(2, { water: 3, atPost1: true }), /isi_air = isi_air \+ 2/);
+    assert.match(instruction(2, { water: 5, atPost1: true }), /Penjumlahan selesai/);
     assert.match(instruction(3, { water: 5 }), /Pergi ke Pos 2/);
     assert.match(instruction(3, { water: 5, atPost2: true }), /air_pos = isi_air/);
-    assert.match(instruction(3, { water: 0, postWater: 5 }), /FINISH/);
+    assert.match(instruction(3, { water: 0, postWater: 5, hasDeliveredWater: true }), /FINISH/);
     // Visiting a marker earlier must not imply the player is still there.
     assert.match(instruction(2, { water: 3, atPost1: false }), /Pergi ke Pos 1/);
 });
@@ -66,19 +67,20 @@ test('completed movement does not create popup feedback', () => {
     assert.deepEqual(messages, []);
 });
 
-test('assignment explains replacement and transfer distinguishes Python from the game rule', () => {
+test('addition and transfer explain value changes in source order', () => {
     const messages = explainExecutedCommands({
         levelNumber: 1, challengeNumber: 2, initialWater: 3,
-        commands: [{ type: 'setWater', amount: 5 }],
+        commands: [{ type: 'addWater', amount: 2 }],
     });
-    assert.match(messages[0], /isi_air = 5/);
-    assert.match(messages[0], /mengganti nilai 3 menjadi 5/);
+    assert.match(messages[0], /isi_air = isi_air \+ 2/);
+    assert.match(messages[0], /3 \+ 2 = 5/);
     const transfer = explainExecutedCommands({
         levelNumber: 1, challengeNumber: 3, initialWater: 5,
-        commands: [{ type: 'transferWater' }],
+        commands: [{ type: 'transferWater' }, { type: 'clearWater' }],
     });
     assert.match(transfer[0], /menyalin nilai 5/);
-    assert.match(transfer[0], /aturan game/);
+    assert.match(transfer[0], /isi_air masih 5/);
+    assert.match(transfer[1], /isi_air = 0/);
 });
 
 test('loop feedback uses the submitted code and actual executed spray count', () => {

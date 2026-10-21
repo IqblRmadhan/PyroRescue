@@ -122,7 +122,7 @@ completed
 Nilai hanya menentukan kualitas badge: Tuntas di bawah 70%, Perunggu 70–84%,
 Perak 85–99%, dan Emas 100%. Seluruh challenge dan evaluasi yang selesai membuka
 level berikutnya tanpa syarat bintang. Hasil terbaik tidak turun saat level diulang.
-Pencapaian menu dihitung dari progres tersebut. Mode tamu tidak menulis progres.
+Pencapaian pada profil pemain dihitung dari progres tersebut. Mode tamu tidak menulis progres.
 
 ## `challenge_attempts`
 
