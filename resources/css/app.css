@@ -1257,45 +1257,109 @@
     grid-column: 2;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
     min-width: 0;
-    padding: 7px 10px;
-    border: 2px solid #90b9a4;
-    border-radius: 8px;
-    background: #102e3ded;
-    box-shadow: 0 3px 0 #061b26;
+    min-height: 50px;
+    padding: 5px 8px 6px 6px;
+    border: 3px solid #173c43;
+    border-radius: 10px;
+    background:
+        linear-gradient(180deg, #315d5d 0 2px, transparent 2px),
+        linear-gradient(135deg, #173d43f5, #0b2732f5 58%, #071c28f5);
+    box-shadow:
+        inset 0 0 0 2px #78a993,
+        inset 0 -5px 0 #061b26,
+        0 3px 0 #05151d,
+        0 5px 10px #0006;
 }
 .game-hud > .hud-counter:first-child { grid-column: 1; justify-self: start; }
-.hud-health__icon { color: #ff6969; font-size: 26px; line-height: 1; text-shadow: 0 2px #8b252c; }
+.hud-health__badge {
+    position: relative;
+    display: grid;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 2px solid #ffc5aa;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #ef6757 0 46%, #a82e35 48% 100%);
+    box-shadow: inset 0 0 0 2px #681e29, 0 2px 0 #061822, 0 0 8px #ff665955;
+}
+.hud-health__badge::after {
+    position: absolute;
+    inset: 3px;
+    border: 1px dashed #ffd9bd99;
+    border-radius: inherit;
+    content: '';
+}
+.hud-health__icon {
+    position: relative;
+    z-index: 1;
+    color: #fff6e9;
+    font-size: 22px;
+    line-height: 1;
+    text-shadow: 0 2px #7c1e2c;
+}
+.hud-health__body {
+    display: grid;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+}
+.hud-health__label {
+    color: #d9eee0;
+    font: 800 8px/1 'Trebuchet MS', sans-serif;
+    letter-spacing: 1.2px;
+    text-shadow: 1px 1px #061820;
+}
 .hud-health__track {
     position: relative;
     flex: 1;
-    height: 23px;
+    height: 22px;
     overflow: hidden;
     border: 2px solid #071e28;
-    border-radius: 4px;
-    background: #381d28;
-    box-shadow: inset 0 2px 4px #0008;
+    border-radius: 5px;
+    background: linear-gradient(#351923, #1d111a);
+    box-shadow: inset 0 2px 5px #000b, 0 1px 0 #6a8e7d;
+}
+.hud-health__track::after {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: repeating-linear-gradient(90deg, transparent 0 19px, #06192355 19px 21px);
+    content: '';
 }
 .hud-health__fill {
     display: block;
     width: 100%;
     height: 100%;
-    background: linear-gradient(#8dea86 0 25%, #42b95e 25% 75%, #248941 75%);
+    background:
+        linear-gradient(180deg, #c1ffb5 0 18%, transparent 18% 28%),
+        linear-gradient(180deg, #63dc74 0 68%, #24934b 68% 100%);
+    box-shadow: inset 0 -2px #176c3a, inset -2px 0 #113c2a88;
     transition: width 350ms ease-out;
 }
-.hud-health__track.is-warning .hud-health__fill { background: linear-gradient(#ffe390 0 25%, #edaa39 25% 75%, #b97823 75%); }
-.hud-health__track.is-critical .hud-health__fill { background: linear-gradient(#ff9b8a 0 25%, #e5574c 25% 75%, #a52e38 75%); }
+.hud-health__track.is-warning .hud-health__fill {
+    background: linear-gradient(180deg, #fff0a5 0 18%, transparent 18% 28%), linear-gradient(180deg, #f4c449 0 68%, #b97823 68% 100%);
+    box-shadow: inset 0 -2px #895619, inset -2px 0 #5d3c1788;
+}
+.hud-health__track.is-critical .hud-health__fill {
+    background: linear-gradient(180deg, #ffc0aa 0 18%, transparent 18% 28%), linear-gradient(180deg, #f06457 0 68%, #a52e38 68% 100%);
+    box-shadow: inset 0 -2px #79202b, inset -2px 0 #561a2388;
+}
 .hud-health__value {
     position: absolute;
     inset: 0;
+    z-index: 3;
     display: grid;
     place-content: center;
     grid-auto-flow: column;
     gap: 4px;
-    color: #fff;
-    font: 800 12px/1 'Trebuchet MS', sans-serif;
-    text-shadow: 1px 1px 2px #071e28, -1px -1px 2px #071e28;
+    color: #fffdf1;
+    font: 900 12px/1 'Trebuchet MS', sans-serif;
+    letter-spacing: .2px;
+    text-shadow: 1px 1px 0 #071e28, -1px -1px 0 #071e28, 0 2px 2px #000b;
 }
 .game-damage-overlay {
     position: absolute;
@@ -1707,12 +1771,144 @@
     gap: 8px;
 }
 
+.game-settings,
 .game-hint {
     position: relative;
     flex: 0 0 62px;
     width: 62px;
     height: 62px;
 }
+
+.game-settings-menu {
+    position: absolute;
+    z-index: 4;
+    top: calc(100% + 12px);
+    right: 0;
+    display: grid;
+    box-sizing: border-box;
+    width: min(290px, calc(100vw - 24px));
+    overflow: visible;
+    padding: 10px;
+    border: 3px solid #163744;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #173e49, #091f2d 72%);
+    box-shadow: inset 0 0 0 2px #75a99b, 0 6px 0 #061722, 0 12px 25px #020c13aa;
+}
+
+.game-settings-menu[hidden] { display: none; }
+
+.game-settings-menu::before {
+    position: absolute;
+    top: -9px;
+    right: 20px;
+    width: 16px;
+    height: 16px;
+    border-top: 3px solid #163744;
+    border-left: 3px solid #163744;
+    background: #173e49;
+    content: '';
+    transform: rotate(45deg);
+}
+
+.game-settings-menu__heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    margin: 1px 3px 9px;
+    padding: 6px 6px 10px;
+    color: #f7d985;
+    border-bottom: 1px solid #6c9688;
+    font-family: 'PixelFont', 'Trebuchet MS', sans-serif;
+    font-size: 16px;
+    letter-spacing: .06em;
+}
+
+.game-settings-menu__heading small {
+    color: #a9c7bd;
+    font: 700 11px/1 'Trebuchet MS', sans-serif;
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.game-settings-menu__item {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    min-height: 48px;
+    padding: 8px 10px;
+    color: #eaf7ef;
+    border: 0;
+    border-bottom: 1px solid #315764;
+    background: transparent;
+    font: 800 14px/1.2 'Trebuchet MS', sans-serif;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.game-settings-menu__item > span {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border-radius: 7px;
+    background: #244f59;
+    font-family: 'Segoe UI Emoji', sans-serif;
+    font-size: 19px;
+}
+
+.game-settings-menu .hint-button__icon {
+    font-size: 19px;
+    line-height: 1;
+}
+
+.game-prototype .game-settings-menu__item > .hint-button__label {
+    font-size: 14px;
+    text-shadow: none;
+}
+
+.game-settings-menu__item > strong { white-space: nowrap; }
+
+.game-settings-menu__item[aria-pressed]::after {
+    padding: 4px 7px;
+    color: #c8ffd5;
+    border: 1px solid #5aa774;
+    border-radius: 8px;
+    background: #1d6542;
+    content: 'AKTIF';
+    font-size: 10px;
+    letter-spacing: .05em;
+}
+
+.game-settings-menu__item[aria-pressed='false']::after {
+    color: #ffc5bd;
+    border-color: #9b5252;
+    background: #6c3035;
+    content: 'MATI';
+}
+
+.game-settings-menu__item:hover:not(:disabled),
+.game-settings-menu__item:focus-visible {
+    color: #fff4c2;
+    background: #2b5963;
+    outline: 0;
+}
+
+.game-settings-menu__item:disabled {
+    cursor: wait;
+    opacity: .5;
+}
+
+.game-settings-menu__item--exit {
+    margin-top: 4px;
+    color: #ffd9d1;
+    border: 1px solid #8f4a49;
+    border-radius: 7px;
+    background: #612f36;
+}
+
+.game-settings-menu__item--exit > span { background: #813a3e; }
 
 .hint-button {
     display: grid;
@@ -1732,9 +1928,36 @@
 }
 
 .hint-button--help {
-    color: #eaffff;
-    background: radial-gradient(circle at 38% 30%, #72e6e3, #278fa4 58%, #16516c);
-    box-shadow: inset 0 0 0 3px #b8ffff, 0 5px 0 #173b50, 0 8px 18px #08171980;
+    color: #fff2d6;
+    border-color: #4a2c17;
+    background: radial-gradient(circle at 36% 27%, #b8834f, #8a5a2e 58%, #5d3719 100%);
+    box-shadow: inset 0 0 0 3px #d9b184, 0 5px 0 #40250f, 0 8px 18px #08171980;
+}
+
+.hint-button--settings {
+    color: #fff2d6;
+    border-color: #4a2c17;
+    border-radius: 16px;
+    background: radial-gradient(circle at 36% 27%, #a97a4d, #7f5229 58%, #4f2f15 100%);
+    box-shadow: inset 0 0 0 3px #cfab80, 0 5px 0 #3c220e, 0 8px 18px #08171980;
+}
+
+.hint-button--settings .hint-button__label { text-shadow: 1px 1px #40250f; }
+
+.game-map-controls > .game-hint .hint-button__icon,
+.game-settings > .hint-button .hint-button__icon {
+    font-size: 30px;
+}
+
+.game-map-controls > .game-hint .hint-button__label,
+.game-settings > .hint-button .hint-button__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 .hint-button--audio {
@@ -1789,7 +2012,7 @@
 }
 
 .hint-button--help .hint-button__label {
-    text-shadow: 1px 1px #16465b;
+    text-shadow: 1px 1px #6f3518;
 }
 
 .hint-button--audio .hint-button__label {
@@ -2075,6 +2298,7 @@
     .game-prototype.game-mobile .hud-counter { min-height: 48px; padding-inline: 4px; }
     .game-prototype.game-mobile .hud-counter .asset-icon { transform: scale(.7); }
     .game-prototype.game-mobile .game-map-controls { display: grid; grid-template-columns: repeat(2, 44px); top: 68px; right: 8px; gap: 6px; }
+    .game-prototype.game-mobile .game-map-controls .game-settings,
     .game-prototype.game-mobile .game-map-controls .game-hint {
         right: auto;
         flex-basis: 44px;
@@ -2083,7 +2307,8 @@
     }
     .game-prototype.game-mobile .hint-button { flex-basis: 44px; width: 44px; height: 44px; border-width: 3px; }
     .game-prototype.game-mobile .hint-button__icon { font-size: 21px; }
-    .game-prototype.game-mobile .hint-button__label { font-size: 10px; }
+    .game-prototype.game-mobile .game-map-controls > .game-hint .hint-button__icon,
+    .game-prototype.game-mobile .game-settings > .hint-button .hint-button__icon { font-size: 24px; }
     .game-prototype.game-mobile #hint-text { width: min(240px, 62vw); font-size: 13px; }
     .game-prototype.game-mobile #game-container {
         height: 100%;
@@ -2391,13 +2616,50 @@
     width: min(100%, 680px);
     min-height: 0;
     margin: 0;
-    padding: 9px 13px;
-    grid-template-columns: 30px minmax(0, 1fr);
+    padding: 8px 11px;
+    grid-template-columns: 32px minmax(0, 1fr);
+    gap: 8px;
+    border-color: #9ebcaf;
+    background:
+        linear-gradient(90deg, #e9f3e9 0 4px, transparent 4px),
+        linear-gradient(110deg, #fffdf3, #eff2df);
+    box-shadow: inset 0 0 0 2px #fff, 0 4px 12px #051c294d;
 }
-.game-prototype.game-workspace .mission-card__icon { font-size: 25px; }
-.game-prototype.game-workspace .mission-card h2 { margin-bottom: 4px; font-size: clamp(15px, 1.2vw, 18px); }
-.game-prototype.game-workspace .target-list { gap: 4px 14px; font-size: 13px; line-height: 1.35; }
-.game-prototype.game-workspace .target-list { display: grid; grid-template-columns: minmax(0, 1fr); }
+.game-prototype.game-workspace .mission-card__icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    color: #fff6d5;
+    border: 2px solid #ffd37a;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #e85a59, #a42d45);
+    box-shadow: 0 2px 0 #67213a;
+    font-size: 17px;
+    filter: none;
+}
+.game-prototype.game-workspace .mission-card__content { min-width: 0; }
+.game-prototype.game-workspace .mission-card h2 {
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+    color: #183858;
+    border-bottom: 2px solid #d7c99e;
+    font-size: clamp(14px, 1.15vw, 17px);
+    line-height: 1.15;
+}
+.game-prototype.game-workspace .target-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 8px;
+    font-size: 12px;
+    line-height: 1.25;
+}
+.game-prototype.game-workspace .target-list li {
+    min-width: 0;
+    padding: 3px 6px;
+    border-radius: 5px;
+    background: #e7ecdc99;
+}
 .game-prototype.game-workspace .target-check { flex-basis: 17px; width: 17px; height: 17px; }
 .game-prototype.game-workspace .panel-content {
     flex: 1;
@@ -2455,6 +2717,7 @@
         right: 8px;
         gap: 6px;
     }
+    .game-prototype.game-workspace .game-map-controls .game-settings,
     .game-prototype.game-workspace .game-map-controls .game-hint,
     .game-prototype.game-workspace .hint-button {
         flex-basis: 44px;
@@ -2463,7 +2726,8 @@
     }
     .game-prototype.game-workspace .hint-button { border-width: 3px; }
     .game-prototype.game-workspace .hint-button__icon { font-size: 21px; }
-    .game-prototype.game-workspace .hint-button__label { font-size: 10px; }
+    .game-prototype.game-workspace .game-map-controls > .game-hint .hint-button__icon,
+    .game-prototype.game-workspace .game-settings > .hint-button .hint-button__icon { font-size: 24px; }
     .game-prototype.game-workspace .hud-counter--condition,
     .game-prototype.game-workspace .hud-counter--bekantan {
         justify-self: start;
@@ -2473,6 +2737,10 @@
         padding: 5px 8px;
         font-size: 13px;
     }
+}
+
+@container (max-width: 480px) {
+    .game-prototype.game-workspace .target-list { grid-template-columns: minmax(0, 1fr); }
 }
 .game-prototype.game-workspace .game-study {
     display: grid;
@@ -4090,14 +4358,11 @@
 .level-story[data-level-number='3'] [data-speaker='player'] .story-dialogue { left: 35%; right: 4%; }
 .level-story[data-level-number='3'] .story-dialogue p { font-size: clamp(15px, 2vw, 26px); line-height: 1.4; }
 .level-story[data-level-number='3'] .story-next { bottom: 4%; }
-.game-prototype.game-workspace.game-level3 .game-hud { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; width: min(350px, calc(100% - 120px)); }
-.game-level3 .hud-health { grid-column: 1 / -1; grid-row: 1; }
-.game-prototype.game-workspace.game-level3 .hud-counter { min-height: 38px; padding: 4px 8px; gap: 3px; font-size: 12px; }
-.game-prototype.game-workspace.game-level3 .hud-counter .asset-icon { flex-basis: 28px; width: 28px; height: 30px; transform: none; }
-.game-prototype.game-workspace.game-level3 .hud-counter--step { grid-column: 1 / -1; min-height: 28px; }
-.level3-world-state { grid-column: 1 / -1; pointer-events: auto; position: relative; color: #fff7dd; background: #172c24ed; border: 1px solid #c9a367; border-radius: 6px; padding: 8px; font: 12px/1.5 monospace; }
-.level3-world-state summary { cursor: pointer; }
-.level3-world-state > div { position: absolute; z-index: 5; top: 100%; right: 0; width: max-content; display: grid; gap: 5px; padding: 12px; background: #172c24; border-radius: 6px; }
+.game-prototype.game-workspace.game-level3 .game-hud { grid-template-columns: auto minmax(0, 1fr); gap: 8px; width: min(310px, calc(100% - 24px)); }
+.game-level3 #hud-water { grid-column: 1; grid-row: 1; }
+.game-level3 .hud-health { grid-column: 2; grid-row: 1; }
+.game-prototype.game-workspace.game-level3 #hud-rescue { min-height: 38px; padding: 4px 8px; gap: 3px; font-size: 12px; }
+.game-prototype.game-workspace.game-level3 #hud-rescue .asset-icon { flex-basis: 28px; width: 28px; height: 30px; transform: none; }
 .level3-result-summary { margin: 16px auto; padding: 0; list-style: none; font: 14px/1.7 'Trebuchet MS', sans-serif; }
 #feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: clamp(120px, 23vw, 320px); grid-template-columns: var(--portrait-width) minmax(0, 1fr); }
 #feedback.mission-guide--level3 .mission-guide__portrait { grid-row: 1; grid-column: 1; height: min(65dvh, 530px); aspect-ratio: auto; }

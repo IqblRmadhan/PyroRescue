@@ -1,10 +1,30 @@
 ﻿import Level2Scene from './Level2Scene.js';
-import { level3Assets, level3MapImage, level3MapShadowImage } from '../Level3Assets.js';
+import { level3Assets, level3MapImage, level3MapShadowImage, bekantanPlayerFacing } from '../Level3Assets.js';
 import { level3Map, isLevel3Walkable, level3TileToWorld, level3WorldToTile } from '../Level3Map.js';
 import challenges from '../Level3Challenges.js';
 import { Level3Mission } from '../Level3Mission.js';
 import { executeLevel3Program, validateLevel3Behavior, getLevel3Features } from '../Level3Validator.js';
 import { addFireLabel } from '../PumpLabel.js';
+
+// Tekstur pixel putih 3x3 dengan beberapa pixel transparan di sudut, mirip kabut pixel art.
+function createFogTexture(scene) {
+    const key = 'level3-fog-pixel';
+    if (scene.textures.exists(key)) return;
+
+    const size = 3;
+    const texture = scene.textures.createCanvas(key, size, size);
+    const context = texture.getContext();
+    context.fillStyle = '#ffffff';
+    for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+            const corner = (x === 0 || x === size - 1) && (y === 0 || y === size - 1);
+            if (corner) continue;
+            context.fillRect(x, y, 1, 1);
+        }
+    }
+    texture.refresh();
+}
+
 
 export default class Level3Scene extends Level2Scene {
     constructor(options) {
@@ -26,10 +46,32 @@ export default class Level3Scene extends Level2Scene {
 
     createAnimations() {
         super.createAnimations();
-        for (const state of ['worried', 'rescued']) this.anims.create({
-            key: `bekantan-${state}`,
-            frames: [1, 2, 3, 4, 5].map(number => ({ key: 'bekantan', frame: `${state}${number}` })),
-            frameRate: 4, repeat: -1,
+        for (const state of ['worried', 'rescued']) {
+            this.anims.create({
+                key: `bekantan-${state}-idle`,
+                frames: [1, 2, 3, 4, 5].map(number => ({ key: 'bekantan', frame: `${state}${number}` })),
+                frameRate: 4, repeat: -1,
+            });
+        }
+        for (const [direction, sheet] of Object.entries(bekantanPlayerFacing)) {
+            for (const state of ['worried', 'rescued']) {
+                this.anims.create({
+                    key: `bekantan-${state}-${direction}`,
+                    frames: [1, 2, 3, 4, 5].map(number => ({ key: sheet.texture, frame: `${state}${number}` })),
+                    frameRate: 6, repeat: -1,
+                });
+            }
+            this.anims.create({
+                key: `bekantan-hop-${direction}`,
+                frames: [1, 2, 3, 4, 5].map(number => ({ key: sheet.texture, frame: `rescued${number}` })),
+                frameRate: 10, repeat: 0,
+            });
+        }
+        // Delapan frame untuk bekantan yang berhenti mengikuti pemain.
+        this.anims.create({
+            key: 'bekantan-diam',
+            frames: [1, 2, 3, 4, 5, 6, 7, 8].map(number => ({ key: 'bekantanDiam', frame: `diam${number}` })),
+            frameRate: 8, repeat: -1,
         });
     }
 
@@ -45,6 +87,8 @@ export default class Level3Scene extends Level2Scene {
 
     teleportForTesting(column, row) {
         this.tweens.killTweensOf(this.player);
+        const target = this.activeStep?.target;
+        const reachedObjective = target?.column === column && target?.row === row;
         const position = level3TileToWorld(column, row);
         this.playerColumn = column;
         this.playerRow = row;
@@ -56,14 +100,18 @@ export default class Level3Scene extends Level2Scene {
         this.updateFires();
         this.publishState();
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09).centerOn(position.x, position.y);
+        return { reachedObjective };
     }
 
     drawMissionObjects() {
         super.drawMissionObjects();
         this.bekantanSprites = {};
         for (const [number, animal] of Object.entries(this.map.bekantan)) {
-            this.bekantanSprites[number] = this.add.sprite(animal.x, animal.y, 'bekantan', 'worried1')
-                .setOrigin(0.5, 1).setScale(animal.size / 400).setDepth(10).play('bekantan-worried');
+            const sprite = this.add.sprite(animal.x, animal.y, 'bekantan', 'worried1')
+                .setOrigin(0.5, 0.9).setDisplaySize(animal.size, animal.size).setDepth(10)
+                .play('bekantan-worried-idle');
+            sprite.setData('home', { x: animal.x, y: animal.y });
+            this.bekantanSprites[number] = sprite;
         }
         this.objectiveMarker = this.add.sprite(0, 0, 'actionMarker', 'pulse1')
             .setDisplaySize(28, 28).setDepth(7).play('level2-marker');
@@ -75,21 +123,44 @@ export default class Level3Scene extends Level2Scene {
     }
 
     createRouteFog() {
-        const pixels = [
-            [-32, -58, 24, 0xdce8e4, .58], [-8, -62, 20, 0xb9ceca, .48], [16, -54, 28, 0xe8efeb, .65],
-            [-46, -36, 20, 0xaec5c2, .5], [-22, -34, 32, 0xd2dfdc, .62], [10, -30, 24, 0xf0f4ef, .68], [36, -38, 20, 0xb7cbc8, .5],
-            [-38, -8, 28, 0xe4ece8, .62], [-8, -6, 28, 0xb8cdca, .54], [22, -10, 32, 0xd9e4e0, .66],
-            [-48, 18, 20, 0xb1c7c4, .48], [-26, 22, 28, 0xe9efeb, .68], [4, 18, 24, 0xc2d4d0, .56], [30, 16, 28, 0xe1eae6, .62],
-            [-34, 46, 24, 0xd3e0dc, .58], [-8, 50, 32, 0xadc4c1, .5], [24, 44, 24, 0xedf2ee, .68], [44, 52, 16, 0xb9ceca, .48],
-        ];
-        const blocks = pixels.map(([offsetX, offsetY, size, color, alpha], index) => {
-            const block = this.add.rectangle(980 + offsetX, 660 + offsetY, size, size, color, alpha)
-                .setOrigin(0.5).setDepth(11);
-            block.fogBaseX = block.x;
-            block.fogBaseAlpha = alpha;
-            block.fogGroup = index % 3;
-            return block;
-        });
+        createFogTexture(this);
+
+        // Kabut menutupi seluruh area jalan dari persimpangan ke barat sampai batas layar kanan.
+        const left = 760;
+        const right = 1230;
+        const top = 598;
+        const bottom = 742;
+        const blocks = [];
+        const columnsCount = 62;
+        const rowsCount = 14;
+        for (let rowIndex = 0; rowIndex < rowsCount; rowIndex += 1) {
+            for (let columnIndex = 0; columnIndex < columnsCount; columnIndex += 1) {
+                if ((rowIndex * 7 + columnIndex * 3) % 11 < 2) continue;
+
+                const ratioX = columnIndex / (columnsCount - 1);
+                const ratioY = rowIndex / (rowsCount - 1);
+                const jitterX = Math.sin(rowIndex * 2.1 + columnIndex * 1.3) * 5;
+                const jitterY = Math.cos(columnIndex * 1.7 + rowIndex * 0.9) * 4;
+                const offsetX = left + ratioX * (right - left) + jitterX;
+                const offsetY = top + ratioY * (bottom - top) + jitterY;
+                const edgeFade = 1 - Math.abs(ratioY - 0.5) * 1.1;
+                const large = (rowIndex + columnIndex) % 9 === 0;
+                const size = large ? 6 : 2 + ((rowIndex + columnIndex) % 3);
+                const shade = [0xdce8e4, 0xb9ceca, 0xe8efeb, 0xaec5c2, 0xf0f4ef][(rowIndex + columnIndex) % 5];
+
+                const block = this.add.image(offsetX, offsetY, 'level3-fog-pixel')
+                    .setTint(shade)
+                    .setOrigin(0.5)
+                    .setDisplaySize(size, large ? size - 1 : size)
+                    .setAlpha(Math.max(.18, (.52 + ((rowIndex + columnIndex) % 4) * .1) * edgeFade))
+                    .setDepth(11);
+                block.fogBaseX = block.x;
+                block.fogBaseY = block.y;
+                block.fogBaseAlpha = block.alpha;
+                block.fogGroup = (rowIndex + columnIndex) % 3;
+                blocks.push(block);
+            }
+        }
         this.routeFog = this.add.container(0, 0, blocks).setDepth(11);
         let phase = 0;
         this.routeFogTimer = this.time.addEvent({
@@ -99,12 +170,14 @@ export default class Level3Scene extends Level2Scene {
                 phase = (phase + 1) % 3;
                 for (const block of blocks) {
                     const active = block.fogGroup === phase;
-                    block.x = block.fogBaseX + (active ? 8 : 0);
-                    block.setAlpha(Math.min(.78, block.fogBaseAlpha + (active ? .1 : 0)));
+                    block.x = block.fogBaseX + (active ? 7 : 0);
+                    block.y = block.fogBaseY + (active ? -3 : 0);
+                    block.setAlpha(Math.min(.92, block.fogBaseAlpha + (active ? .12 : 0)));
                 }
             },
         });
     }
+
 
     isRouteFogTile(column, row) {
         return column === this.map.crossing.column && row >= 15 && row <= 17;
@@ -118,10 +191,89 @@ export default class Level3Scene extends Level2Scene {
         super.update();
         this.postLabel?.setZoom(this.cameras.main.zoom);
         this.routeFog?.setVisible(this.isRouteFogLocked());
-        const following = this.mission.following;
-        if (following && this.player) {
-            this.bekantanSprites[following]?.setPosition(this.player.x - 24, this.player.y + 8);
+        this.updateFollowingBekantan();
+    }
+
+    // Bekantan yang diselamatkan mengikuti pemain dengan loncatan kecil dan menghadap arah pemain.
+    // Saat pemain menghadap atas, bekantan berada di belakang (digambar lebih dulu).
+    // Saat menghadap bawah, bekantan berada di depan (digambar setelah pemain).
+    updateFollowingBekantan() {
+        const following = Number(this.mission.following);
+        const hasFollowing = Number.isInteger(following) && this.mission.following !== null;
+        if (!this.player) return;
+
+        // Bekantan yang sudah di pos atau belum diselamatkan harus kembali ke tempat asalnya.
+        for (const [number, sprite] of Object.entries(this.bekantanSprites)) {
+            if (hasFollowing && Number(number) === following) continue;
+            if (sprite.bekantanFollowing) {
+                sprite.bekantanFollowing = false;
+                sprite.bekantanBusy = false;
+                this.resetBekantanSprite(number, sprite);
+            }
         }
+        if (!hasFollowing) return;
+
+        const sprite = this.bekantanSprites[following];
+        if (!sprite || sprite.bekantanBusy) return;
+        sprite.bekantanFollowing = true;
+
+        const direction = this.direction ?? 'east';
+        const facing = bekantanPlayerFacing[direction];
+        const animal = this.map.bekantan[following];
+        const behind = direction === 'north';
+        const inFront = direction === 'south';
+        // Ukuran lembar arah sedikit lebih kecil agar tidak menutupi pemain.
+        const size = animal.sheetSize ?? animal.size;
+
+        sprite.setDisplaySize(size, size).setFlipX(facing.flipX);
+        sprite.setDepth(behind ? 9 : 11);
+
+        // Saat menghadap atas, bekantan dijauhkan ke belakang supaya tidak menimpa badan pemain.
+        const offsetX = inFront ? 0 : (behind ? 0 : -26);
+        const offsetY = inFront ? 26 : (behind ? -38 : 6);
+        const targetX = this.player.x + offsetX;
+        const targetY = this.player.y + offsetY;
+
+        // Pemain berhenti: bekantan ikut berhenti dan memakai lembar Bekantan-diam.png.
+        if (Math.abs(sprite.x - targetX) < 1 && Math.abs(sprite.y - targetY) < 1) {
+            if (sprite.anims?.currentAnim?.key !== 'bekantan-diam') {
+                sprite.play('bekantan-diam', true).setFlipX(facing.flipX);
+            }
+            return;
+        }
+
+        if (sprite.anims?.currentAnim?.key !== `bekantan-hop-${direction}`) {
+            sprite.play(`bekantan-hop-${direction}`, true).setFlipX(facing.flipX);
+        }
+        sprite.bekantanBusy = true;
+        this.tweens.add({
+            targets: sprite,
+            x: targetX,
+            y: targetY,
+            duration: 300,
+            ease: 'Quad.easeOut',
+            onComplete: () => {
+                sprite.bekantanBusy = false;
+            },
+        });
+    }
+
+    // Mengembalikan bekantan yang tidak sedang mengikuti pemain ke habitat atau pos evakuasi.
+    resetBekantanSprite(number, sprite) {
+        const delivered = this.mission.rescued.includes(Number(number));
+        const home = this.map.bekantan[number];
+        const targetX = delivered ? 600 + Number(number) * 17 : home.x;
+        const targetY = delivered ? 530 : home.y;
+        if (sprite.x === targetX && sprite.y === targetY && !sprite.bekantanBusy
+            && sprite.anims?.currentAnim?.key === `bekantan-${delivered ? 'rescued' : 'worried'}-idle`) return;
+
+        this.tweens.killTweensOf(sprite);
+        sprite.bekantanBusy = false;
+        sprite.setPosition(targetX, targetY)
+            .setDisplaySize(home.size, home.size)
+            .setDepth(10)
+            .setFlipX(false)
+            .play(`bekantan-${delivered ? 'rescued' : 'worried'}-idle`, true);
     }
 
     get activeStep() { return challenges[this.challengeNumber].steps[this.mission.step]; }
@@ -156,11 +308,10 @@ export default class Level3Scene extends Level2Scene {
                 .setAlpha(Number(number) === m.fireNumber ? 1 : 0.55);
         }
         for (const [number, sprite] of Object.entries(this.bekantanSprites ?? {})) {
-            const delivered = m.rescued.includes(Number(number));
-            const following = m.following === Number(number);
-            sprite.play(delivered || following ? 'bekantan-rescued' : 'bekantan-worried', true);
-            const home = this.map.bekantan[number];
-            if (!following) sprite.setPosition(delivered ? 600 + Number(number) * 17 : home.x, delivered ? 530 : home.y);
+            const following = this.mission.following !== null && Number(this.mission.following) === Number(number);
+            if (following) continue;
+            sprite.bekantanFollowing = false;
+            this.resetBekantanSprite(number, sprite);
         }
         const target = this.activeStep?.target;
         if (target) {

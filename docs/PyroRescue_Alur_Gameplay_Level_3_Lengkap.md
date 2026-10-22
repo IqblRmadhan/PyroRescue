@@ -49,7 +49,7 @@ Satu pemanggilan `semprot()` menggunakan satu unit air dan memberikan satu unit 
 | Persimpangan jembatan bagian tengah | Area pengambilan keputusan tentang jalur aman |
 | Pulau berhutan sebelah kanan | Titik api pertama dan bekantan pertama |
 | Pulau bawah dekat menara pengamatan | Titik api kedua dan bekantan kedua |
-| Kawasan hutan bagian kanan atas | Habitat bekantan ketiga dan lokasi evaluasi terakhir |
+| Lahan cokelat di pulau kiri atas | Habitat bekantan ketiga dan lokasi evaluasi terakhir |
 | Pondok tengah-kiri | Lokasi penyerahan bekantan setelah dievakuasi |
 
 Objek tambahan yang dapat ditempatkan di atas map tanpa mengubah susunan dasarnya adalah pompa air, efek api dan asap, titik tujuan merah berkedip, indikator pemeriksaan jalur, serta penanda checkpoint.
@@ -401,7 +401,7 @@ Checkpoint 2         : tersimpan
 
 # 7. CHALLENGE 3 — HABITAT TERISOLASI
 
-**Lokasi:** Persimpangan tengah → jembatan utara → kawasan hutan kanan atas.  
+**Lokasi:** Persimpangan tengah → jembatan utara → pulau kiri atas.
 **Konsep:** Percabangan bersarang dengan pemeriksaan keselamatan hewan, api, dan akses.  
 **Jumlah submisi:** 6.
 
@@ -428,7 +428,7 @@ Jika jalur utama dinyatakan berbahaya, karakter harus berbelok dan mencapai mark
 
 ## Misi 4/6 — Memeriksa kondisi bekantan ketiga
 
-Di habitat kanan atas, bekantan ketiga terlihat terjebak dekat api dan akses jalur sebagian terhalang.
+Di habitat pulau kiri atas, bekantan ketiga terlihat terjebak dekat api dan akses jalur sebagian terhalang.
 
 Contoh keadaan:
 
@@ -505,13 +505,13 @@ Evaluasi             : terbuka
 
 # 8. EVALUASI LEVEL 3 — OPERASI PENYELAMATAN TERAKHIR
 
-**Lokasi:** Habitat kanan atas → jalur jembatan → pos penyelamatan tengah-kiri.  
+**Lokasi:** Habitat pulau kiri atas → jalur jembatan → pos penyelamatan tengah-kiri.
 **Konsep:** Variabel + `for` + operator perbandingan + `if/else` bersarang.
 
 ## 8.1 Kondisi awal evaluasi
 
 ```text
-Lokasi         : Habitat kanan atas
+Lokasi         : Habitat pulau kiri atas
 isi_air        : 5
 kebutuhan_air  : 4
 api_padam      : False

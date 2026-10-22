@@ -128,29 +128,25 @@
         <main class="game-layout">
             <section class="game-area wood-frame" aria-label="Area game Level {{ $levelNumber }}">
                 <div class="game-hud" aria-label="Status permainan">
-                    <div id="hud-water" class="hud-counter" aria-label="{{ $hasEvaluation ? 'Isi tangki dan kapasitas air' : 'Isi air dan target' }}" title="{{ $isLevel3 ? 'Isi tangki / kapasitas 5 unit' : ($isLevel2 ? 'Isi tangki / kapasitas 6 unit' : 'Isi air / target') }}" @if($isLevel3) hidden @endif>
+                    <div id="hud-water" class="hud-counter" aria-label="{{ $hasEvaluation ? 'Isi tangki dan kapasitas air' : 'Isi air dan target' }}" title="{{ $isLevel3 ? 'Isi tangki / kapasitas 5 unit' : ($isLevel2 ? 'Isi tangki / kapasitas 6 unit' : 'Isi air / target') }}">
                         <span class="asset-icon asset-icon--water" aria-hidden="true"></span>
                         <strong><span id="water-count">0</span>/<span id="required-water">{{ $isLevel3 ? '5' : ($isLevel2 ? '6' : '3') }}</span></strong>
                     </div>
                     <div class="hud-health" title="HP menentukan kualitas badge. Kode salah: -5 HP. Tabrakan: -10 HP.">
-                        <span class="hud-health__icon" aria-hidden="true">&#9829;</span>
-                        <div id="health-bar" class="hud-health__track" role="progressbar" aria-label="HP / nilai permainan"
-                             aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
-                            <span id="health-fill" class="hud-health__fill"></span>
-                            <strong class="hud-health__value" aria-hidden="true"><span id="score-value">100</span> / 100</strong>
+                        <span class="hud-health__badge" aria-hidden="true">
+                            <span class="hud-health__icon">&#9829;</span>
+                        </span>
+                        <div class="hud-health__body">
+                            <span class="hud-health__label" aria-hidden="true">STATUS HP</span>
+                            <div id="health-bar" class="hud-health__track" role="progressbar" aria-label="HP / nilai permainan"
+                                 aria-valuemin="0" aria-valuemax="100" aria-valuenow="100">
+                                <span id="health-fill" class="hud-health__fill"></span>
+                                <strong class="hud-health__value" aria-hidden="true"><span id="score-value">100</span> / 100</strong>
+                            </div>
                         </div>
                     </div>
                     @if($isLevel3)
-                    <div id="hud-fire" class="hud-counter" hidden><span class="asset-icon asset-icon--fire" aria-hidden="true"></span><strong>API <span id="extinguished-count">0</span>/3</strong></div>
                     <div id="hud-rescue" class="hud-counter" hidden><span class="asset-icon asset-icon--rescue" aria-hidden="true"></span><strong>SELAMAT <span id="rescued-count">0</span>/3</strong></div>
-                    <div id="hud-step" class="hud-counter hud-counter--step"><strong>LANGKAH <span id="sub-mission">1/6</span></strong></div>
-                    <details id="hud-world-state" class="level3-world-state" hidden><summary>Kondisi yang dipakai</summary><div>
-                        <span data-world-condition="fire">api_padam = <strong id="fire-condition">False</strong></span>
-                        <span data-world-condition="animal">BEKANTAN: <strong id="bekantan-status">TUNGGU</strong></span>
-                        <span data-world-condition="route">jalur_aman = <strong id="jalur-condition">True</strong></span>
-                        <span data-world-condition="animal">hewan_terjebak = <strong id="animal-condition">True</strong></span>
-                        <span data-world-condition="water-fire">kebutuhan_air = <strong id="water-needed">2</strong></span>
-                    </div></details>
                     @endif
                 </div>
 
@@ -165,25 +161,41 @@
 
                 <div id="damage-overlay" class="game-damage-overlay" aria-hidden="true"></div>
 
-                <div class="game-map-controls" aria-label="Kontrol musik, efek suara, bantuan, dan pengulangan misi">
-                    <button id="music-toggle" class="hint-button hint-button--music" type="button" aria-label="Matikan musik game" aria-pressed="true">
-                        <span class="hint-button__icon" aria-hidden="true">&#127925;</span>
-                        <span class="hint-button__label">Musik</span>
-                    </button>
-                    <button id="audio-toggle" class="hint-button hint-button--audio" type="button" aria-label="Matikan efek suara dan karakter" aria-pressed="true">
-                        <span class="hint-button__icon" aria-hidden="true">&#128266;</span>
-                        <span class="hint-button__label">SFX</span>
-                    </button>
-                    <button id="reset" class="hint-button hint-button--reset" type="button" aria-label="Ulangi challenge saat ini" disabled>
-                        <span class="hint-button__icon" aria-hidden="true">&#8635;</span>
-                        <span class="hint-button__label">Ulangi</span>
-                    </button>
+                <div class="game-map-controls" aria-label="Pengaturan dan bantuan game">
                     <div id="game-hint" class="game-hint">
                         <button id="hint" class="hint-button hint-button--help" type="button" aria-label="Buka hint" aria-expanded="false" aria-controls="hint-text">
                             <span class="hint-button__icon" aria-hidden="true">&#128161;</span>
                             <span class="hint-button__label">Hint</span>
                         </button>
                         <p id="hint-text" aria-live="polite" hidden>Susun instruksi dari atas ke bawah.</p>
+                    </div>
+                    <div class="game-settings">
+                        <button id="game-settings-toggle" class="hint-button hint-button--settings" type="button"
+                                aria-label="Buka pengaturan game" aria-expanded="false" aria-controls="game-settings-menu">
+                            <span class="hint-button__icon" aria-hidden="true">&#9881;</span>
+                            <span class="hint-button__label">Setelan</span>
+                        </button>
+                        <div id="game-settings-menu" class="game-settings-menu" role="menu" aria-label="Pengaturan game" hidden>
+                            <div class="game-settings-menu__heading">
+                                <span>PENGATURAN</span>
+                                <small>Kontrol permainan</small>
+                            </div>
+                            <button id="music-toggle" class="game-settings-menu__item" type="button" role="menuitem"
+                                    aria-label="Matikan musik game" aria-pressed="true">
+                                <span class="hint-button__icon" aria-hidden="true">&#127925;</span><strong class="hint-button__label">Musik</strong>
+                            </button>
+                            <button id="audio-toggle" class="game-settings-menu__item" type="button" role="menuitem"
+                                    aria-label="Matikan efek suara dan karakter" aria-pressed="true">
+                                <span class="hint-button__icon" aria-hidden="true">&#128266;</span><strong class="hint-button__label">SFX</strong>
+                            </button>
+                            <button id="reset" class="game-settings-menu__item" type="button" role="menuitem"
+                                    aria-label="Ulangi challenge saat ini" disabled>
+                                <span aria-hidden="true">&#8635;</span><strong>Ulangi Challenge</strong>
+                            </button>
+                            <a class="game-settings-menu__item game-settings-menu__item--exit" href="{{ route('main-menu') }}" role="menuitem">
+                                <span aria-hidden="true">&#10140;</span><strong>Keluar ke Menu</strong>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -192,7 +204,7 @@
             <aside class="game-panel wood-frame" aria-label="Challenge dan editor PyroPad">
                 <section class="mission-card mission-card--briefing" aria-labelledby="mission-title">
                     <span class="mission-card__icon" aria-hidden="true">🎯</span>
-                    <div>
+                    <div class="mission-card__content">
                         <h2 id="mission-title">{{ $isLevel3 ? 'Challenge 1 - Patroli dan Penyelamatan Pertama' : ($isLevel2 ? 'Challenge 1 - Mengenal Semprotan' : 'Challenge 1 - Mengambil Air') }}</h2>
                         <ul id="target-list" class="target-list" aria-label="Target challenge">
                             <li id="target-pump"><span class="target-check" aria-hidden="true"></span>{{ $isLevel3 ? 'Pergi ke pos penyelamatan' : ($isLevel2 ? 'Ambil 6 unit air di pompa' : 'Pergi ke pompa air') }}</li>

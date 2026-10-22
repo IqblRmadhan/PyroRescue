@@ -48,6 +48,26 @@ test('Level 3 uses only the central pump and converts debug clicks to grid tiles
     assert.notDeepEqual(level3Map.pump.action, level3Map.crossing);
 });
 
+test('final rescue encounter is grouped on the upper-left brown clearing', () => {
+    const fire = level3Map.fires[4];
+    const bekantan = level3Map.bekantan[4];
+
+    assert.deepEqual({ x: fire.x, y: fire.y }, { x: 780, y: 245 });
+    assert.equal(fire.size, 220);
+    assert.equal(fire.flipX, true);
+    assert.deepEqual(fire.action, { column: 20, row: 4 });
+    assert.deepEqual(level3Map.habitat, fire.action);
+    assert.deepEqual(level3Map.evaluationStart, { column: 19, row: 4, direction: 'east' });
+    assert.equal(
+        Math.abs(level3Map.evaluationStart.column - fire.action.column)
+            + Math.abs(level3Map.evaluationStart.row - fire.action.row),
+        1,
+        'evaluation checkpoint is adjacent to the fire interaction tile',
+    );
+    assert.ok(Math.abs(bekantan.x - fire.x) <= 80, 'bekantan stays near the fire');
+    assert.ok(Math.abs(bekantan.y - fire.y) <= 80, 'bekantan stays near the fire');
+});
+
 test('map and shadow align and all asset frames stay within their source images', () => {
     for (const file of [level3MapImage, level3MapShadowImage]) {
         const webp = readFileSync(`public/assets/${file}`);

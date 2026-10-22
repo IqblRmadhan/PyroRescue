@@ -22,9 +22,9 @@ const travel = {
         'Pergi ke persimpangan jembatan tengah untuk mengamati jalur utara.',
         'Capai penanda merah pemeriksaan jembatan. Kita perlu memilih akses yang aman.',
         'Ikuti jalur alternatif ke penanda merah di kanan persimpangan.',
-        'Pergi ke penanda merah di pulau utara yang memiliki pondok kayu. Periksa keselamatan bekantan ketiga di sana.',
+        'Pergi ke penanda merah di lahan cokelat pulau kiri atas. Periksa keselamatan bekantan ketiga di sana.',
         'Kembali ke pompa untuk melengkapi air bagi operasi terakhir.',
-        'Pergi ke checkpoint aman di pulau utara dekat pondok kayu. Bawa persediaan air untuk evaluasi.',
+        'Pergi ke checkpoint aman di sebelah habitat pulau kiri atas. Bawa persediaan air untuk evaluasi.',
     ],
 };
 

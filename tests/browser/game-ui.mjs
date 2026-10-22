@@ -107,6 +107,7 @@ try {
             scene.anims.globalTimeScale = 10;
         });
 
+        await page.locator('#game-settings-toggle').click();
         for (const button of ['#music-toggle', '#audio-toggle']) {
             const before = await page.locator(button).getAttribute('aria-pressed');
             await page.locator(button).click();
@@ -114,6 +115,7 @@ try {
             await page.locator(button).click();
             assert.equal(await page.locator(button).getAttribute('aria-pressed'), before);
         }
+        await page.locator('#game-settings-toggle').click();
         if (level === 1) {
             await checkResetLock();
             await run('isi_ air = 3');

@@ -165,6 +165,7 @@ export default class Level2Scene extends Phaser.Scene {
             const texture = this.definitions[number].texture;
             this.fires[number] = this.add.sprite(fire.x, fire.y, texture, 'fire1')
                 .setOrigin(0.5, 1).setDisplaySize(fire.size, fire.size).setDepth(5)
+                .setFlipX(Boolean(fire.flipX))
                 .play(`${texture}-burn`);
             const label = fire.label ?? {
                 x: fire.x,

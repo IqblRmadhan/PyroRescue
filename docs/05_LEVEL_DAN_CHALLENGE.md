@@ -152,4 +152,4 @@ sebagai karakter pemain di kiri. Bantuan evaluasi tidak memuat solusi lengkap.
 
 Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai. Run mengembalikan kamera mengikuti pemain. Potret dialog ditampilkan setengah badan.
 
-Habitat terakhir: pulau utara dengan pondok kayu, titik coding (29,5), checkpoint (29,6).
+Habitat terakhir: lahan cokelat di pulau kiri atas, titik coding (20,4), checkpoint (19,4).

@@ -19,12 +19,13 @@ road(24, 4, 24, 18);
 road(32, 12, 32, 18);
 road(14, 18, 14, 25);
 road(14, 25, 23, 25);
+road(22, 24, 22, 24);
 road(23, 18, 23, 26);
 
 export const level3Map = {
     width: 1600, height: 1200, tileSize: 40, columns: 40, rows: 30,
     start: { column: 7, row: 18, direction: 'east' },
-    evaluationStart: { column: 29, row: 6, direction: 'north' },
+    evaluationStart: { column: 19, row: 4, direction: 'east' },
     // Level 3 memakai satu pompa di persimpangan tengah. Pompa dekat pos evakuasi dihapus.
     pump: { x: 900, y: 700, action: { column: 22, row: 18 }, capacity: 5 },
     evaluationPump: { x: 900, y: 700, action: { column: 22, row: 18 }, capacity: 5 },
@@ -33,17 +34,17 @@ export const level3Map = {
     crossing: { column: 24, row: 18 },
     northWatch: { column: 24, row: 12 },
     alternative: { column: 26, row: 12 },
-    habitat: { column: 29, row: 5 },
+    habitat: { column: 20, row: 4 },
     finish: { column: 34, row: 18 },
     fires: {
         1: { x: 1380, y: 495, size: 170, action: { column: 32, row: 12 }, direction: 'east' },
-        2: { x: 1040, y: 1030, size: 170, action: { column: 23, row: 25 }, direction: 'east' },
-        4: { x: 1250, y: 250, size: 150, action: { column: 29, row: 5 }, direction: 'east' },
+        2: { x: 960, y: 1070, size: 170, action: { column: 22, row: 24 }, direction: 'east', flipX: true },
+        4: { x: 780, y: 245, size: 220, action: { column: 20, row: 4 }, direction: 'south', flipX: true },
     },
     bekantan: {
-        1: { x: 1360, y: 530, size: 56 },
-        2: { x: 1005, y: 1055, size: 56 },
-        4: { x: 1205, y: 270, size: 56 },
+        1: { x: 1360, y: 530, size: 34, sheetSize: 29 },
+        2: { x: 1005, y: 1055, size: 34, sheetSize: 29 },
+        4: { x: 760, y: 285, size: 34, sheetSize: 29 },
     },
 };
 

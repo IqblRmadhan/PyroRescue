@@ -14,6 +14,10 @@ export function isDebugInteractionTarget(levelNumber, challengeNumber, state = {
         return Boolean(state.atPump || state.atFire || state.atFinish);
     }
 
+    if (levelNumber === 3) {
+        return Boolean(state.atObjective || state.reachedObjective);
+    }
+
     return false;
 }
 
@@ -54,9 +58,9 @@ export function enableDebugTeleport(scene, {
             return;
         }
 
-        teleport(tile.column, tile.row);
+        const result = teleport(tile.column, tile.row) ?? {};
         showTeleportNotice(scene, `Teleport uji ke petak (${tile.column}, ${tile.row})`, true);
-        onTeleport({ column: tile.column, row: tile.row });
+        onTeleport({ column: tile.column, row: tile.row, ...result });
     }
 
     scene.input.on('pointerdown', handlePointerDown);

@@ -57,9 +57,11 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
   perintah untuk mengganti penjelasan, termasuk dengan Enter atau Spasi lewat keyboard.
 - `atas()`, `bawah()`, `kanan()`, dan `kiri()` merupakan perintah yang disediakan
   game. Materi membedakannya dari assignment Python.
-- `air_pos = isi_air` menyalin nilai tanpa menghapus nilai asal. `isi_air = 0`
-  secara eksplisit mengosongkan tangki setelah penyalinan.
-- Tombol Hint biru, Ulangi merah, dan Suara hijau berada di kanan atas peta.
+- `air_pos = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
+  adalah aturan game, bukan perilaku assignment Python; jika diperlukan,
+  `isi_air = 0` mengosongkan tangki secara eksplisit.
+- Tombol Setelan dan Hint berada di kanan atas peta. Setelan membuka panel
+  Musik, SFX, Ulangi Challenge, dan Keluar ke Menu; Hint tetap terpisah.
   Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
 - `MissionGuide.js` menentukan arahan menurut posisi dan keadaan misi terkini:
   menuju pompa, mengisi air, menuju Pos 1, menuju Pos 2, lalu FINISH.
@@ -179,8 +181,8 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Komandan tampil di kanan memakai komandan.png; karakter pemain di kiri
   memakai mission-guide.png. Story Level 3 mempunyai briefing dan tutorial sendiri.
 - Checklist submisi ditampilkan satu kolom sesuai urutan pengerjaan.
-- HUD selalu menampilkan HP dan langkah aktif. Air, api, satwa, serta kondisi
-  dunia hanya muncul ketika dipakai oleh submisi aktif; ikon memakai aset UI.
+- HUD selalu menampilkan HP dan jumlah air. Status satwa hanya muncul ketika
+  dipakai oleh submisi aktif; kondisi dunia dan api tetap diproses tanpa panel tambahan.
 - Level 3 memakai satu pompa di persimpangan tengah. Pompa dekat pos evakuasi
   beserta label dan penandanya tidak dirender. Pompa berada di (22,18) dengan
   penanda biru; pemeriksaan persimpangan tetap memakai penanda merah di (24,18).
@@ -231,7 +233,7 @@ menemukan pompa, memahami sequence gerakan, lalu menjalankan kerangka
 langkah terakhir, fokus langsung berpindah ke PyroPad tanpa dialog tambahan.
 
 Tur lengkap **Cara Bermain** tetap dapat dibuka dari bawah halaman. Tur ini
-menjelaskan status air dan HP, tombol aksi, kontrol suara, Ulangi, Hint,
+menjelaskan status air dan HP, tombol aksi, panel Setelan, Ulangi, Hint,
 Baca Materi, penanda biru di pompa, penanda merah di Pos 1, dan FINISH.
 Penanda biru adalah petak
 mengambil air; penanda merah adalah petak menjalankan kode untuk challenge.
@@ -487,6 +489,6 @@ Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pen
 
 Kisi-kisi PyroPad: ChallengeStarterCode.js menyediakan kerangka dengan ... untuk challenge latihan Level 1–3. Kerangka muncul sekali per titik pengerjaan/submisi sesudah Run selesai; kode yang sedang diedit tidak ditimpa. Reset mengaktifkan kerangka kembali. Seluruh evaluasi tidak mendapat kerangka kode.
 
-Penyempurnaan arahan: checklist submisi diberi nomor, papan MISI dihapus (marker merah tetap ada), grid Level 3 memakai garis 1,5 px beropasitas 0,48. Arahan perjalanan hanya menjelaskan lokasi dan tujuan; instruksi serta kerangka kode muncul setelah tiba pada penanda pengerjaan. Potongan kode dialog memakai blok pre/code dengan textContent. Pengisian pompa hanya menganimasikan tambahan air, bukan seluruh isi akhir. Habitat terakhir dipindah ke pulau berpondok: penanda (29,5), checkpoint (29,6).
+Penyempurnaan arahan: checklist submisi diberi nomor, papan MISI dihapus (marker merah tetap ada), grid Level 3 memakai garis 1,5 px beropasitas 0,48. Arahan perjalanan hanya menjelaskan lokasi dan tujuan; instruksi serta kerangka kode muncul setelah tiba pada penanda pengerjaan. Potongan kode dialog memakai blok pre/code dengan textContent. Pengisian pompa hanya menganimasikan tambahan air, bukan seluruh isi akhir. Habitat terakhir berada di lahan cokelat pulau kiri atas: penanda (20,4), checkpoint (19,4).
 
 Level 1 terbaru: isi 3 unit di pompa. Di Pos 1 tambahkan 2 dengan `isi_air = isi_air + 2`. Di Pos 2 salin 5 unit melalui `air_pos = isi_air`, lalu ubah `isi_air = 0` dalam satu Run. Nilai akhir hanya mengatur kualitas lencana; seluruh challenge dan evaluasi yang selesai membuka level berikutnya.

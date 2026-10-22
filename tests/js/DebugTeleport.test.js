@@ -41,7 +41,10 @@ test('debug teleport converts a Ctrl-click to a walkable tile without opening UI
     enableDebugTeleport(scene, {
         worldToTile: (x, y) => ({ column: Math.floor(x / 40), row: Math.floor(y / 40) }),
         isWalkable: (column, row) => column === 6 && row === 20,
-        teleport: (column, row) => { teleportedTo = { column, row }; },
+        teleport: (column, row) => {
+            teleportedTo = { column, row };
+            return { reachedObjective: true };
+        },
         onTeleport: tile => { reportedTile = tile; },
     });
     pointerHandler({
@@ -51,7 +54,7 @@ test('debug teleport converts a Ctrl-click to a walkable tile without opening UI
     });
 
     assert.deepEqual(teleportedTo, { column: 6, row: 20 });
-    assert.deepEqual(reportedTile, { column: 6, row: 20 });
+    assert.deepEqual(reportedTile, { column: 6, row: 20, reachedObjective: true });
 });
 
 test('teleport responds only when Level 1 lands on the active interaction point', () => {
@@ -64,4 +67,10 @@ test('teleport recognizes Level 2 pumps and active fires as interaction points',
     assert.equal(isDebugInteractionTarget(2, 1, { atPump: true }), true);
     assert.equal(isDebugInteractionTarget(2, 2, { atFire: true }), true);
     assert.equal(isDebugInteractionTarget(2, 2, {}), false);
+});
+
+test('teleport recognizes only the active Level 3 objective as an interaction point', () => {
+    assert.equal(isDebugInteractionTarget(3, 1, { atObjective: true }), true);
+    assert.equal(isDebugInteractionTarget(3, 1, { reachedObjective: true }), true);
+    assert.equal(isDebugInteractionTarget(3, 1, { atObjective: false }), false);
 });

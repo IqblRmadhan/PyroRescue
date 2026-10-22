@@ -424,25 +424,9 @@ function renderMissionState(state = {}) {
 
     if (isLevel3) {
         const visibleHud = new Set(latestState.hud ?? []);
-        document.getElementById('hud-water').hidden = !visibleHud.has('water');
-        document.getElementById('hud-fire').hidden = !visibleHud.has('fire');
+        document.getElementById('hud-water').hidden = false;
         document.getElementById('hud-rescue').hidden = !visibleHud.has('animal');
-        const worldState = document.getElementById('hud-world-state');
-        worldState.hidden = !['fire', 'animal', 'route'].some(name => visibleHud.has(name));
-        for (const status of worldState.querySelectorAll('[data-world-condition]')) {
-            const condition = status.dataset.worldCondition;
-            status.hidden = condition === 'water-fire'
-                ? !(visibleHud.has('water') && visibleHud.has('fire'))
-                : !visibleHud.has(condition);
-        }
-        document.getElementById('fire-condition').textContent = latestState.apiPadam ? 'True' : 'False';
-        document.getElementById('bekantan-status').textContent = (latestState.bekantanStatus ?? 'tunggu').toUpperCase();
         document.getElementById('rescued-count').textContent = latestState.rescuedCount ?? 0;
-        document.getElementById('extinguished-count').textContent = latestState.extinguishedCount ?? 0;
-        document.getElementById('sub-mission').textContent = `${Math.min((latestState.step ?? 0) + 1, latestState.totalSteps ?? 6)}/${latestState.totalSteps ?? 6}`;
-        document.getElementById('jalur-condition').textContent = latestState.routeSafe ? 'True' : 'False';
-        document.getElementById('animal-condition').textContent = latestState.animalTrapped ? 'True' : 'False';
-        document.getElementById('water-needed').textContent = latestState.requiredWater ?? 2;
         // Reset mengembalikan checklist ke checkpoint, bukan riwayat aksi yang dibatalkan.
         completedTargets = new Set(challengeDefinitions[currentChallenge].targets
             .filter(target => isTargetComplete(target.key, latestState)).map(target => target.key));
@@ -589,8 +573,11 @@ const scene = new Scene({
         document.getElementById('editor-action-status').textContent = branch
             ? `Baris ${branch.line}: ${branch.condition} = ${branch.result ? 'True' : 'False'}` : '';
     },
-    async onDebugTeleport() {
-        if (!isDebugInteractionTarget(levelNumber, currentChallenge, latestState)) return;
+    async onDebugTeleport(teleportState = {}) {
+        if (!isDebugInteractionTarget(levelNumber, currentChallenge, {
+            ...latestState,
+            reachedObjective: teleportState.reachedObjective,
+        })) return;
 
         showMarkerStarterCode();
         if (levelNumber === 1 && currentChallenge === 2) {

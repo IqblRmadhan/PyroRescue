@@ -32,6 +32,7 @@ const gamePrototype = document.querySelector('.game-prototype');
 
 if (gamePrototype) {
     import('./game/MaterialDialog.js').then(({ initMaterialDialog }) => initMaterialDialog());
+    import('./game/GameSettingsMenu.js').then(({ initGameSettingsMenu }) => initGameSettingsMenu());
 
     const hasMobileUserAgent = navigator.userAgentData?.mobile === true
         || /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);

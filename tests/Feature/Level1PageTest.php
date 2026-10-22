@@ -44,6 +44,9 @@ class Level1PageTest extends TestCase
             ->assertSee('id="level1-tutorial"', false)
             ->assertSee('CARA BERMAIN')
             ->assertSee('id="score-value"', false)
+            ->assertSee('class="hud-health__badge"', false)
+            ->assertSee('class="hud-health__label"', false)
+            ->assertSee('STATUS HP')
             ->assertDontSee('id="mission-stars"', false)
             ->assertSee('id="result-badge"', false)
             ->assertSee('id="code-line-numbers-content"', false)
@@ -63,6 +66,9 @@ class Level1PageTest extends TestCase
             ->assertSee('Hint')
             ->assertSee('id="music-toggle"', false)
             ->assertSee('id="audio-toggle"', false)
+            ->assertSee('id="game-settings-toggle"', false)
+            ->assertSee('id="game-settings-menu"', false)
+            ->assertSee('Keluar ke Menu')
             ->assertSee('aria-pressed="true"', false)
             ->assertSee('id="reset"', false)
             ->assertSee('id="clear-code"', false)
@@ -75,10 +81,13 @@ class Level1PageTest extends TestCase
             ->assertDontSee('id="study-tips-title"', false)
             ->assertSeeInOrder([
                 'class="game-map-controls"',
-                'id="music-toggle" class="hint-button hint-button--music"',
-                'id="audio-toggle" class="hint-button hint-button--audio"',
-                'id="reset" class="hint-button hint-button--reset"',
+                'id="game-hint"',
                 'id="hint" class="hint-button hint-button--help"',
+                'id="game-settings-toggle"',
+                'id="game-settings-menu"',
+                'id="music-toggle"',
+                'id="audio-toggle"',
+                'id="reset"',
             ], false);
 
         $this->get('/game-test')->assertOk();

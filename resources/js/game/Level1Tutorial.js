@@ -31,8 +31,8 @@ export const level1TutorialSteps = [
         target: '.game-map-controls',
         eyebrow: '05 / KONTROL GAME',
         title: 'Atur suara dan bantuan',
-        text: 'Musik dan SFX punya tombol terpisah. Ulangi mengembalikan challenge saat ini ke awal, sedangkan Hint memberi petunjuk ketika kamu buntu.',
-        note: 'Tombol Ulangi juga mengembalikan posisi pemadam pada challenge aktif.',
+        text: 'Buka Setelan untuk mengatur Musik, SFX, mengulangi challenge, atau keluar ke menu. Hint tetap terpisah agar mudah dipakai ketika kamu buntu.',
+        note: 'Ulangi Challenge juga mengembalikan posisi pemadam pada challenge aktif.',
     },
     {
         target: '#material-open',
