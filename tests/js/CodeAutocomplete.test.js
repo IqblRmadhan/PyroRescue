@@ -62,14 +62,14 @@ test('autocomplete can show every supported Level 1 command', () => {
     assert.equal(suggestions[0].parameter, 'angka');
 });
 
-test('Challenge 3 autocomplete offers both copying and clearing the tank', () => {
+test('Challenge 3 autocomplete offers copying and initialized compound assignment', () => {
     const suggestions = createLevel1Suggestions(5, 3);
 
-    assert.equal(suggestions.length, 6);
-    assert.equal(suggestions.at(-2).value, 'air_pos = isi_air');
-    assert.equal(suggestions.at(-2).kind, 'Assignment variabel');
-    assert.equal(suggestions.at(-2).example, 'air_pos = isi_air');
-    assert.equal(suggestions.at(-1).value, 'isi_air = 0');
+    assert.equal(suggestions.length, 8);
+    assert.deepEqual(suggestions.slice(4).map(({ value }) => value), [
+        'air_pos = isi_air', 'isi_air = 0', 'air_pos = 0', 'air_pos += isi_air',
+    ]);
+    assert.equal(suggestions.at(-1).kind, 'Operator gabungan');
 });
 
 test('every movement keeps its direction, example and editable step number', () => {

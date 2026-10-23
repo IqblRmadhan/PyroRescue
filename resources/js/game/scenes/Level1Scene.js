@@ -451,10 +451,27 @@ export default class Level1Scene extends Phaser.Scene {
                 continue;
             }
 
+            if (command.type === 'initializePostWater') {
+                if (this.challengeNumber !== 3 || !isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action)) {
+                    return { status: 'error', missionSuccess: false, message: 'Berdirilah di penanda merah Pos 2 sebelum menginisialisasi air_pos.' };
+                }
+                this.postWater = 0;
+                this.publishState();
+                onCommandComplete(command);
+                continue;
+            }
+
+            if (command.type === 'addPostWater') {
+                const result = await this.transferWaterToPost(true);
+                if (!result.success) return { status: 'error', missionSuccess: false, message: result.message };
+                onCommandComplete(command);
+                continue;
+            }
+
             if (command.type === 'clearWater') {
                 if (this.challengeNumber !== 3 || !this.postWater
                     || !isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action)) {
-                    return { status: 'error', missionSuccess: false, message: 'Salin air_pos = isi_air di Pos 2 sebelum mengosongkan tangki.' };
+                    return { status: 'error', missionSuccess: false, message: 'Serahkan air ke Pos 2 sebelum mengosongkan tangki.' };
                 }
                 this.setWater(0);
                 this.hasDeliveredWater = true;
@@ -511,13 +528,13 @@ export default class Level1Scene extends Phaser.Scene {
 
         if (this.challengeNumber === 2) {
             if (isOnTile(this.playerColumn, this.playerRow, level1Map.post1Action)) {
-                return `Kamu tiba di Pos 1 dengan ${this.water} unit. Tambah 2 dengan isi_air = isi_air + 2.`;
+                return `Kamu tiba di Pos 1 dengan ${this.water} unit. Tambah 2 dengan isi_air += 2.`;
             }
 
             return `Bawa ${this.water} unit air ke penanda Pos 1 untuk melapor.`;
         }
 
-        return 'Pergi ke Pos 2. Salin air_pos = isi_air, lalu ubah isi_air = 0.';
+        return 'Pergi ke Pos 2. Serahkan isi_air ke air_pos, lalu kosongkan tangki dengan isi_air = 0.';
     }
 
     addWaterAtPost(amount) {
@@ -561,7 +578,7 @@ export default class Level1Scene extends Phaser.Scene {
         return { success: true };
     }
 
-    async transferWaterToPost() {
+    async transferWaterToPost(addToExisting = false) {
         if (!isOnTile(this.playerColumn, this.playerRow, level1Map.post2Action)) {
             return {
                 success: false,
@@ -576,6 +593,10 @@ export default class Level1Scene extends Phaser.Scene {
             };
         }
 
+        if (addToExisting && this.postWater + this.water > this.requiredWater) {
+            return { success: false, message: 'air_pos sudah penuh. Jangan tambahkan air yang sama dua kali.' };
+        }
+
         const previousDirection = this.direction;
         this.setPlayerIdle(this.getDirectionTo(level1Map.post2Npc));
         await this.playNpcAction(
@@ -583,7 +604,7 @@ export default class Level1Scene extends Phaser.Scene {
             'npc-post2-receive-water',
             'npc-post2-idle',
         );
-        this.postWater = this.water;
+        this.postWater = addToExisting ? this.postWater + this.water : this.water;
         this.onAudio('water');
         this.publishState();
         this.setPlayerIdle(previousDirection);

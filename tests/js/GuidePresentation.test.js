@@ -15,6 +15,11 @@ test('Pos 1 arithmetic assignment stays together as one readable code snippet', 
     assert.deepEqual(parts.filter(part => part.type === 'code').map(part => part.text), ['isi_air = isi_air + 2']);
 });
 
+test('Pos 1 compound assignment stays together as one readable code snippet', () => {
+    const parts = tokenizeGuideMessage('Di Pos 1 tulis isi_air += 2 untuk menambah air.');
+    assert.deepEqual(parts.filter(part => part.type === 'code').map(part => part.text), ['isi_air += 2']);
+});
+
 test('Level 1 challenges receive field analogies and marker scaffolds', () => {
     const variable = getGuidePresentation({
         levelNumber: 1, challengeNumber: 1, state: { atPump: true, water: 0 },
@@ -26,7 +31,7 @@ test('Level 1 challenges receive field analogies and marker scaffolds', () => {
         levelNumber: 1, challengeNumber: 2, state: { atPost1: true, water: 3 },
     });
     assert.match(addition.analogy.title, /Pertambahan/);
-    assert.equal(addition.code, 'isi_air = isi_air + ...');
+    assert.equal(addition.code, 'isi_air += ...');
 });
 
 test('Level 2 loop challenges explain repetition with boxed steps', () => {

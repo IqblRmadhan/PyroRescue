@@ -48,9 +48,9 @@ Pemandu tampil sebagai dialog di bagian bawah layar, dengan karakter besar di
 kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuka.
 
 - `LearningPanel.js` membaca materi dari `Level*Challenges.js` untuk ketiga level. Pada Level 1: menyimpan 3 unit,
-  menambah 2 unit di Pos 1, lalu menyalin 5 unit dan mengosongkan tangki di Pos 2.
+  menambah 2 unit dengan `isi_air += 2` di Pos 1, lalu menyalin 5 unit dan mengosongkan tangki di Pos 2.
 - Setelah Run gerakan selesai tepat di penanda challenge Level 1, kode gerakan
-  diganti satu kali dengan `isi_air = ...`, `isi_air = isi_air + ...`, atau dua baris `air_pos = ...` dan `isi_air = ...` sesuai challenge.
+  diganti satu kali dengan `isi_air = ...`, `isi_air += ...`, atau dua baris `air_pos = ...` dan `isi_air = ...` sesuai challenge.
   Melewati penanda biru atau merah tidak mengganti kode. Isian juga tidak menimpa
   kode baru yang sedang diketik pemain selama gerakan berjalan.
 - Kamus perintah tersedia di popup Baca Materi. Klik tombol
@@ -60,6 +60,9 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - `air_pos = isi_air` menyalin nilai. Pengosongan tangki setelah penyerahan
   adalah aturan game, bukan perilaku assignment Python; jika diperlukan,
   `isi_air = 0` mengosongkan tangki secara eksplisit.
+- Di Pos 2, pemain dapat memakai alternatif `air_pos = 0`, `air_pos += isi_air`,
+  lalu `isi_air = 0` dalam satu Run. `+=` membaca nilai lama; tanpa inisialisasi
+  `air_pos`, validator menolaknya.
 - Tombol Setelan dan Hint berada di kanan atas peta. Setelan membuka panel
   Musik, SFX, Ulangi Challenge, dan Keluar ke Menu; Hint tetap terpisah.
   Tombol Hapus di samping Run Code mengosongkan editor tanpa mengulang misi.
@@ -491,4 +494,4 @@ Kisi-kisi PyroPad: ChallengeStarterCode.js menyediakan kerangka dengan ... untuk
 
 Penyempurnaan arahan: checklist submisi diberi nomor, papan MISI dihapus (marker merah tetap ada), grid Level 3 memakai garis 1,5 px beropasitas 0,48. Arahan perjalanan hanya menjelaskan lokasi dan tujuan; instruksi serta kerangka kode muncul setelah tiba pada penanda pengerjaan. Potongan kode dialog memakai blok pre/code dengan textContent. Pengisian pompa hanya menganimasikan tambahan air, bukan seluruh isi akhir. Habitat terakhir berada di lahan cokelat pulau kiri atas: penanda (20,4), checkpoint (19,4).
 
-Level 1 terbaru: isi 3 unit di pompa. Di Pos 1 tambahkan 2 dengan `isi_air = isi_air + 2`. Di Pos 2 salin 5 unit melalui `air_pos = isi_air`, lalu ubah `isi_air = 0` dalam satu Run. Nilai akhir hanya mengatur kualitas lencana; seluruh challenge dan evaluasi yang selesai membuka level berikutnya.
+Level 1 terbaru: isi 3 unit di pompa. Di Pos 1 tambahkan 2 dengan `isi_air += 2` atau bentuk panjang `isi_air = isi_air + 2`. Di Pos 2 salin 5 unit melalui `air_pos = isi_air`, atau inisialisasi `air_pos = 0` lalu gunakan `air_pos += isi_air`; keduanya diikuti `isi_air = 0` dalam satu Run. Evaluasi di FINISH hanya memakai gerakan karena nilai air telah diserahkan. Nilai akhir mengatur kualitas lencana; aturan membuka level berikutnya mengikuti syarat hasil yang diterapkan game.

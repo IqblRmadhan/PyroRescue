@@ -21,12 +21,12 @@ export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) 
     if (challengeNumber === 4) return movementSuggestions;
 
     if (challengeNumber === 2) {
-        const value = 'isi_air = isi_air + 2';
+        const value = 'isi_air += 2';
         return [...movementSuggestions, {
-            label: 'isi_air = isi_air + 2', value,
+            label: value, value,
             selectionStart: value.length - 1, selectionLength: 1,
-            kind: 'Pertambahan variabel',
-            description: 'Di Pos 1, baca 3 unit yang tersimpan dalam isi_air, tambahkan 2, lalu simpan hasil 5 ke nama yang sama.',
+            kind: 'Operator gabungan',
+            description: 'Di Pos 1, isi_air sudah bernilai 3. += 2 menambahkannya menjadi 5; setara dengan isi_air = isi_air + 2.',
             example: value, parameter: '2', parameterDescription: 'Tambahan dua unit di Pos 1.',
         }];
     }
@@ -51,6 +51,20 @@ export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) 
                 kind: 'Mengubah variabel',
                 description: 'Setelah air_pos = isi_air, simpan 0 ke isi_air untuk mengosongkan tangki.',
                 example: 'isi_air = 0', parameter: '0', parameterDescription: 'Tangki kosong setelah penyerahan.',
+            },
+            {
+                label: 'air_pos = 0', value: 'air_pos = 0',
+                selectionStart: 10, selectionLength: 1,
+                kind: 'Inisialisasi variabel',
+                description: 'Beri air_pos nilai awal 0 sebelum menambahnya dengan operator +=.',
+                example: 'air_pos = 0', parameter: '0', parameterDescription: 'Nilai awal catatan Pos 2.',
+            },
+            {
+                label: 'air_pos += isi_air', value: 'air_pos += isi_air',
+                selectionStart: 18, selectionLength: 0,
+                kind: 'Operator gabungan',
+                description: 'Setelah air_pos = 0, tambahkan 5 unit dari isi_air. Kemudian kosongkan isi_air = 0.',
+                example: 'air_pos += isi_air', parameter: 'isi_air', parameterDescription: 'Nilai 5 yang dibawa di tangki.',
             },
         ];
     }

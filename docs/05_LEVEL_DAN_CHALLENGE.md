@@ -2,7 +2,7 @@
 
 # Level 1 - Variabel Persediaan Air
 
-Level 1 mengajarkan assignment, pertambahan, penyalinan, dan perubahan nilai variabel. Kapasitas tangki 5 unit. Semua kode diperiksa oleh validator terbatas, tanpa menjalankan Python bebas.
+Level 1 mengajarkan assignment, operator gabungan `+=`, pertambahan, penyalinan, dan perubahan nilai variabel. Kapasitas tangki 5 unit. Semua kode diperiksa oleh validator terbatas, tanpa menjalankan Python bebas.
 
 ### Challenge 1 - Mengambil Air
 
@@ -19,10 +19,10 @@ Kisi-kisi PyroPad menampilkan isi_air = ... untuk dilengkapi pemain.
 Bawa tiga unit ke penanda Pos 1, lalu jalankan:
 
 ```python
-isi_air = isi_air + 2
+isi_air += 2
 ```
 
-Nilai lama 3 dibaca, ditambah 2, kemudian hasil 5 disimpan kembali. Materi Baca Materi juga menjelaskan `-`, `*`, `/`, `//`, dan `%` sebagai operator Python umum. PyroPad Level 1 hanya menerima pertambahan yang dibutuhkan misi ini. Kedatangan di Pos 1 saja belum menyelesaikan challenge.
+`+=` membaca nilai lama 3, menambah 2, kemudian menyimpan hasil 5 kembali. Bentuk `isi_air = isi_air + 2` setara dan tetap diterima. Ini berbeda dari `isi_air = 2`, yang mengganti nilainya menjadi 2. Variabel harus berisi nilai sebelum `+=` digunakan. Operator gabungan Python lain seperti `-=`, `*=`, `/=`, `//=`, dan `%=` dijelaskan sebagai perluasan materi, tetapi PyroPad Level 1 hanya menerima penambahan 2 unit di Pos 1. Kedatangan di Pos 1 saja belum menyelesaikan challenge.
 
 ### Challenge 3 - Pasok Air ke Pos 2
 
@@ -33,11 +33,19 @@ air_pos = isi_air
 isi_air = 0
 ```
 
-Baris pertama menyalin nilai 5 ke `air_pos`; nilai `isi_air` masih 5. Baris kedua mengubah `isi_air` menjadi 0. Pos 2 menerima lima unit setelah urutan berhasil.
+Baris pertama menyalin nilai 5 ke `air_pos`; nilai `isi_air` masih 5. Baris kedua mengubah `isi_air` menjadi 0. Sebagai alternatif yang mempraktikkan operator gabungan, pemain dapat menjalankan urutan berikut dalam satu Run:
+
+```python
+air_pos = 0
+air_pos += isi_air
+isi_air = 0
+```
+
+`air_pos += isi_air` menambahkan 5 ke nilai awal 0, menghasilkan 5. Tanpa `air_pos = 0` terlebih dahulu, operator `+=` tidak memiliki nilai lama untuk dibaca. Pos 2 menerima lima unit setelah salah satu urutan berhasil.
 
 ### Evaluasi
 
-Capai FINISH setelah tiga challenge selesai. Tidak ada kisi-kisi pada evaluasi.
+Capai FINISH setelah tiga challenge selesai. Evaluasi memeriksa hasil aksi sebelumnya, sehingga pemain memakai perintah gerak dan tidak menulis ulang assignment air di FINISH. Tidak ada kisi-kisi pada evaluasi.
 Checkpoint C2 membawa 3 unit dari pompa; checkpoint C3 membawa 5 unit dari Pos 1.
 
 # Level 2 — Hutan Gambut Berasap

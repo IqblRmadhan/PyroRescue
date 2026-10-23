@@ -29,7 +29,7 @@ test('Level 1 guidance follows the current location and delivered water', () => 
     assert.match(instruction(1, {}), /Pergi ke pompa/);
     assert.match(instruction(1, { atPump: true }), /isi_air = 3/);
     assert.match(instruction(2, { water: 3 }), /Pergi ke Pos 1/);
-    assert.match(instruction(2, { water: 3, atPost1: true }), /isi_air = isi_air \+ 2/);
+    assert.match(instruction(2, { water: 3, atPost1: true }), /isi_air \+= 2/);
     assert.match(instruction(2, { water: 5, atPost1: true }), /Penjumlahan selesai/);
     assert.match(instruction(3, { water: 5 }), /Pergi ke Pos 2/);
     assert.match(instruction(3, { water: 5, atPost2: true }), /air_pos = isi_air/);
@@ -81,6 +81,32 @@ test('addition and transfer explain value changes in source order', () => {
     assert.match(transfer[0], /menyalin nilai 5/);
     assert.match(transfer[0], /isi_air masih 5/);
     assert.match(transfer[1], /isi_air = 0/);
+});
+
+test('compound assignment feedback names the submitted operator and resulting value', () => {
+    const messages = explainExecutedCommands({
+        levelNumber: 1, challengeNumber: 2, initialWater: 3,
+        code: 'isi_air += 2',
+        commands: [{ type: 'addWater', amount: 2 }],
+    });
+    assert.match(messages[0], /isi_air \+= 2/);
+    assert.match(messages[0], /3 \+ 2 = 5/);
+});
+
+test('post accumulation feedback distinguishes initialization from addition', () => {
+    const messages = explainExecutedCommands({
+        levelNumber: 1, challengeNumber: 3, initialWater: 5,
+        code: 'air_pos = 0\nair_pos += isi_air\nisi_air = 0',
+        commands: [
+            { type: 'initializePostWater' },
+            { type: 'addPostWater' },
+            { type: 'clearWater' },
+        ],
+    });
+    assert.match(messages[0], /air_pos = 0/);
+    assert.match(messages[1], /air_pos \+= isi_air/);
+    assert.match(messages[1], /0.*5/);
+    assert.match(messages[2], /isi_air = 0/);
 });
 
 test('loop feedback uses the submitted code and actual executed spray count', () => {

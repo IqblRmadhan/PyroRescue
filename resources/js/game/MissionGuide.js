@@ -101,7 +101,7 @@ const challengeBridges = {
     1: {
         1: bridge(
             'Tambahkan Persediaan',
-            'Tangki menyimpan 3 unit dalam isi_air. Di Pos 1, tulis isi_air = isi_air + 2. Python membaca 3, menghitung 3 + 2 = 5, lalu menyimpan 5 kembali. Operator lain: - untuk mengurangi, * mengalikan, / membagi, // bagi bulat, dan % sisa bagi. PyroPad Level 1 hanya menerima penjumlahan ini.',
+            'Tangki menyimpan 3 unit dalam isi_air. Di Pos 1, tulis isi_air += 2. Python membaca 3, menghitung 3 + 2 = 5, lalu menyimpan 5 kembali. Ini setara dengan isi_air = isi_air + 2; variabel harus berisi nilai sebelum memakai +=.',
             'Menyimpan 3 unit air ke variabel isi_air.',
             'Bagaimana menambah 2 unit tanpa melupakan nilai lama?',
             'Baca isi_air, tambah 2, lalu simpan hasilnya ke isi_air.',
@@ -116,7 +116,7 @@ const challengeBridges = {
         3: bridge(
             'Pemeriksaan Misi',
             'Air sudah disimpan, dibawa, lalu diserahkan dengan variabel. Sekarang ikuti jalan menuju FINISH agar seluruh rangkaian misi diperiksa.',
-            'Menyalin nilai isi_air ke air_pos lalu mengubah isi_air menjadi 0.',
+            'Menyimpan 5 unit dari isi_air ke air_pos lalu mengubah isi_air menjadi 0.',
             'Apakah seluruh urutan pengiriman sudah selesai?',
             'Capai FINISH untuk menjalankan evaluasi akhir.',
         ),
@@ -190,12 +190,12 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
         if (challengeNumber === 2) {
             if (state.water === 5) return 'Penjumlahan selesai. isi_air sekarang 5; lanjutkan pengiriman ke Pos 2.';
             return state.atPost1
-                ? 'Di Pos 1, baca 3 unit dalam isi_air lalu tambah 2: isi_air = isi_air + 2.'
+                ? 'Di Pos 1, baca 3 unit dalam isi_air lalu tambah 2: isi_air += 2.'
                 : 'Pergi ke Pos 1 sambil membawa 3 unit air dari pompa. Di sana kamu akan menambah 2 unit.';
         }
         if (state.hasDeliveredWater) return 'Air diterima Pos 2, tangki kosong. Lanjutkan evaluasi dengan menuju FINISH.';
         return state.atPost2
-            ? 'Di Pos 2, salin air_pos = isi_air lalu ubah isi_air = 0. Tulis kedua baris berurutan.'
+            ? 'Di Pos 2, salin air_pos = isi_air lalu isi_air = 0; atau tulis air_pos = 0, air_pos += isi_air, isi_air = 0. Jalankan satu urutan lengkap.'
             : 'Pergi ke Pos 2. Bawa 5 unit air untuk diserahkan kepada penjaga pos.';
     }
 
@@ -265,8 +265,14 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
             messages.push(`api_padam bernilai ${command.fireOut ? 'True' : 'False'}, sehingga ${branch} dijalankan. Status bekantan sekarang "${command.status}". if memeriksa kondisi; assignment di dalam blok menyimpan status.`);
         } else if (command.type === 'transferWater') {
             messages.push(`air_pos = isi_air menyalin nilai ${water} ke air_pos. isi_air masih ${water}; assignment Python tidak menghapus variabel asal.`);
+        } else if (command.type === 'initializePostWater') {
+            messages.push('air_pos = 0 membuat nilai awal pada catatan Pos 2. Sekarang air_pos dapat ditambah memakai +=.');
+        } else if (command.type === 'addPostWater') {
+            messages.push(`air_pos += isi_air membaca air_pos yang semula 0, menambahkan ${water} dari isi_air, lalu menyimpan ${water} ke air_pos. isi_air masih ${water}.`);
         } else if (command.type === 'addWater') {
-            messages.push(`isi_air = isi_air + ${command.amount} membaca nilai lama ${water}, menghitung ${water} + ${command.amount} = ${water + command.amount}, lalu menyimpan hasilnya kembali ke isi_air.`);
+            const operator = /^isi_air[ \t]*\+=[ \t]*2[ \t]*$/m.test(source)
+                ? `isi_air += ${command.amount}` : `isi_air = isi_air + ${command.amount}`;
+            messages.push(`${operator} membaca nilai lama ${water}, menghitung ${water} + ${command.amount} = ${water + command.amount}, lalu menyimpan hasilnya kembali ke isi_air.`);
             water += command.amount;
         } else if (command.type === 'clearWater') {
             messages.push(`isi_air = 0 mengganti nilai ${water} menjadi 0. air_pos tetap menyimpan ${water} unit yang diserahkan ke Pos 2.`);

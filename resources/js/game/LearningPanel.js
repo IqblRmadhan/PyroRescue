@@ -6,7 +6,8 @@ export default class LearningPanel {
     }
 
     setChallenge(challengeNumber) {
-        const lesson = this.challenges[Math.min(challengeNumber, 3)];
+        const current = this.challenges[challengeNumber];
+        const lesson = current?.lesson && current?.example ? current : this.challenges[3];
         this.root.querySelector('#lesson-title').textContent = lesson.lessonTitle ?? lesson.title;
         this.root.querySelector('#lesson-code').textContent = lesson.example;
         this.root.querySelector('#lesson-explanation').textContent = lesson.lesson;

@@ -140,6 +140,8 @@ export default class CodeValidator {
         let hasWaterAssignment = false;
         let hasAddition = false;
         let hasPostAssignment = false;
+        let hasPostInitialization = false;
+        let hasPostAddition = false;
         let hasClearedWater = false;
         let water = 0;
 
@@ -154,11 +156,12 @@ export default class CodeValidator {
             }
             const waterAssignment = line.match(/^isi_air[ \t]*=[ \t]*(0|[1-9][0-9]*)$/);
             const waterAddition = line.match(/^isi_air[ \t]*=[ \t]*isi_air[ \t]*\+[ \t]*(0|[1-9][0-9]*)$/);
+            const compoundAddition = line.match(/^isi_air[ \t]*\+=[ \t]*(0|[1-9][0-9]*)$/);
             const movementMatch = line.match(/^(atas|bawah|kanan|kiri)[ \t]*\([ \t]*(0|[1-9][0-9]*)[ \t]*\)$/);
 
-            if (waterAddition) {
-                if (challengeNumber !== 2 || hasAddition || Number(waterAddition[1]) !== 2) {
-                    result.message = 'Di Pos 1, tambahkan tepat 2 unit dengan isi_air = isi_air + 2.';
+            if (waterAddition || compoundAddition) {
+                if (challengeNumber !== 2 || hasAddition || Number((waterAddition || compoundAddition)[1]) !== 2) {
+                    result.message = 'Di Pos 1, tambahkan tepat 2 unit dengan isi_air += 2.';
                     return result;
                 }
                 hasAddition = true;
@@ -167,7 +170,8 @@ export default class CodeValidator {
             }
 
             if (waterAssignment) {
-                if (challengeNumber === 3 && Number(waterAssignment[1]) === 0 && hasPostAssignment && !hasClearedWater) {
+                if (challengeNumber === 3 && Number(waterAssignment[1]) === 0
+                    && (hasPostAssignment || hasPostAddition) && !hasClearedWater) {
                     hasClearedWater = true;
                     commands.push({ type: 'clearWater' });
                     continue;
@@ -176,7 +180,7 @@ export default class CodeValidator {
                     result.message = challengeNumber === 4
                         ? 'Pada evaluasi, gunakan perintah gerak menuju FINISH.'
                         : challengeNumber === 2
-                            ? 'Gunakan isi_air = isi_air + 2 agar nilai lama dibaca sebelum ditambah.'
+                            ? 'Gunakan isi_air += 2 agar nilai lama dibaca sebelum ditambah.'
                             : 'Salin nilai ke air_pos dahulu, lalu kosongkan tangki dengan isi_air = 0.';
                     return result;
                 }
@@ -203,13 +207,41 @@ export default class CodeValidator {
                     return result;
                 }
 
-                if (hasPostAssignment || hasClearedWater) {
-                    result.message = 'Cukup tulis air_pos = isi_air satu kali.';
+                if (hasPostAssignment || hasPostInitialization || hasPostAddition || hasClearedWater) {
+                    result.message = 'Pilih satu cara: air_pos = isi_air, atau air_pos = 0 lalu air_pos += isi_air.';
                     return result;
                 }
 
                 hasPostAssignment = true;
                 commands.push({ type: 'transferWater' });
+                continue;
+            }
+
+            if (/^air_pos[ \t]*=[ \t]*0$/.test(line)) {
+                if (challengeNumber === 4) {
+                    result.message = 'Air sudah diserahkan di Pos 2. Gunakan perintah gerak menuju FINISH.';
+                    return result;
+                }
+                if (challengeNumber !== 3 || hasPostInitialization || hasPostAssignment || hasPostAddition || hasClearedWater) {
+                    result.message = 'Inisialisasi air_pos = 0 sekali, sebelum air_pos += isi_air di Pos 2.';
+                    return result;
+                }
+                hasPostInitialization = true;
+                commands.push({ type: 'initializePostWater' });
+                continue;
+            }
+
+            if (/^air_pos[ \t]*\+=[ \t]*isi_air$/.test(line)) {
+                if (challengeNumber === 4) {
+                    result.message = 'Air sudah diserahkan di Pos 2. Gunakan perintah gerak menuju FINISH.';
+                    return result;
+                }
+                if (challengeNumber !== 3 || !hasPostInitialization || hasPostAddition || hasPostAssignment || hasClearedWater) {
+                    result.message = 'Di Pos 2, tulis air_pos = 0 sebelum air_pos += isi_air, lalu isi_air = 0.';
+                    return result;
+                }
+                hasPostAddition = true;
+                commands.push({ type: 'addPostWater' });
                 continue;
             }
 
@@ -237,22 +269,23 @@ export default class CodeValidator {
             result.message = challengeNumber === 4
                 ? 'Pada evaluasi, gunakan perintah gerak untuk mencapai FINISH.'
                 : challengeNumber === 3
-                    ? 'Gunakan perintah gerak, lalu air_pos = isi_air dan isi_air = 0 di Pos 2.'
+                    ? 'Di Pos 2, salin air_pos = isi_air atau inisialisasi air_pos = 0 lalu gunakan air_pos += isi_air. Akhiri dengan isi_air = 0.'
                     : challengeNumber === 2
-                        ? 'Gunakan perintah gerak, lalu isi_air = isi_air + 2 di Pos 1.'
+                        ? 'Gunakan perintah gerak, lalu isi_air += 2 di Pos 1.'
                         : 'Gunakan hanya perintah gerak dan isi_air = angka.';
             return result;
         }
 
-        if (challengeNumber === 3 && hasPostAssignment !== hasClearedWater) {
-            result.message = 'Di Pos 2, tulis air_pos = isi_air lalu isi_air = 0 dalam satu Run.';
+        const hasPostTransfer = hasPostAssignment || hasPostAddition;
+        if (challengeNumber === 3 && ((hasPostInitialization && !hasPostAddition) || hasPostTransfer !== hasClearedWater)) {
+            result.message = 'Di Pos 2, salin air_pos = isi_air lalu isi_air = 0, atau inisialisasi air_pos = 0, tambahkan air_pos += isi_air, lalu kosongkan isi_air = 0 dalam satu Run.';
             return result;
         }
 
         result.syntaxValid = true;
         result.conceptValid = true;
         result.missionSuccess = challengeNumber === 4 ? commands.length > 0 : challengeNumber === 3
-            ? hasPostAssignment && hasClearedWater
+            ? hasPostTransfer && hasClearedWater
             : challengeNumber === 2 ? hasAddition : hasWaterAssignment && water === requiredWater;
         result.actions = { water, commands };
 
@@ -261,11 +294,13 @@ export default class CodeValidator {
         } else if (challengeNumber === 3) {
             result.message = hasPostAssignment
                 ? 'Kode valid. Nilai isi_air disalin ke air_pos, lalu isi_air dikosongkan.'
-                : 'Kode valid. Bergeraklah ke Pos 2, lalu salin air_pos = isi_air dan kosongkan isi_air = 0.';
+                : hasPostAddition
+                    ? 'Kode valid. Nilai isi_air ditambahkan ke air_pos yang semula 0, lalu isi_air dikosongkan.'
+                    : 'Kode valid. Bergeraklah ke Pos 2, lalu serahkan isi_air dan kosongkan tangki.';
         } else if (challengeNumber === 2) {
             result.message = hasAddition
                 ? 'Kode valid. Tambahkan 2 unit ke nilai isi_air yang sudah tersimpan.'
-                : 'Kode valid. Di Pos 1, tulis isi_air = isi_air + 2.';
+                : 'Kode valid. Di Pos 1, tulis isi_air += 2.';
         } else if (!hasWaterAssignment) {
             result.message = 'Kode valid. Pemadam menjalankan urutan gerakanmu.';
         } else if (result.missionSuccess) {

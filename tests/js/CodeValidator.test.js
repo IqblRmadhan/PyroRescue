@@ -36,9 +36,17 @@ test('Challenge 2 adds two units to the saved water at Pos 1', () => {
     assert.equal(result.conceptValid, true);
     assert.equal(result.missionSuccess, true);
     assert.deepEqual(result.actions.commands.at(-1), { type: 'addWater', amount: 2 });
-    for (const code of ['isi_air = 5', 'isi_air = isi_air + 3', 'isi_air += 2']) {
+    for (const code of ['isi_air = 5', 'isi_air = isi_air + 3', 'isi_air += 3', 'isi_air -= 2']) {
         assert.equal(validator.validateVariable(code, 5, 2).syntaxValid, false, code);
     }
+});
+
+test('Challenge 2 accepts compound assignment as the same two-unit addition', () => {
+    const result = validator.validateVariable('isi_air += 2', 5, 2);
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.missionSuccess, true);
+    assert.deepEqual(result.actions.commands, [{ type: 'addWater', amount: 2 }]);
+    assert.match(result.message, /3.*5|2 unit/);
 });
 
 test('Challenge 3 copies the saved tank value and then clears the tank', () => {
@@ -63,6 +71,25 @@ test('Challenge 3 copies the saved tank value and then clears the tank', () => {
         const invalidResult = validator.validateVariable(invalidCode, 5, 3);
         assert.equal(invalidResult.syntaxValid, false, invalidCode);
         assert.equal(invalidResult.actions, null, invalidCode);
+    }
+});
+
+test('Challenge 3 can accumulate into an initialized post using compound assignment', () => {
+    const result = validator.validateVariable('air_pos = 0\nair_pos += isi_air\nisi_air = 0', 5, 3);
+    assert.equal(result.syntaxValid, true);
+    assert.equal(result.missionSuccess, true);
+    assert.deepEqual(result.actions.commands, [
+        { type: 'initializePostWater' },
+        { type: 'addPostWater' },
+        { type: 'clearWater' },
+    ]);
+    for (const invalid of [
+        'air_pos += isi_air\nisi_air = 0',
+        'air_pos = 0\nair_pos += isi_air',
+        'air_pos = 0\nair_pos += isi_air\nair_pos += isi_air\nisi_air = 0',
+        'air_pos = 0\nair_pos = isi_air\nisi_air = 0',
+    ]) {
+        assert.equal(validator.validateVariable(invalid, 5, 3).syntaxValid, false, invalid);
     }
 });
 
@@ -176,6 +203,11 @@ test('Level 1 evaluation accepts movement to FINISH and rejects new assignments'
     assert.equal(movement.conceptValid, true);
     assert.equal(movement.actions.commands.length, 15);
     assert.equal(validator.validateVariable('isi_air = 5', 5, 4).syntaxValid, false);
+    for (const code of ['air_pos = 0', 'air_pos += isi_air']) {
+        const result = validator.validateVariable(code, 5, 4);
+        assert.equal(result.syntaxValid, false);
+        assert.match(result.message, /FINISH/);
+    }
 });
 
 test('Level 1 rejects split identifiers, split numbers, and unexpected indentation', () => {

@@ -8,7 +8,7 @@ test('stopping on a Level 1 marker offers its placeholder only once per challeng
     const getStarterCode = challengeModule.getLevel1MarkerStarterCode;
 
     assert.equal(getStarterCode({ challengeNumber: 1, hasShownStarterCode: false, isAtMarker: true }), 'isi_air = ...');
-    assert.equal(getStarterCode({ challengeNumber: 2, hasShownStarterCode: false, isAtMarker: true }), 'isi_air = isi_air + ...');
+    assert.equal(getStarterCode({ challengeNumber: 2, hasShownStarterCode: false, isAtMarker: true }), 'isi_air += ...');
     assert.equal(getStarterCode({ challengeNumber: 3, hasShownStarterCode: false, isAtMarker: true }), 'air_pos = ...\nisi_air = ...');
     assert.equal(getStarterCode({ challengeNumber: 1, hasShownStarterCode: true, isAtMarker: true }), null);
     assert.equal(getStarterCode({ challengeNumber: 1, hasShownStarterCode: true, isAtMarker: false }), null);

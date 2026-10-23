@@ -6,7 +6,7 @@ export function getChallengeStarterCode(level, challenge, state = {}) {
     if (level === 1) {
         if (!state.atLocation) return null;
         code = challenge === 1 ? 'isi_air = ...'
-            : challenge === 2 ? 'isi_air = isi_air + ...'
+            : challenge === 2 ? 'isi_air += ...'
                 : 'air_pos = ...\nisi_air = ...';
     } else if (level === 2) {
         if (state.atPump) {
