@@ -9,12 +9,14 @@
             [
                 'image' => 'assets/story/level3/1.png',
                 'alt' => 'Komandan PyroRescue menerima laporan kebakaran dari pos operasi',
-                'text' => 'Komandan menerima laporan bahwa kebakaran hutan semakin meluas dan mulai mengancam habitat bekantan.',
+                'speaker' => 'KOMANDAN',
+                'text' => 'Petugas, kebakaran hutan semakin meluas dan mulai mengancam habitat bekantan. Kita harus segera bertindak.',
             ],
             [
                 'image' => 'assets/story/level3/2.png',
                 'alt' => 'Anggota PyroRescue tiba di jalur hutan dan melihat kebakaran dari kejauhan',
-                'text' => 'Anggota PyroRescue segera menuju lokasi. Dari kejauhan, api terlihat menyebar di antara pepohonan dan menutup beberapa jalur.',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'Kami sudah tiba di lokasi, Komandan. Api menyebar di antara pepohonan dan menutup beberapa jalur.',
             ],
             [
                 'image' => 'assets/story/level3/3.png',
@@ -24,6 +26,7 @@
             [
                 'image' => 'assets/story/level3/4.png',
                 'alt' => 'Komandan PyroRescue memberi perintah untuk memulai operasi penyelamatan',
+                'speaker' => 'KOMANDAN',
                 'text' => 'Padamkan seluruh titik api, selamatkan para bekantan, lalu antar mereka ke Pos Evakuasi dengan aman. Operasi penyelamatan dimulai!',
             ],
         ]
@@ -48,7 +51,8 @@
             [
                 'image' => 'assets/story/level2/4.png',
                 'alt' => 'Anggota PyroRescue memegang PyroPad sebelum memasuki area operasi',
-                'text' => 'Dengan PyroPad di tangan, anggota PyroRescue bersiap menyeberangi jembatan, mengisi tangki di pompa, lalu memadamkan tiga titik api satu per satu.',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'PyroPad siap, Komandan. Kami akan menyeberangi jembatan, mengisi tangki di pompa, lalu memadamkan tiga titik api satu per satu.',
             ],
         ]
         : [
@@ -71,7 +75,8 @@
             [
                 'image' => 'assets/story/level1/scene-4.png',
                 'alt' => 'Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad',
-                'text' => 'Pemain turun dari mobil dan sudah memegang PyroPad. Ia bersiap untuk masuk ke jalur hutan.',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'PyroPad sudah siap, Komandan. Kami akan masuk melalui jalur hutan dan memadamkan titik api pertama.',
             ],
         ]);
 @endphp
@@ -102,12 +107,19 @@
             </div>
 
             @foreach($storyScenes as $scene)
-            <article class="story-slide{{ $loop->first ? ' is-active' : '' }}{{ isset($scene['speaker']) ? ' story-slide--commander' : '' }}"
+            @php
+                $speakerType = match ($scene['speaker'] ?? null) {
+                    'KOMANDAN' => 'commander',
+                    'TIM PEMADAM' => 'team',
+                    default => 'narration',
+                };
+            @endphp
+            <article class="story-slide story-slide--{{ $speakerType }}{{ $loop->first ? ' is-active' : '' }}"
                      data-story-slide @unless($loop->first) hidden @endunless>
                 <img src="{{ asset($scene['image']) }}" alt="{{ $scene['alt'] }}">
-                <div class="story-dialogue{{ isset($scene['speaker']) ? ' story-dialogue--commander' : '' }}">
+                <div class="story-dialogue story-dialogue--{{ $speakerType }}">
                     @isset($scene['speaker'])
-                    <strong class="story-speaker">{{ $scene['speaker'] }}</strong>
+                    <strong class="story-speaker story-speaker--{{ $speakerType }}">{{ $scene['speaker'] }}</strong>
                     @endisset
                     <p>{{ $scene['text'] }}</p>
                 </div>

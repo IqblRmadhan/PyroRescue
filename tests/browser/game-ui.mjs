@@ -135,14 +135,13 @@ try {
         for (const challenge of [1, 2, 3, 4]) {
             const current = await page.evaluate(() => window.pyroGame.scene.getScenes(true)[0].challengeNumber);
             assert.equal(current, challenge);
+            const titles = level === 1 ? ['1. Membuat variabel', '2. Menambah dan mengubah nilai', '3. Menggunakan nilai variabel']
+                : ['Challenge 1 - Mengenal Semprotan', 'Challenge 2 - Mengulang Semprotan', 'Challenge 3 - Variabel dalam Perulangan'];
+            const codes = level === 1 ? ['isi_air = 3', 'isi_air = isi_air + 2', 'air_pos = isi_air\nisi_air = 0']
+                : ['semprot()\nsemprot()', 'for i in range(1):\n    semprot()', 'jumlah_semprot = 3\nfor i in range(jumlah_semprot):\n    semprot()'];
             if (challenge < 4) {
-                const titles = level === 1 ? ['1. Membuat variabel', '2. Menambah dan mengubah nilai', '3. Menggunakan nilai variabel']
-                    : level === 2 ? ['Challenge 1 - Mengenal Semprotan', 'Challenge 2 - Mengulang Semprotan', 'Challenge 3 - Variabel dalam Perulangan']
-                        : ['Challenge 1 - Memadamkan Api di Habitat', 'Challenge 2 - Memeriksa Kondisi Api dengan if', 'Challenge 3 - Menentukan Tindakan dengan if/else'];
-                const codes = level === 1 ? ['isi_air = 3', 'isi_air = isi_air + 2', 'air_pos = isi_air\nisi_air = 0']
-                    : level === 2 ? ['isi_air = 6\nsemprot()\nsemprot()', 'for i in range(1):\n    semprot()', 'jumlah_semprot = 3\nfor i in range(jumlah_semprot):\n    semprot()']
-                        : ['jumlah_semprot = 3\nfor i in range(jumlah_semprot):\n    semprot()', 'if api_padam:\n    status_bekantan = "aman"', 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"'];
-                await checkMaterial(titles[challenge - 1], codes[challenge - 1]);
+                if (level === 1) await checkMaterial(titles[challenge - 1], codes[challenge - 1]);
+                else assert.equal(await page.locator('#material-open').isVisible(), false);
             } else if (level > 1) {
                 assert.equal(await page.locator('#material-open').isVisible(), false);
                 assert.equal(await page.locator('#hint').isVisible(), false);
@@ -156,6 +155,9 @@ try {
             } else {
                 if (challenge === 1 || challenge === 4) {
                     await goTo((challenge === 1 ? map.pump : map.evaluationPump).action, walkable);
+                    if (level === 2 && challenge === 1) {
+                        assert.equal(await page.locator('#code-editor').inputValue(), '');
+                    }
                     await run(`isi_air = ${level === 2 ? challenge === 1 ? 6 : 3 : challenge === 1 ? 3 : 4}`);
                 }
                 if (level === 3 && (challenge === 2 || challenge === 3)) {
@@ -164,6 +166,10 @@ try {
                         : 'if api_padam:\n    status_bekantan = "selamat"\nelse:\n    status_bekantan = "tunggu"');
                 } else {
                     await goTo(map.fires[challenge].action, walkable);
+                    if (level === 2 && challenge < 4) {
+                        assert.equal(await page.locator('#material-open').isVisible(), true);
+                        await checkMaterial(titles[challenge - 1], codes[challenge - 1]);
+                    }
                     let code = level === 2 && challenge === 1 ? 'semprot()\nsemprot()'
                         : level === 2 && challenge === 2 ? 'for i in range(1):\n    semprot()'
                             : `jumlah_semprot = ${level === 3 && challenge === 4 ? 4 : 3}\nfor i in range(jumlah_semprot):\n    semprot()`;

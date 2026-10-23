@@ -123,6 +123,10 @@
     color: #b92718;
 }
 
+.story-is-typing .story-slide--team.is-active .story-dialogue p::after {
+    color: #78dbff;
+}
+
 .story-dialogue--commander {
     color: #241a15;
     border-color: #35261c;
@@ -131,20 +135,38 @@
     text-shadow: none;
 }
 
+.story-dialogue--team {
+    border-color: #8adbf0;
+    background: #0b2d42f2;
+    box-shadow: inset 0 0 0 3px #174b63, 0 5px 0 #061923;
+    text-shadow: 2px 2px #061923;
+}
+
 .story-speaker {
     position: absolute;
     bottom: calc(100% - 5px);
     left: 17px;
     padding: 6px 24px;
     color: #fff7dd;
-    border: 3px solid #512016;
+    border: 3px solid;
     border-radius: 3px;
-    background: #b92718;
-    box-shadow: inset 0 0 0 2px #dc5b32, 2px 3px #2e1b15;
     font-size: clamp(16px, 2vw, 28px);
     line-height: 1;
     letter-spacing: .04em;
+}
+
+.story-speaker--commander {
+    border-color: #512016;
+    background: #b92718;
+    box-shadow: inset 0 0 0 2px #dc5b32, 2px 3px #2e1b15;
     text-shadow: 2px 2px #5b1f17;
+}
+
+.story-speaker--team {
+    border-color: #123f57;
+    background: #187aa3;
+    box-shadow: inset 0 0 0 2px #50b9d9, 2px 3px #071c27;
+    text-shadow: 2px 2px #0a3b52;
 }
 
 .story-skip,
@@ -4384,6 +4406,16 @@
 }
 #feedback.mission-guide--level3 .mission-guide__portrait--commander img { top: 0; }
 .guide-message__sentence { margin: 0; padding: 11px 13px; border: 2px solid #dbc596; border-radius: 8px; background: #fffaf0c9; box-shadow: inset 0 0 0 2px #fff; font-size: 17px; line-height: 1.55; }
+.guide-message__mission { position: relative; isolation: isolate; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: stretch; margin-top: 12px; overflow: hidden; color: #35261c; border: 3px solid #71301f; border-radius: 11px; background: #fff0ae; box-shadow: inset 0 0 0 2px #fff9dc, 0 5px 0 #452118, 0 9px 18px #43231835; animation: guide-mission-in 360ms cubic-bezier(.2, .9, .25, 1.2) both; }
+.guide-message__mission::before { position: absolute; z-index: -1; inset: 0; content: ''; background: linear-gradient(135deg, #fff7d999 0 18%, transparent 18% 50%, #e4bd5522 50% 68%, transparent 68%), repeating-linear-gradient(90deg, transparent 0 31px, #9a6a2412 31px 32px); background-size: 130px 100%, 32px 100%; pointer-events: none; }
+.guide-message__mission::after { position: absolute; top: 0; right: 0; width: 58px; height: 7px; content: ''; background: repeating-linear-gradient(135deg, #b93622 0 7px, #ffd15c 7px 14px); box-shadow: -58px 0 0 #ffd15c; }
+.guide-message__mission-label { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-width: 108px; padding: 13px 15px; color: #fff8dc; border-right: 3px solid #71301f; background: linear-gradient(145deg, #df522d 0%, #b52f20 58%, #8d241b 100%); box-shadow: inset -3px 0 #f9a34055, inset 0 0 0 2px #ef7147; font: 800 13px/1.2 'PixelFont', 'Trebuchet MS', sans-serif; letter-spacing: .11em; text-shadow: 2px 2px #6d2018; }
+.guide-message__mission-label::before { width: 22px; height: 22px; box-sizing: border-box; content: ''; border: 3px solid #ffe188; border-radius: 50%; background: radial-gradient(circle, #fff6c9 0 2px, transparent 3px), linear-gradient(90deg, transparent 43%, #ffe188 43% 57%, transparent 57%), linear-gradient(transparent 43%, #ffe188 43% 57%, transparent 57%); filter: drop-shadow(2px 2px #6d2018); }
+.guide-message__mission-label::after { position: absolute; top: 0; right: -3px; bottom: 0; width: 3px; content: ''; background: #ffd15c; }
+.guide-message__mission-body { align-self: center; min-width: 0; padding: 12px 17px 13px; }
+.guide-message__mission-eyebrow { display: block; margin-bottom: 5px; color: #8e321f; font: 800 10px/1.2 'PixelFont', 'Trebuchet MS', sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.guide-message__mission-text { margin: 0; font-size: 17px; font-weight: 800; line-height: 1.5; text-wrap: pretty; }
+.guide-message__mission-text::first-letter { text-transform: uppercase; }
 .guide-code-chip { display: inline-block; margin: 2px 3px; padding: 2px 7px; color: #e9f8ff; border: 1px solid #4f7588; border-radius: 4px; background: #102938; box-shadow: 0 2px 0 #071923; font: 700 .88em/1.4 Consolas, monospace; text-shadow: none; white-space: nowrap; }
 .guide-analogy { margin: 10px 0 0; padding: 11px 12px 12px; border: 2px solid #c98935; border-radius: 9px; background: #f5e6ba; box-shadow: inset 0 0 0 2px #fff3cc, 0 3px 0 #8c5a28; color: #263b51; }
 .guide-analogy__title { display: block; color: #713e20; font: 800 12px/1.25 'PixelFont', 'Trebuchet MS', sans-serif; letter-spacing: .035em; }
@@ -4399,13 +4431,31 @@
 #feedback.mission-guide #feedback-message .guide-code-panel pre { margin: 0; padding: 10px 13px; overflow-x: auto; color: #e2f5ff; border: 1px solid #577989; border-radius: 6px; background: #102938; font: 15px/1.5 Consolas, monospace; text-shadow: none; white-space: pre; }
 @media (max-width: 600px) {
     .guide-message__sentence { padding: 9px 10px; font-size: 14px; }
+    .guide-message__mission { margin-top: 9px; border-width: 2px; border-radius: 8px; box-shadow: inset 0 0 0 2px #fff9dc, 0 4px 0 #452118; }
+    .guide-message__mission-label { min-width: 78px; gap: 6px; padding: 9px 8px; border-right-width: 2px; font-size: 9px; }
+    .guide-message__mission-label::before { width: 18px; height: 18px; border-width: 2px; }
+    .guide-message__mission-label::after { right: -2px; width: 2px; }
+    .guide-message__mission-body { padding: 10px 11px; }
+    .guide-message__mission-eyebrow { margin-bottom: 4px; font-size: 8px; }
+    .guide-message__mission-text { font-size: 14px; line-height: 1.45; }
     .guide-analogy__rows { grid-template-columns: 1fr; }
     .guide-analogy__row { margin-left: calc(var(--analogy-depth) * 8px); }
 }
 @media (max-height: 500px) {
     .guide-message__sentence { padding: 7px 9px; font-size: 13px; }
+    .guide-message__mission { margin-top: 7px; }
+    .guide-message__mission-label { min-width: 70px; gap: 4px; padding: 7px; font-size: 8px; }
+    .guide-message__mission-label::before { width: 16px; height: 16px; border-width: 2px; }
+    .guide-message__mission-body { padding: 7px 9px; }
+    .guide-message__mission-eyebrow { margin-bottom: 2px; font-size: 7px; }
+    .guide-message__mission-text { font-size: 13px; }
     .guide-analogy { padding: 8px 9px; }
     .guide-analogy__intro { margin: 4px 0 6px; font-size: 12px; }
     .guide-analogy__row { padding: 6px 7px; font-size: 12px; }
     #feedback.mission-guide #feedback-message .guide-code-panel pre { padding: 7px 9px; font-size: 12px; }
 }
+@keyframes guide-mission-in { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+    .guide-message__mission { animation: none; }
+}
+.pref-reduced-motion .guide-message__mission { animation: none; }

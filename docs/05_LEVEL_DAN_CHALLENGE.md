@@ -51,13 +51,20 @@ Pemain mampu menggunakan `for` dan `range()` untuk menjalankan aksi berulang ses
 ## Misi
 Memadamkan beberapa titik api dengan jumlah penyemprotan sesuai kebutuhan.
 Dekat jalan setelah jembatan terdapat pompa air tanpa lapisan latar tambahan
-di atas gambar peta. Di penanda bawah pompa, pemain mengulang
-materi Level 1 dengan menulis `isi_air = 6`.
+di atas gambar peta. Di penanda bawah pompa, pemain diminta mengisi tangki
+dengan enam unit air. Editor dibiarkan kosong agar pemain mengetik kodenya sendiri.
 Enam unit dipakai untuk dua semprotan di C1, satu di C2, dan tiga di C3.
 Setiap `semprot()` mengurangi `isi_air` satu unit menurut aturan game.
 Pompa menerima assignment sebagian sampai kapasitas enam unit. Contohnya,
 `isi_air = 3` menghasilkan `3/6`; menjalankan nilai yang sama lagi tetap `3/6`
 karena assignment mengganti nilai. Nilai lebih dari enam ditolak.
+
+Pemandu hanya memberi arahan perjalanan saat pemain belum tiba di lokasi.
+Materi challenge baru muncul setelah pemain menginjak penanda merah api.
+Setelah C1–C3 selesai, satu feedback menjelaskan hasil kode sekaligus
+mengarahkan pemain ke titik berikutnya; tidak ada dialog sukses terpisah.
+Kotak kisi-kisi di dalam dialog tidak ditampilkan. Editor tetap kosong di pompa,
+sedangkan kerangka kode pemadaman diisikan saat pemain tiba di titik api.
 
 ### Challenge 1 — Mengenal Semprotan (area tengah)
 
@@ -67,7 +74,8 @@ semprot()
 ```
 
 Api membutuhkan **2 semprotan**. Gunakan sprite `LEVEL2-C1.png`.
-Sebelum menuju C1, pemain harus mengisi tangki di pompa.
+Sebelum menuju C1, pemain harus mengisi tangki di pompa. Materi C1 membahas
+bahwa satu `semprot()` memanggil satu aksi dan air berkurang otomatis.
 
 ### Challenge 2 — Mengulang Semprotan (kanan atas)
 
@@ -76,7 +84,10 @@ for i in range(1):
     semprot()
 ```
 
-Api membutuhkan **1 semprotan**, dengan `for/range`. Gunakan sprite `LEVEL2-C2.png`.
+Api membutuhkan **1 semprotan**, dengan `for/range`. Materi yang muncul di C2
+membedah `for`, penghitung `i`, `range(1)`, tanda `:`, dan indentasi blok.
+Pemain dapat menekan Tab untuk membuat indentasi pada baris setelah tanda `:`.
+Gunakan sprite `LEVEL2-C2.png`.
 
 ### Challenge 3 — Variabel + Perulangan (kanan bawah)
 
@@ -87,6 +98,9 @@ for i in range(jumlah_semprot):
     semprot()
 ```
 
+Materi yang muncul di C3 menjelaskan bahwa `jumlah_semprot` menyimpan angka
+yang kemudian dibaca oleh `range()` untuk menentukan banyaknya perulangan.
+
 ### Evaluasi
 
 Api ketiga membutuhkan **3 semprotan** dan memakai sprite `LEVEL2-C3.png`.
@@ -95,8 +109,10 @@ Di sana tersedia pompa kedua dan satu api terakhir dengan sprite
 `LEVEL2-EVAL.png`. Pompa kedua berada di rumput sebelah kiri jalan bawah dan
 tetap memakai kapasitas tangki enam unit. Pemain mengambil minimal 3 unit air,
 memakai variabel `jumlah_semprot` bersama `for/range()` untuk memadamkannya,
-lalu menuju petak FINISH. Panel materi, kamus, autocomplete, dan tombol Hint
-disembunyikan selama evaluasi. Nilai dan bintang dihitung setelah FINISH dicapai.
+lalu menuju petak FINISH. Panel materi, kamus, dan tombol Hint disembunyikan
+selama evaluasi. Rekomendasi Ctrl+Space tetap tersedia, tetapi hanya berisi
+urutan gerak `atas`, `bawah`, `kanan`, dan `kiri`. Nilai dan bintang dihitung
+setelah FINISH dicapai.
 
 Nomor file sprite mengikuti urutan challenge: C1 di tengah = 2 semprotan,
 C2 di kanan atas = 1 semprotan, C3 di kanan bawah = 3 semprotan, dan
@@ -150,6 +166,6 @@ lama. Nilai percobaan/hint ikut snapshot; HP habis mengulang Level 3 dari awal.
 Story dan dialog Level 3 memakai komandan.png di kanan dan mission-guide.png
 sebagai karakter pemain di kiri. Bantuan evaluasi tidak memuat solusi lengkap.
 
-Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai. Run mengembalikan kamera mengikuti pemain. Potret dialog ditampilkan setengah badan.
+Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai, lalu kembali mengikuti pemain setelah sekitar dua detik. Potret dialog ditampilkan setengah badan.
 
 Habitat terakhir: lahan cokelat di pulau kiri atas, titik coding (20,4), checkpoint (19,4).

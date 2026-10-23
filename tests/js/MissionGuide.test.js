@@ -41,12 +41,16 @@ test('Level 1 guidance follows the current location and delivered water', () => 
 test('Level 2 guides pumping, approaching fires, and the remaining sprays', () => {
     const instruction = (challengeNumber, state) => getGuideInstruction({ levelNumber: 2, challengeNumber, state });
     assert.match(instruction(1, { water: 0 }), /pompa/);
-    assert.match(instruction(1, { water: 0, atPump: true }), /isi_air = 6/);
-    assert.match(instruction(1, { water: 6 }), /api tengah/);
-    assert.match(instruction(1, { water: 5, sprays: 1, atFire: true }), /1 semprotan/);
+    assert.match(instruction(1, { water: 0, atPump: true }), /Isi tangki dengan 6 unit air/);
+    assert.doesNotMatch(instruction(1, { water: 0, atPump: true }), /isi_air/);
+    assert.match(instruction(1, { water: 6 }), /titik kebakaran/);
+    assert.match(instruction(1, { water: 5, sprays: 1, atFire: true }), /satu semprotan/);
     assert.match(instruction(2, { water: 4, atFire: true }), /for/);
     assert.match(instruction(3, { water: 3, atFire: true }), /jumlah_semprot/);
     assert.match(instruction(3, { water: 0 }), /pompa/);
+    for (const challengeNumber of [1, 2, 3]) {
+        assert.match(instruction(challengeNumber, { water: 6, atFire: true }), /Misi:/);
+    }
 });
 
 test('evaluation dialogue gives objectives without code answers or teaching feedback', () => {

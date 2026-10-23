@@ -130,7 +130,8 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - Pompa Phaser ditempatkan di dekat jalan setelah jembatan tanpa bidang rumput
   atau lapisan latar tambahan. Sprite pompa Level 1 digunakan ulang;
   pompa berada di `(740,240)`, menghadap kanan, dengan penanda biru `(17,5)`.
-  Pemain mengambil enam unit dengan `isi_air = 6` di penanda tersebut.
+  Pemain diminta mengisi enam unit air di penanda tersebut. Editor tidak
+  diisi otomatis di pompa agar pemain mengetik kodenya sendiri.
   HUD menampilkan sisa isi tangki, dan setiap `semprot()` memakai satu unit.
 - `Level2Assets.js` membaca setiap sprite api sebagai lima frame 200 × 200:
   empat frame animasi api dan satu frame padam. PNG asli tidak diubah.
@@ -153,11 +154,21 @@ kiri dan balon teks di kanan. Latar game sedikit diredupkan selama dialog terbuk
 - `Level2Scene.js` menjalankan gerakan dan semprotan secara berurutan. Pompa
   kedua berada di rumput sebelah kiri jalan bawah dengan kapasitas 6 unit;
   evaluasi membutuhkan 3 unit. Ubin FINISH menyelesaikan
-  level setelah api evaluasi padam. Selama evaluasi, Hint, materi, kamus,
-  dan autocomplete disembunyikan.
-- Pemandu Level 2 menjelaskan pengisian air, semprotan, serta perulangan pada tiga
-  challenge latihan. Pada evaluasi, dialog hanya memberi tujuan umum dan hasil;
-  penjelasan kode dan contoh jawaban tidak ditampilkan.
+  level setelah api evaluasi padam. Selama evaluasi, Hint, materi, dan kamus
+  disembunyikan. Rekomendasi Ctrl+Space tetap tersedia hanya untuk urutan
+  gerak `atas`, `bawah`, `kanan`, dan `kiri`.
+- Pemandu Level 2 memakai dialog sesedikit mungkin. Challenge 1 dimulai dengan
+  arahan langsung ke pompa; setelah tangki berisi enam unit, pemain langsung
+  diarahkan ke api. Materi baru tampil ketika pemain menginjak penanda merah.
+  Challenge 1 menjelaskan aksi `semprot()`, Challenge 2 membedah
+  `for i in range(1):`, tanda `:`, dan indentasi dengan Tab, sedangkan
+  Challenge 3 menjelaskan variabel `jumlah_semprot` di dalam `range()`.
+- Penyelesaian C1-C3 hanya menampilkan satu feedback hasil kode yang sekaligus
+  mengarahkan pemain ke titik berikutnya. Dialog “Misi berhasil” dan kotak
+  “Coba di PyroPad” tidak ditampilkan pada Level 2. Editor dibiarkan kosong
+  di pompa, sedangkan kisi-kisi pemadaman baru masuk saat pemain tiba di api.
+  Pada evaluasi, dialog hanya memberi
+  tujuan umum; materi, contoh jawaban, dan feedback sukses terpisah tidak tampil.
 - Assignment `isi_air` pada pompa mengganti isi tangki dan boleh berada di
   bawah kapasitas. Nilai yang melebihi kapasitas ditolak. Animasi pompa
   diputar satu siklus untuk setiap unit air yang diambil.
@@ -485,7 +496,7 @@ button {
 
 Jangan buat admin panel, leaderboard, shop, atau kustomisasi avatar dulu.
 
-Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai. Run mengembalikan kamera mengikuti pemain. Potret dialog ditampilkan setengah badan.
+Pembaruan penanda: START Level 3 di (7,18), FINISH di (34,18), sesuai gambar pengguna. Penanda merah api yang belum padam tetap tampak; tujuan aktif lebih terang. Kamera semua level menyorot tujuan setelah challenge selesai, dan Level 3 setelah submisi selesai, lalu kembali mengikuti pemain setelah sekitar dua detik. Potret dialog ditampilkan setengah badan.
 
 Kisi-kisi PyroPad: ChallengeStarterCode.js menyediakan kerangka dengan ... untuk challenge latihan Level 1–3. Kerangka muncul sekali per titik pengerjaan/submisi sesudah Run selesai; kode yang sedang diedit tidak ditimpa. Reset mengaktifkan kerangka kembali. Seluruh evaluasi tidak mendapat kerangka kode.
 
