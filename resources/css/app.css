@@ -4348,16 +4348,6 @@
     .auth-scene__light, .auth-scene__mascot { animation: none; }
     .auth-scene__mascot { transform: translateX(-50%); }
 }
-/* Level 3 layers existing portraits over the sanctuary map. */
-.level-story[data-level-number='3'] .story-stage { width: min(1200px, calc(100vw - 32px)); height: min(760px, calc(100dvh - 32px)); aspect-ratio: auto; }
-.level-story[data-level-number='3'] .story-slide > img:first-child { opacity: .7; }
-.level-story[data-level-number='3'] .story-portrait { position: absolute; z-index: 1; bottom: 0; width: 32%; height: 85%; object-fit: contain; object-position: bottom; }
-.level-story[data-level-number='3'] .story-portrait--commander { right: 1%; }
-.level-story[data-level-number='3'] .story-portrait--player { left: 1%; }
-.level-story[data-level-number='3'] .story-dialogue { bottom: 18%; left: 4%; right: 35%; padding: 24px; max-height: 62%; overflow: visible; }
-.level-story[data-level-number='3'] [data-speaker='player'] .story-dialogue { left: 35%; right: 4%; }
-.level-story[data-level-number='3'] .story-dialogue p { font-size: clamp(15px, 2vw, 26px); line-height: 1.4; }
-.level-story[data-level-number='3'] .story-next { bottom: 4%; }
 .game-prototype.game-workspace.game-level3 .game-hud { grid-template-columns: auto minmax(0, 1fr); gap: 8px; width: min(310px, calc(100% - 24px)); }
 .game-level3 #hud-water { grid-column: 1; grid-row: 1; }
 .game-level3 .hud-health { grid-column: 2; grid-row: 1; }
@@ -4375,17 +4365,11 @@
 #feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__portrait--player,
 #feedback.mission-guide--level3[data-speaker='player'] .mission-guide__portrait--commander { display: none; }
 @media (max-width: 600px) {
-    .level-story[data-level-number='3'] .story-dialogue { padding: 16px; bottom: 19%; max-height: 65%; }
-    .level-story[data-level-number='3'] .story-dialogue p { font-size: 15px; }
-    .level-story[data-level-number='3'] .story-speaker { font-size: 12px; padding: 5px 8px; left: 6px; }
     #feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: 75px; }
     #feedback.mission-guide--level3 .mission-guide__portrait { height: 180px; }
     #feedback.mission-guide--level3[data-speaker='commander'] .mission-guide__bubble::before { right: -10px; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
-    .level-story[data-level-number='3'] .story-dialogue { bottom: 22%; padding: 12px 16px; max-height: 58%; }
-    .level-story[data-level-number='3'] .story-dialogue p { font-size: clamp(12px, 2.2vh, 16px); line-height: 1.35; }
-    .level-story[data-level-number='3'] .story-speaker { font-size: 12px; padding: 4px 9px; }
     #feedback.mission-guide--level3 .mission-guide__stage { --portrait-width: 105px; gap: 12px; }
     #feedback.mission-guide--level3 .mission-guide__portrait { height: min(80dvh, 270px); }
     #feedback.mission-guide--level3 .mission-guide__bubble { max-height: calc(100dvh - 42px); padding: 22px 18px 12px; }
@@ -4395,12 +4379,10 @@
 /* Potret dialog dipotong di pinggang, sama seperti pemandu biasa. */
 #feedback.mission-guide--level3 .mission-guide__portrait { height: auto; aspect-ratio: 4 / 5; }
 #feedback.mission-guide--level3 .mission-guide__portrait img { inset: auto; top: -30%; left: -17.5%; width: 135%; height: auto; object-fit: contain; }
-.level-story[data-level-number='3'] .story-portrait { height: 62%; width: 32%; object-fit: cover; object-position: center top; }
 @media (max-width: 600px) {
     #feedback.mission-guide--level3 .mission-guide__portrait { height: 125px; aspect-ratio: auto; }
 }
 #feedback.mission-guide--level3 .mission-guide__portrait--commander img { top: 0; }
-.level-story[data-level-number='3'] .story-portrait--commander { height: 45%; object-position: center top; }
 .guide-message__sentence { margin: 0; padding: 11px 13px; border: 2px solid #dbc596; border-radius: 8px; background: #fffaf0c9; box-shadow: inset 0 0 0 2px #fff; font-size: 17px; line-height: 1.55; }
 .guide-code-chip { display: inline-block; margin: 2px 3px; padding: 2px 7px; color: #e9f8ff; border: 1px solid #4f7588; border-radius: 4px; background: #102938; box-shadow: 0 2px 0 #071923; font: 700 .88em/1.4 Consolas, monospace; text-shadow: none; white-space: nowrap; }
 .guide-analogy { margin: 10px 0 0; padding: 11px 12px 12px; border: 2px solid #c98935; border-radius: 9px; background: #f5e6ba; box-shadow: inset 0 0 0 2px #fff3cc, 0 3px 0 #8c5a28; color: #263b51; }
