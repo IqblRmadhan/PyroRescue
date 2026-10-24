@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { tokenizeGuideMessage } from '../../resources/js/game/GuideMessage.js';
+import { splitGuideMission, tokenizeGuideMessage } from '../../resources/js/game/GuideMessage.js';
 import { getGuidePresentation } from '../../resources/js/game/MissionGuide.js';
 
 test('instruction code stays inline instead of becoming separate full-width blocks', () => {
@@ -18,6 +18,20 @@ test('Pos 1 arithmetic assignment stays together as one readable code snippet', 
 test('Pos 1 compound assignment stays together as one readable code snippet', () => {
     const parts = tokenizeGuideMessage('Di Pos 1 tulis isi_air += 2 untuk menambah air.');
     assert.deepEqual(parts.filter(part => part.type === 'code').map(part => part.text), ['isi_air += 2']);
+});
+
+test('mission text is separated from the dialogue explanation', () => {
+    assert.deepEqual(
+        splitGuideMission('semprot() menjalankan satu aksi. Misi: lakukan dua kali penyemprotan.'),
+        {
+            explanation: 'semprot() menjalankan satu aksi.',
+            mission: 'lakukan dua kali penyemprotan.',
+        },
+    );
+    assert.deepEqual(splitGuideMission('Pergi ke pompa.'), {
+        explanation: 'Pergi ke pompa.',
+        mission: '',
+    });
 });
 
 test('Level 1 challenges receive field analogies and marker scaffolds', () => {
@@ -41,15 +55,29 @@ test('Level 2 loop challenges explain repetition with boxed steps', () => {
         state: { atFire: true, water: 4, sprays: 0 },
     });
 
-    assert.match(guide.analogy.title, /Penyemprot Otomatis/);
-    assert.ok(guide.analogy.rows.length >= 3);
-    assert.match(guide.code, /for i in range/);
+    assert.match(guide.analogy.title, /Membedah for dan range/);
+    assert.deepEqual(guide.analogy.rows.map(row => row.label), [
+        'for', 'i', 'range(n)', 'Tanda (:)', 'Indentasi',
+    ]);
+    assert.equal(guide.code, '');
+});
+
+test('Level 2 travel instructions do not show lesson details before the fire marker', () => {
+    const guide = getGuidePresentation({
+        levelNumber: 2,
+        challengeNumber: 1,
+        state: { atPump: true, atFire: false, water: 0, sprays: 0 },
+    });
+
+    assert.equal(guide.analogy, null);
+    assert.equal(guide.code, '');
 });
 
 test('evaluations provide an analogy without revealing a code scaffold', () => {
     for (const levelNumber of [1, 2, 3]) {
         const guide = getGuidePresentation({ levelNumber, challengeNumber: 4, state: {} });
-        assert.ok(guide.analogy, `Level ${levelNumber} needs an evaluation analogy`);
+        if (levelNumber === 2) assert.equal(guide.analogy, null);
+        else assert.ok(guide.analogy, `Level ${levelNumber} needs an evaluation analogy`);
         assert.equal(guide.code, '');
     }
 });

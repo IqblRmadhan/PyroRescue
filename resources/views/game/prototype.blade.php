@@ -6,10 +6,29 @@
     $levelTitle = $isLevel3 ? 'Suaka Bekantan' : ($isLevel2 ? 'Hutan Gambut Berasap' : 'Tepi Sungai Terbakar');
     $storyScenes = $isLevel3
         ? [
-            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Pulau dan jembatan di Suaka Bekantan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'Beberapa bekantan masih terjebak. Sebagian jalur tertutup asap. Padamkan tiga titik api dan antar tiga bekantan ke pos penyelamatan. Periksa kondisi sebelum bertindak.'],
-            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Jalur menuju pos penyelamatan', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Saya akan memeriksa jalur, persediaan air, dan keadaan satwa. Bekantan harus saya antar kembali ke pos setelah api padam.'],
-            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Peta operasi untuk belajar percabangan', 'speaker' => 'KOMANDAN', 'side' => 'commander', 'text' => 'if menjalankan tindakan saat kondisi True. else memilih alternatif saat False. Akhiri dengan titik dua dan beri indentasi pada tindakan. Kondisi berasal dari dunia game; periksa sebelum mengambil keputusan.'],
-            ['image' => 'assets/maps/level3-map.webp', 'alt' => 'Anggota PyroRescue bersiap menuju pondok', 'speaker' => 'PEMAIN', 'side' => 'player', 'text' => 'Siap! Saya menuju pondok, mengisi empat unit air, lalu memilih jalur aman. Dengan if/else, saya akan memeriksa setiap kemungkinan sebelum memulai penyelamatan.'],
+            [
+                'image' => 'assets/story/level3/1.png',
+                'alt' => 'Komandan PyroRescue menerima laporan kebakaran dari pos operasi',
+                'speaker' => 'KOMANDAN',
+                'text' => 'Petugas, kebakaran hutan semakin meluas dan mulai mengancam habitat bekantan. Kita harus segera bertindak.',
+            ],
+            [
+                'image' => 'assets/story/level3/2.png',
+                'alt' => 'Anggota PyroRescue tiba di jalur hutan dan melihat kebakaran dari kejauhan',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'Kami sudah tiba di lokasi, Komandan. Api menyebar di antara pepohonan dan menutup beberapa jalur.',
+            ],
+            [
+                'image' => 'assets/story/level3/3.png',
+                'alt' => 'Sekelompok bekantan terjebak di tengah kebakaran hutan',
+                'text' => 'Sejumlah bekantan terjebak di tengah kepungan api. Mereka harus segera diselamatkan sebelum keadaan semakin berbahaya.',
+            ],
+            [
+                'image' => 'assets/story/level3/4.png',
+                'alt' => 'Komandan PyroRescue memberi perintah untuk memulai operasi penyelamatan',
+                'speaker' => 'KOMANDAN',
+                'text' => 'Padamkan seluruh titik api, selamatkan para bekantan, lalu antar mereka ke Pos Evakuasi dengan aman. Operasi penyelamatan dimulai!',
+            ],
         ]
         : ($isLevel2
         ? [
@@ -32,7 +51,8 @@
             [
                 'image' => 'assets/story/level2/4.png',
                 'alt' => 'Anggota PyroRescue memegang PyroPad sebelum memasuki area operasi',
-                'text' => 'Dengan PyroPad di tangan, anggota PyroRescue bersiap menyeberangi jembatan, mengisi tangki di pompa, lalu memadamkan tiga titik api satu per satu.',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'PyroPad siap, Komandan. Kami akan menyeberangi jembatan, mengisi tangki di pompa, lalu memadamkan tiga titik api satu per satu.',
             ],
         ]
         : [
@@ -55,7 +75,8 @@
             [
                 'image' => 'assets/story/level1/scene-4.png',
                 'alt' => 'Anggota PyroRescue berdiri di depan jalur hutan sambil memegang PyroPad',
-                'text' => 'Pemain turun dari mobil dan sudah memegang PyroPad. Ia bersiap untuk masuk ke jalur hutan.',
+                'speaker' => 'TIM PEMADAM',
+                'text' => 'PyroPad sudah siap, Komandan. Kami akan masuk melalui jalur hutan dan memadamkan titik api pertama.',
             ],
         ]);
 @endphp
@@ -86,15 +107,19 @@
             </div>
 
             @foreach($storyScenes as $scene)
-            <article class="story-slide{{ $loop->first ? ' is-active' : '' }}{{ isset($scene['speaker']) ? ' story-slide--commander' : '' }}"
-                     data-story-slide @if($isLevel3) data-speaker="{{ $scene['side'] }}" @endif @unless($loop->first) hidden @endunless>
+            @php
+                $speakerType = match ($scene['speaker'] ?? null) {
+                    'KOMANDAN' => 'commander',
+                    'TIM PEMADAM' => 'team',
+                    default => 'narration',
+                };
+            @endphp
+            <article class="story-slide story-slide--{{ $speakerType }}{{ $loop->first ? ' is-active' : '' }}"
+                     data-story-slide @unless($loop->first) hidden @endunless>
                 <img src="{{ asset($scene['image']) }}" alt="{{ $scene['alt'] }}">
-                @if($isLevel3)
-                <img class="story-portrait story-portrait--{{ $scene['side'] }}" src="{{ asset('assets/characters/'.($scene['side'] === 'commander' ? 'komandan.png' : 'mission-guide.png')) }}" alt="" aria-hidden="true">
-                @endif
-                <div class="story-dialogue{{ isset($scene['speaker']) ? ' story-dialogue--commander' : '' }}">
+                <div class="story-dialogue story-dialogue--{{ $speakerType }}">
                     @isset($scene['speaker'])
-                    <strong class="story-speaker">{{ $scene['speaker'] }}</strong>
+                    <strong class="story-speaker story-speaker--{{ $speakerType }}">{{ $scene['speaker'] }}</strong>
                     @endisset
                     <p>{{ $scene['text'] }}</p>
                 </div>

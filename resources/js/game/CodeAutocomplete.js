@@ -85,7 +85,7 @@ export function createLevel1Suggestions(requiredWater = 5, challengeNumber = 1) 
     ];
 }
 
-export function createLevel2Suggestions(requiredCount, challengeNumber) {
+function createLoopLearningSuggestions(requiredCount, challengeNumber) {
     if (challengeNumber === 4) return [];
     const movements = createLevel1Suggestions().slice(0, 4);
     return [
@@ -115,7 +115,7 @@ export function createLevel2Suggestions(requiredCount, challengeNumber) {
             label: 'for i in range(...):',
             value: `for i in range(${challengeNumber === 3 ? 'jumlah_semprot' : requiredCount}):\n    semprot()`,
             selectionStart: 15, selectionLength: challengeNumber === 3 ? 13 : String(requiredCount).length,
-            kind: 'Perulangan Python', description: 'Mengulang semprot() di dalam blok. Empat spasi menandai indentasi.',
+            kind: 'Perulangan Python', description: 'Mengulang semprot() di dalam blok. Setelah tanda (:), tekan Tab pada baris berikutnya untuk membuat indentasi.',
             example: challengeNumber === 3
                 ? `jumlah_semprot = ${requiredCount}\nfor i in range(jumlah_semprot):\n    semprot()`
                 : `for i in range(${requiredCount}):\n    semprot()`,
@@ -125,9 +125,13 @@ export function createLevel2Suggestions(requiredCount, challengeNumber) {
     ];
 }
 
+export function createLevel2Suggestions() {
+    return createLevel1Suggestions().slice(0, 4);
+}
+
 export function createLevel3Suggestions(requiredCount, challengeNumber) {
     if (challengeNumber === 4) return [];
-    const basics = createLevel2Suggestions(requiredCount, 3).map(item => ({ ...item }));
+    const basics = createLoopLearningSuggestions(requiredCount, 3).map(item => ({ ...item }));
     basics[4] = { label: 'isi_air = angka', value: 'isi_air = 5', selectionStart: 10, selectionLength: 1,
         kind: 'Assignment', description: 'Mengganti isi tangki hanya di pompa. Kapasitas 5 unit.',
         example: 'isi_air = 5', parameter: '0?5', parameterDescription: 'Ikuti jumlah yang diminta submisi.' };

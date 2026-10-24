@@ -39,22 +39,56 @@ export function tokenizeGuideMessage(message) {
     return parts;
 }
 
-// Semua konten dimasukkan sebagai textContent, termasuk potongan kode pemain.
-export function renderGuideMessage(root, message, code = '', analogy = null) {
-    root.replaceChildren();
-    const sentence = document.createElement('p');
-    sentence.className = 'guide-message__sentence';
+export function splitGuideMission(message) {
+    const [explanation, ...missionParts] = String(message).split(/(?:^|\s+)Misi:\s*/i);
+    return {
+        explanation: explanation.trim(),
+        mission: missionParts.join(' Misi: ').trim(),
+    };
+}
+
+function appendTokenizedText(root, message) {
     for (const part of tokenizeGuideMessage(message)) {
         if (part.type === 'text') {
-            sentence.append(document.createTextNode(part.text));
+            root.append(document.createTextNode(part.text));
             continue;
         }
         const snippet = document.createElement('code');
         snippet.className = 'guide-code-chip';
         snippet.textContent = part.text;
-        sentence.append(snippet);
+        root.append(snippet);
     }
-    root.append(sentence);
+}
+
+// Semua konten dimasukkan sebagai textContent, termasuk potongan kode pemain.
+export function renderGuideMessage(root, message, code = '', analogy = null) {
+    root.replaceChildren();
+    const { explanation, mission } = splitGuideMission(message);
+    if (explanation) {
+        const sentence = document.createElement('p');
+        sentence.className = 'guide-message__sentence';
+        appendTokenizedText(sentence, explanation);
+        root.append(sentence);
+    }
+    if (mission) {
+        const missionCard = document.createElement('section');
+        missionCard.className = 'guide-message__mission';
+        missionCard.setAttribute('aria-label', 'Misi saat ini');
+        const missionLabel = document.createElement('strong');
+        missionLabel.className = 'guide-message__mission-label';
+        missionLabel.textContent = 'MISI';
+        const missionBody = document.createElement('div');
+        missionBody.className = 'guide-message__mission-body';
+        const missionEyebrow = document.createElement('span');
+        missionEyebrow.className = 'guide-message__mission-eyebrow';
+        missionEyebrow.textContent = 'TUJUAN OPERASI';
+        const missionText = document.createElement('p');
+        missionText.className = 'guide-message__mission-text';
+        appendTokenizedText(missionText, mission);
+        missionBody.append(missionEyebrow, missionText);
+        missionCard.append(missionLabel, missionBody);
+        root.append(missionCard);
+    }
     appendAnalogy(root, analogy);
     if (code) {
         const panel = document.createElement('section');

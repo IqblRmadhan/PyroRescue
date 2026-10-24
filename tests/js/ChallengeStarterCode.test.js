@@ -17,8 +17,9 @@ test('training scaffolds appear at coding locations, with blanks for player answ
         for (const step of steps) assert.match(starter(3,challenge,{step,atObjective:true}).code,/\.\.\./);
     }
 });
-test('pump and fire or successive decisions have distinct keys', () => {
-    assert.notEqual(starter(2,1,{atPump:true}).key,starter(2,1,{atFire:true}).key);
+test('Level 2 pump stays empty while fire and successive decisions receive scaffolds', () => {
+    assert.equal(starter(2,1,{atPump:true}),null);
+    assert.match(starter(2,1,{atFire:true}).code,/\.\.\./);
     assert.notEqual(starter(3,1,{step:3,atObjective:true}).key,starter(3,1,{step:4,atObjective:true}).key);
     assert.equal(starter(2,2,{atFire:true,fireOut:true}),null);
     assert.equal(starter(3,1,{step:5,atObjective:true}),null);

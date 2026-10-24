@@ -44,6 +44,7 @@ const resetButton = document.getElementById('reset');
 const clearButton = document.getElementById('clear-code');
 const hintButton = document.getElementById('hint');
 const hintButtonLabel = hintButton.querySelector('.hint-button__label');
+const materialButton = document.getElementById('material-open');
 const feedback = document.getElementById('feedback');
 const feedbackMessage = document.getElementById('feedback-message');
 const feedbackOkButton = document.getElementById('feedback-ok');
@@ -243,8 +244,10 @@ async function nextGuideMessage() {
             target.getAnimations().forEach((animation) => animation.cancel());
         }
         if (hasExplanation) {
+            const challengeBefore = currentChallenge;
             guideDialogue.next();
-            renderGuide(true);
+            if (isLevel2 && currentChallenge !== challengeBefore) hideFeedback();
+            else renderGuide(true);
         } else {
             hideFeedback();
             editor.focus({ preventScroll: true });
@@ -399,6 +402,18 @@ function isTargetComplete(targetKey, state) {
 
 // Dipanggil setelah Run gerakan selesai, bukan saat melewati penanda di tengah jalan.
 function showMarkerStarterCode() {
+    if (isLevel2 && currentChallenge === 1 && latestState.atPump) {
+        const emptyPumpKey = '2:1:pump-empty';
+        if (!shownStarterCodes.has(emptyPumpKey)) {
+            shownStarterCodes.add(emptyPumpKey);
+            editor.value = '';
+            editor.dispatchEvent(new Event('input', { bubbles: true }));
+            autocomplete.hide();
+            document.getElementById('editor-action-status').textContent = 'PyroPad dikosongkan. Ketik sendiri kode untuk mengisi tangki dengan 6 unit air.';
+        }
+        return;
+    }
+
     const starter = getChallengeStarterCode(levelNumber, currentChallenge, {
         ...latestState, atLocation: isTargetComplete('location', latestState),
     });
@@ -421,6 +436,10 @@ function renderMissionState(state = {}) {
         gameAudio.setFireNearby(persistentState.fireNearby);
     }
     latestState = { ...latestState, ...persistentState };
+
+    if (isLevel2) {
+        materialButton.hidden = currentChallenge === 4 || !latestState.atFire;
+    }
 
     if (isLevel3) {
         const visibleHud = new Set(latestState.hud ?? []);
@@ -732,7 +751,16 @@ async function runCode() {
             code: submittedCode,
             initialWater,
         }).map((message) => ({ message, state: 'info' }));
-        if (outcome.missionSuccess || outcome.reachedFinish) {
+
+        const completedLevel2Lesson = isLevel2 && currentChallenge < 4 && outcome.missionSuccess;
+        if (completedLevel2Lesson) {
+            const explanation = messages.map((entry) => entry.message).join(' ');
+            messages.splice(0, messages.length, {
+                message: [explanation, definition.nextMessage].filter(Boolean).join(' '),
+                state: 'info',
+            });
+        } else if ((outcome.missionSuccess || outcome.reachedFinish)
+            && !(isLevel2 && outcome.missionSuccess)) {
             messages.push({ message: outcome.message,
                 state: outcome.missionSuccess ? 'success' : 'info' });
             const bridgeMessage = outcome.missionSuccess

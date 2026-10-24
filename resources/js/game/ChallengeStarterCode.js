@@ -9,10 +9,8 @@ export function getChallengeStarterCode(level, challenge, state = {}) {
             : challenge === 2 ? 'isi_air += ...'
                 : 'air_pos = ...\nisi_air = ...';
     } else if (level === 2) {
-        if (state.atPump) {
-            key += ':pump';
-            code = 'isi_air = ...';
-        } else if (state.atFire && !state.fireOut) {
+        if (state.atPump) return null;
+        if (state.atFire && !state.fireOut) {
             key += ':fire';
             code = challenge === 1 ? '...()\n...()'
                 : challenge === 2 ? 'for i in range(...):\n    ...()'

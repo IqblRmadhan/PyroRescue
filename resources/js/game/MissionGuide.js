@@ -44,29 +44,31 @@ const guideAnalogies = {
     },
     2: {
         1: {
-            title: 'Tombol Selang Pemadam',
-            intro: 'Satu pemanggilan fungsi sama seperti menekan tombol alat satu kali.',
+            title: 'Aksi Selang Pemadam',
+            intro: 'semprot() adalah perintah untuk menjalankan satu aksi penyemprotan di dalam game.',
             rows: [
-                { label: 'Satu tekan', text: 'semprot() dijalankan sekali.', type: 'question' },
-                { label: 'Dua semprotan', text: 'Jalankan perintah yang sama dua kali.', type: 'answer' },
-                { label: 'Biaya', text: 'Setiap semprotan memakai 1 unit air.', type: 'yes' },
+                { label: 'Jalankan aksi', text: 'Satu semprot() menghasilkan satu semprotan.', type: 'question' },
+                { label: 'Ulangi manual', text: 'Tulis semprot() pada dua baris untuk dua aksi.', type: 'answer' },
+                { label: 'Air otomatis', text: 'Setiap aksi mengurangi 1 unit air dalam tangki.', type: 'yes' },
             ],
         },
         2: {
-            title: 'Penyemprot Otomatis',
-            intro: 'Seperti mengatur mesin agar mengulangi tindakan yang sama sesuai angka pada penghitung.',
+            title: 'Membedah for dan range',
+            intro: 'Perulangan menjalankan satu blok kode beberapa kali tanpa menyalin baris yang sama.',
             rows: [
-                { label: 'Atur pengulangan', text: 'range() menentukan berapa kali.', type: 'question' },
-                { label: 'Pilih tindakan', text: 'semprot() diletakkan di dalam for.', type: 'answer' },
-                { label: 'Mesin bekerja', text: 'Perintah dijalankan dari hitungan awal sampai selesai.', type: 'yes' },
+                { label: 'for', text: 'Memulai perulangan untuk setiap nilai yang diberikan range().', type: 'question' },
+                { label: 'i', text: 'Ini merupakan inisialisasi nama variabel penghitung perulangan. Selain i, kamu juga bisa menggunakan nama variabel lain. Seperti x ,y , z, dan lain lain', type: 'answer' },
+                { label: 'range(n)', text: 'Melakukan n kali perulangan. Jika 1 kali perulangan maka range(1)', type: 'answer' },
+                { label: 'Tanda (:)', text: 'Titik dua digunakan di akhir baris deklarasi yang akan diikuti oleh blok kode dengan indentasi ke dalam', type: 'answer' },
+                { label: 'Indentasi', text: 'Setelah tanda (:), baris berikutnya harus memakai indentasi. Tekan Tab untuk membuat indentasi.', type: 'yes' },
             ],
         },
         3: {
             title: 'Panel Penghitung Semprotan',
-            intro: 'Angka pengulangan disimpan pada panel bernama jumlah_semprot, lalu dibaca oleh mesin.',
+            intro: 'Angka pengulangan disimpan pada variabel jumlah_semprot.',
             rows: [
-                { label: 'Simpan angka', text: 'jumlah_semprot menyimpan jumlah yang diperlukan.', type: 'question' },
-                { label: 'Baca angka', text: 'range(jumlah_semprot) memakai nilai tersebut.', type: 'answer' },
+                { label: 'Simpan angka', text: 'Variabel jumlah_semprot menyimpan jumlah semprot yang diperlukan.', type: 'question' },
+                { label: 'Baca angka', text: 'range(nama variabel) artinya melakukan perulangan sebanyak angka yang disimpan dalam variabel tersebut.', type: 'answer' },
                 { label: 'Ulangi', text: 'for menjalankan semprot() sebanyak nilai itu.', type: 'yes' },
             ],
         },
@@ -138,7 +140,7 @@ const challengeBridges = {
         ),
         3: bridge(
             'Gabungkan Semua Bekal',
-            'Sekarang kamu sudah mengenal fungsi, perulangan, dan variabel pengatur jumlah. Pada evaluasi, tentukan sendiri cara menggabungkan ketiganya untuk menyiapkan air, memadamkan api, lalu mencapai FINISH.',
+            'Sekarang kamu sudah mengenal aksi semprot, perulangan, dan variabel pengatur jumlah. Pada evaluasi, tentukan sendiri cara menggabungkan ketiganya untuk menyiapkan air, memadamkan api, lalu mencapai FINISH.',
             'Mengatur jumlah pengulangan melalui variabel.',
             'Misi berikutnya tidak menyediakan kisi-kisi kode.',
             'Baca keadaan misi lalu susun program lengkap secara mandiri.',
@@ -202,23 +204,29 @@ export function getGuideInstruction({ levelNumber, challengeNumber, state = {} }
     if (challengeNumber === 4) {
         return state.fireOut
             ? 'Api evaluasi sudah padam! Pergi ke petak FINISH untuk menyelesaikan misi.'
-            : 'Saatnya bekerja mandiri: siapkan pasokan air, padamkan api evaluasi, lalu capai FINISH. Gunakan konsep yang sudah kamu pelajari.';
+            : 'Siapkan pasokan air, padamkan api evaluasi, lalu capai FINISH. Gunakan konsep yang sudah kamu pelajari.';
     }
     const remaining = level2Challenges[challengeNumber].requiredWater - (state.sprays ?? 0);
     const needsWater = (state.water ?? 0) < remaining
         || (challengeNumber === 1 && !state.sprays && (state.water ?? 0) < 6);
     if (needsWater) {
         return state.atPump
-            ? 'Kamu sudah di pompa! Tulis isi_air = 6 untuk mengisi tangki sampai kapasitas 6 unit.'
+            ? 'Kamu sudah di pompa! Isi tangki dengan 6 unit air.'
             : 'Pergi ke penanda pompa untuk mengambil air sebelum mendekati api.';
     }
     if (!state.atFire) {
-        const location = { 1: 'tengah', 2: 'kanan atas', 3: 'kanan bawah' }[challengeNumber];
-        return `Pergi ke penanda api ${location}. Bawa air untuk ${remaining} semprotan yang masih dibutuhkan.`;
+        return 'Pergi ke titik kebakaran dan lakukan pemadaman api.';
     }
-    if (challengeNumber === 1) return `Kamu sudah dekat api. Jalankan semprot() untuk ${remaining} semprotan lagi; setiap semprotan memakai 1 unit air.`;
-    if (challengeNumber === 2) return `Gunakan for dan range() untuk mengulang semprot(). Api ini membutuhkan ${remaining} semprotan lagi.`;
-    return `Simpan ${remaining} dalam jumlah_semprot, lalu pakai range(jumlah_semprot) untuk mengulang semprot().`;
+    if (challengeNumber === 1) {
+        const sprayTask = remaining === 1
+            ? 'Misi: lakukan satu semprotan lagi agar api benar-benar padam.'
+            : 'Misi: lakukan 2 kali penyemprotan supaya api kebakaran bisa padam.';
+        return `Kamu sudah tiba di Challenge 1. semprot() memanggil satu aksi penyemprotan. ${sprayTask}`;
+    }
+    if (challengeNumber === 2) {
+        return 'Kamu sudah tiba di Challenge 2. Barusan kita menulis semprot() dua kali. Bagaimana kalau api membutuhkan 100 semprotan? Gunakan for dan range() agar satu blok kode dapat diulang. Misi: gunakan for i in range(1): untuk melakukan satu kali penyemprotan.';
+    }
+    return `Kamu sudah tiba di Challenge 3. Variabel jumlah_semprot menyimpan jumlah yang diperlukan. Misi: simpan angka ${remaining} pada jumlah_semprot, lalu gunakan range(jumlah_semprot) agar for menjalankan semprot() sebanyak nilai tersebut.`;
 }
 
 export function getGuidePresentation({ levelNumber, challengeNumber, state = {} }) {
@@ -233,8 +241,12 @@ export function getGuidePresentation({ levelNumber, challengeNumber, state = {} 
 
     return {
         message: getGuideInstruction({ levelNumber, challengeNumber, state }),
-        code: starter?.code ?? '',
-        analogy: guideAnalogies[levelNumber]?.[challengeNumber] ?? null,
+        code: levelNumber === 2 ? '' : starter?.code ?? '',
+        analogy: levelNumber === 2
+            ? challengeNumber < 4 && state.atFire
+                ? guideAnalogies[levelNumber]?.[challengeNumber] ?? null
+                : null
+            : guideAnalogies[levelNumber]?.[challengeNumber] ?? null,
     };
 }
 
@@ -252,7 +264,9 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
         if (command.type === 'move') {
             continue;
         } else if (command.type === 'setWater') {
-            messages.push(`isi_air = ${command.amount} menyimpan nilai ${command.amount} ke variabel isi_air, mengganti nilai ${water} menjadi ${command.amount}. Tanda = menyimpan nilai, bukan menambahkannya. Di game, jumlah ini menjadi isi tangkimu.`);
+            if (levelNumber !== 2) {
+                messages.push(`isi_air = ${command.amount} menyimpan nilai ${command.amount} ke variabel isi_air, mengganti nilai ${water} menjadi ${command.amount}. Tanda = menyimpan nilai, bukan menambahkannya. Di game, jumlah ini menjadi isi tangkimu.`);
+            }
             water = command.amount;
         } else if (command.type === 'branch') {
             messages.push('Saya memeriksa ' + command.condition + ': hasilnya ' + (command.result ? 'True, cabang if dijalankan.' : 'False, cabang else dijalankan.'));
@@ -285,11 +299,14 @@ export function explainExecutedCommands({ levelNumber, challengeNumber, commands
             }
             let concept = 'semprot() memanggil aksi menyemprot satu kali.';
             if (/range\s*\(\s*jumlah_semprot\s*\)/.test(source)) {
-                concept = 'jumlah_semprot menyimpan banyaknya pengulangan. range(jumlah_semprot) membaca nilai itu, dan for mengulang blok semprot() sebanyak nilai tersebut.';
+                concept = 'Variabel jumlah_semprot menyimpan banyaknya pengulangan. range(jumlah_semprot) membaca nilai itu, dan for mengulang blok semprot() sebanyak nilai tersebut.';
             } else if (/^\s*for\s+/m.test(source)) {
                 concept = 'for mengulang blok di bawahnya. range(angka) menentukan banyaknya pengulangan; tiap semprot() dalam blok dijalankan pada setiap pengulangan.';
             }
-            messages.push(`${concept} Pada Run ini, ${count} semprotan berhasil di bagian ini. Setiap semprotan memakai 1 unit air menurut aturan game, sehingga air berubah dari ${water} menjadi ${water - count}.`);
+            const result = levelNumber === 2
+                ? `${concept} Setelah kode dijalankan, ${count} semprotan berhasil. Air di dalam tangki berkurang otomatis dari ${water} menjadi ${water - count}.`
+                : `${concept} Pada Run ini, ${count} semprotan berhasil di bagian ini. Setiap semprotan memakai 1 unit air menurut aturan game, sehingga air berubah dari ${water} menjadi ${water - count}.`;
+            messages.push(result);
             water -= count;
         }
     }

@@ -21,23 +21,26 @@ class Level3PageTest extends TestCase
         $this->get('/game/3')->assertRedirect(route('login'));
         $this->post(route('login.guest'));
         $this->get('/main-menu')->assertOk()->assertSee(route('game.level3'), false);
-        $this->get('/game/3')->assertOk()->assertSee('Suaka Bekantan')
+        $response = $this->get('/game/3')->assertOk()->assertSee('Suaka Bekantan')
             ->assertSee('data-level="3"', false)->assertSee('data-progress-url=""', false)
-            ->assertSee('assets/maps/level3-map.webp')->assertDontSee('assets/story/level2/')
+            ->assertSee('assets/story/level3/1.png')->assertSee('assets/story/level3/2.png')
+            ->assertSee('assets/story/level3/3.png')->assertSee('assets/story/level3/4.png')
+            ->assertSee('Petugas, kebakaran hutan semakin meluas dan mulai mengancam habitat bekantan. Kita harus segera bertindak.')
+            ->assertSee('Kami sudah tiba di lokasi, Komandan. Api menyebar di antara pepohonan dan menutup beberapa jalur.')
+            ->assertSee('Sejumlah bekantan terjebak di tengah kepungan api. Mereka harus segera diselamatkan sebelum keadaan semakin berbahaya.')
+            ->assertSee('Padamkan seluruh titik api, selamatkan para bekantan, lalu antar mereka ke Pos Evakuasi dengan aman. Operasi penyelamatan dimulai!')
+            ->assertDontSee('assets/maps/level3-map.webp')->assertDontSee('assets/story/level2/')
+            ->assertDontSee('Beberapa bekantan masih terjebak. Sebagian jalur tertutup asap.')
             ->assertSee('assets/characters/komandan.png')->assertSee('assets/characters/mission-guide.png')
-            ->assertSee('story-portrait--commander')->assertSee('story-portrait--player')
-            ->assertSee('data-speaker="commander"', false)->assertSee('data-speaker="player"', false)
+            ->assertDontSee('story-portrait--commander')->assertDontSee('story-portrait--player')
             ->assertSee('data-guide-portrait="commander"', false)->assertSee('data-guide-portrait="player"', false)
-            ->assertSee('data-guide-speaker-name', false)->assertSee('if menjalankan tindakan saat kondisi True')
-            ->assertSee('api_padam')->assertSee('id="bekantan-status"', false)
+            ->assertSee('data-guide-speaker-name', false)->assertSee('api_padam')
             ->assertSee('id="required-water">5</span>', false)
-            ->assertSee('id="rescued-count"', false)->assertSee('id="extinguished-count"', false)
-            ->assertSee('id="sub-mission"', false)->assertSee('id="jalur-condition"', false)
-            ->assertSee('id="animal-condition"', false)->assertSee('id="water-needed"', false)
-            ->assertSee('id="hud-water"', false)->assertSee('id="hud-world-state"', false)
+            ->assertSee('id="rescued-count"', false)->assertSee('id="hud-water"', false)
             ->assertSee('tahan Control lalu klik petak jalan untuk teleport')
             ->assertSee('Bekantan diselamatkan: 3/3')->assertSee('Evaluasi akhir: LULUS')
             ->assertDontSee('Lanjut Level 4');
+        $this->assertDoesNotMatchRegularExpression('/data-story-slide[^>]*data-speaker=/', $response->getContent());
         $this->postJson('/progress/challenge', ['level' => 3, 'challenge' => 4])->assertOk()->assertJsonPath('saved', false);
         $this->assertDatabaseCount('user_level_progress', 0);
     }

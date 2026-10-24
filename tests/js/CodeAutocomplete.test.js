@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import CodeAutocomplete, {
     applyAutocompleteSuggestion,
     createLevel1Suggestions,
+    createLevel2Suggestions,
+    createLevel3Suggestions,
     getAutocompleteMatches,
     getCompletionContext,
 } from '../../resources/js/game/CodeAutocomplete.js';
@@ -85,6 +87,25 @@ test('every movement keeps its direction, example and editable step number', () 
         assert.equal(completion.value, `${direction}(1)`);
         assert.equal(completion.value.slice(completion.selectionStart, completion.selectionEnd), '1');
     }
+});
+
+test('Level 2 shortcut recommendations only contain movement sequences, including evaluation', () => {
+    for (const challengeNumber of [1, 2, 3, 4]) {
+        const suggestions = createLevel2Suggestions(3, challengeNumber);
+
+        assert.deepEqual(
+            suggestions.map(({ value }) => value),
+            ['atas(1)', 'bawah(1)', 'kanan(1)', 'kiri(1)'],
+        );
+        assert.equal(suggestions.every(({ kind }) => kind === 'Perintah gerak'), true);
+    }
+});
+
+test('limiting Level 2 shortcuts does not remove Level 3 learning commands', () => {
+    const values = createLevel3Suggestions(3, 3).map(({ value }) => value);
+
+    assert.equal(values.includes('semprot()'), true);
+    assert.equal(values.includes('for i in range(jumlah_semprot):\n    semprot()'), true);
 });
 
 test('completion preserves neighbouring lines and indentation in the middle of code', () => {

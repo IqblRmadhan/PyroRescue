@@ -6,8 +6,8 @@ import { level2Map } from './Level2Map.js';
 const challenges = {
     1: {
         title: 'Challenge 1 - Mengenal Semprotan',
-        effect: 'Di game: isi_air = 6 dijalankan di pompa sebelum berangkat. Datangi penanda C1, lalu padamkan api dengan 2 kali semprotan.',
-        description: 'Datangi pompa di atas jalan dekat jembatan dan tulis isi_air = 6. Gunakan 2 unit untuk memadamkan api C1 dengan semprot() dua kali.',
+        effect: 'semprot() memanggil satu aksi menyemprot. Dua aksi penyemprotan memadamkan api Challenge 1 dan air di tangki berkurang otomatis.',
+        description: 'Isi tangki dengan 6 unit air, lanjutkan ke Challenge 1, lalu jalankan semprot() dua kali untuk memadamkan api.',
         texture: 'fireC1',
         requiredWater: 2,
         targets: [
@@ -15,18 +15,18 @@ const challenges = {
             { key: 'location', label: 'Pergi ke penanda api tengah' },
             { key: 'fire', label: 'Padamkan api dengan 2 semprotan' },
         ],
-        example: 'isi_air = 6\nsemprot()\nsemprot()',
-        lesson: 'Ulangi materi variabel: di pompa, isi_air = 6 menyimpan enam unit air. C1 butuh dua semprotan, C2 satu, dan C3 tiga. Tiap semprot() memakai satu unit, sehingga setelah C1 masih ada empat.',
+        example: 'semprot()\nsemprot()',
+        lesson: 'semprot() adalah aksi penyemprotan dalam game. Karena api Challenge 1 membutuhkan dua semprotan, tulis aksi yang sama pada dua baris. Setiap aksi mengurangi 1 unit air dalam tangki secara otomatis.',
         hints: [
-            'Datangi penanda biru di sebelah pompa. Tulis isi_air = 6 untuk mengisi tangki, lalu lanjut ke api C1.',
-            'Dari awal challenge: kanan(15), isi_air = 6, kanan(2), bawah(3), kanan(2), lalu semprot() pada dua baris. Jalankan tiap perintah sesuai urutan.',
+            'Datangi penanda biru di sebelah pompa dan isi tangki dengan 6 unit air, lalu lanjut ke api Challenge 1.',
+            'Dari awal challenge: kanan(15), isi tangki dengan 6 unit air, kanan(2), bawah(3), kanan(2), lalu semprot() pada dua baris. Jalankan tiap perintah sesuai urutan.',
         ],
-        nextMessage: 'Empat unit air tersisa. Lanjutkan ke api kanan atas dan gunakan perulangan untuk menyemprot satu kali.',
+        nextMessage: 'Empat unit air tersisa. Sekarang langsung menuju titik api Challenge 2 di kanan atas.',
     },
     2: {
         title: 'Challenge 2 - Mengulang Semprotan',
-        effect: 'Di game: Datangi penanda C2, lalu padamkan api dengan 1 kali semprotan.',
-        description: 'Empat unit air tersisa dari pompa. Pergi ke C2 dan gunakan for serta range() untuk menjalankan 1 semprotan.',
+        effect: 'Di game: datangi penanda Challenge 2, lalu padamkan api dengan 1 kali semprotan.',
+        description: 'Pergi ke Challenge 2 dan gunakan for i in range(1): untuk menjalankan satu semprotan melalui perulangan.',
         texture: 'fireC2',
         requiredWater: 1,
         targets: [
@@ -34,16 +34,16 @@ const challenges = {
             { key: 'fire', label: 'Padamkan api dengan for/range: 1 semprotan' },
         ],
         example: 'for i in range(1):\n    semprot()',
-        lesson: 'Dari isi_air = 6, dua unit dipakai di C1 sehingga tersisa empat. range(1) menjalankan semprot() satu kali di C2; tiga unit air akan tersisa untuk C3.',
+        lesson: 'for memulai perulangan, i mencatat putaran yang sedang berjalan, dan range(1) melakukan 1 kali perulangan. Setelah tanda (:), baris berikutnya harus memakai indentasi. Tekan Tab untuk membuat indentasi sebelum semprot().',
         hints: [
             'Kembali ke jalan utama, lalu ikuti jalan atas ke kanan. Gunakan for/range agar semprot() dijalankan satu kali.',
-            'Dari awal challenge: kiri(2), atas(6), kanan(13), bawah(2), kanan(4). Lalu tulis for i in range(1): dan semprot() dengan empat spasi di baris berikutnya.',
+            'Dari awal challenge: kiri(2), atas(6), kanan(13), bawah(2), kanan(4). Lalu tulis for i in range(1): dan tekan Tab untuk memberi indentasi pada semprot() di baris berikutnya.',
         ],
-        nextMessage: 'Tiga unit air tersisa untuk api terakhir. Simpan jumlah iterasinya dalam jumlah_semprot.',
+        nextMessage: 'Tiga unit air tersisa. Sekarang langsung menuju titik api Challenge 3 di kanan bawah.',
     },
     3: {
         title: 'Challenge 3 - Variabel dalam Perulangan',
-        effect: 'Di game: Datangi penanda C3, lalu padamkan api dengan 3 kali semprotan.',
+        effect: 'Di game: datangi penanda Challenge 3, lalu padamkan api dengan 3 kali semprotan.',
         description: 'Gunakan sisa 3 unit air di api kanan bawah. Simpan jumlah_semprot = 3, lalu gunakan nilainya dalam range().',
         texture: 'fireC3',
         requiredWater: 3,
@@ -57,7 +57,7 @@ const challenges = {
             'Ikuti jalan ke kanan lalu turun ke penanda api kanan bawah.',
             'Dari awal challenge: bawah(2), kanan(4), bawah(11). Tulis jumlah_semprot = 3, lalu for i in range(jumlah_semprot): dengan semprot() berindentasi.',
         ],
-        nextMessage: 'Tiga area latihan selesai. Di area terakhir, selesaikan evaluasi secara mandiri tanpa hint.',
+        nextMessage: 'Tiga area latihan selesai. Lanjutkan ke area evaluasi dan selesaikan misi terakhir secara mandiri.',
     },
     4: {
         title: 'Evaluasi Akhir - Padamkan Api',
